@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.jark006.freezeit",
+  "variantName": "release",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 20000,
+      "versionName": "2.0",
+      "outputFile": "freezeit.apk"
+    }
+  ],
+  "elementType": "File"
+}

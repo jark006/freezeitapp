@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Freezeit</string>
+    <string name="title_home">Freezeit</string>
+    <string name="title_config">WhiteList</string>
+    <string name="title_logcat">Logcat</string>
+    <string name="title_other">Other</string>
+    <string name="state">Unknow</string>
+    <string name="icon">Icon</string>
+    <string name="supportTitle">Support</string>
+    <string name="supportDescriptText">Modules are completely free to use, donate developers to get more development momentum.</string>
+    <string name="changelogTitle">Changelog</string>
+    <string name="changelogText">Freezeit module changelog</string>
+    <string name="communityTitle">Developers and Community</string>
+    <string name="coolapk_text">Coolapk @JARK006</string>
+    <string name="qqgroup_text">QQ Group 781222669</string>
+    <string name="qqchannel_text">QQ Channel【冻它模块】</string>
+    <string name="telegramgroup_text">TelegramGroup</string>
+    <string name="telegramchannel_text">TelegramChannel</string>
+    <string name="github_text">FreezeitApp open source</string>
+    <string name="update_app_name">Update Newly installed app</string>
+    <string name="get_log_fail_tips">Failed to get work log</string>
+    <string name="get_changelog_fail_tips">Failed to get Changelog</string>
+    <string name="about">About</string>
+    <string name="freezeit_online">Freezeit is running</string>
+    <string name="freezeit_offline">Freezeit is not installed or running</string>
+    <string name="freezeit_offline_tips">Please check whether the freezeit module in Magisk is installed and enabled. If it is just installed, restart it to take effect.</string>
+    <string name="app_aboutInfo">The freezeit module implements the IOS-like tombstone mechanism.\n\nPause background CPU usage of blacklisted apps.</string>
+    <string name="app_label">app label</string>
+    <string name="update_seccess">update seccess</string>
+    <string name="update_fail">update fail</string>
+    <string name="update_start">update start</string>
+    <string name="developer">Developer: JARK006</string>
+</resources>

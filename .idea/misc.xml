@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.182" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/drawable/ic_baseline_ac_unit_24.xml" value="0.1995" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/drawable/ic_baseline_format_list_bulleted_24.xml" value="0.1995" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/drawable/ic_baseline_info_24.xml" value="0.203" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/drawable/ic_changelog_24dp.xml" value="0.203" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/drawable/ic_config_24dp.xml" value="0.1995" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/drawable/ic_dashboard_black_24dp.xml" value="0.1995" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/drawable/ic_home_24dp.xml" value="0.1995" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/drawable/ic_home_black_24dp.xml" value="0.182" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/drawable/ic_info_24dp.xml" value="0.203" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/drawable/ic_launcher_background.xml" value="0.182" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/drawable/ic_logcat_24.xml" value="0.1995" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/drawable/ic_logcat_24dp.xml" value="0.1995" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/drawable/ic_logotop.xml" value="0.1995" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/drawable/ic_notifications_black_24dp.xml" value="0.182" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/layout/about.xml" value="0.2" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/layout/activity_main.xml" value="0.33" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/layout/alipay.xml" value="0.1734375" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/layout/app_item_layout.xml" value="0.3536458333333333" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/layout/bitcoinpay.xml" value="0.1734375" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/layout/ecnypay.xml" value="0.16927083333333334" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/layout/ethereumpay.xml" value="0.16927083333333334" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/layout/fragment_config.xml" value="0.15625" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/layout/fragment_dashboard.xml" value="0.3546875" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/layout/fragment_home.xml" value="0.22" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/layout/fragment_logcat.xml" value="0.16927083333333334" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/layout/fragment_notifications.xml" value="0.3546875" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/layout/qqpay.xml" value="0.3546875" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/layout/wechatpay.xml" value="0.17447916666666666" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/menu/bottom_nav_menu.xml" value="0.3194444444444444" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/menu/config_menu.xml" value="0.3546875" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.182" />
+        <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.182" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+  <component name="VisualizationToolProject">
+    <option name="state">
+      <ProjectState>
+        <option name="scale" value="0.2" />
+      </ProjectState>
+    </option>
+  </component>
+</project>

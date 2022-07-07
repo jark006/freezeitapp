@@ -1,0 +1,3 @@
+password freezeit
+alias    freezeit
+password freezeit
