@@ -2,8 +2,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:layout_width="270dp"
-    android:layout_height="480dp">
+    android:layout_width="320dp"
+    android:layout_height="wrap_content">
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="80dp"
@@ -29,12 +29,17 @@
         <ImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:padding="5dp"
             app:srcCompat="@drawable/ic_launcher"
             android:contentDescription="@string/icon" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/app_name" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/appVer" />
     </LinearLayout>
 
     <TextView

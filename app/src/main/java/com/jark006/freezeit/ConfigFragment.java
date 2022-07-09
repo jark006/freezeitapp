@@ -1,7 +1,5 @@
 package com.jark006.freezeit;
 
-import static androidx.constraintlayout.widget.Constraints.TAG;
-
 import android.annotation.SuppressLint;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -11,11 +9,17 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -53,8 +57,11 @@ import java.util.List;
 //                      佛祖坐镇 尔等bug小怪速速离去
 
 public class ConfigFragment extends Fragment implements Handler.Callback {
+    final String TAG = "ConfigFragment";
 
     private FragmentConfigBinding binding;
+    SearchView searchView;
+    ConstraintLayout constraintLayout;
     appListRecyclerAdapter recycleAdapter;
     List<ApplicationInfo> applicationInfoList = new ArrayList<>();
     List<ApplicationInfo> applicationInfoListSort = new ArrayList<>();
@@ -70,6 +77,7 @@ public class ConfigFragment extends Fragment implements Handler.Callback {
 
         binding = FragmentConfigBinding.inflate(inflater, container, false);
 
+        constraintLayout = binding.constraintLayoutConfig;
         recyclerView = binding.recyclerviewApp;
         swipeRefreshLayout = binding.swipeRefreshLayout;
         swipeRefreshLayout.setOnRefreshListener(() -> new Thread(getWhitelistTask).start());
@@ -81,6 +89,43 @@ public class ConfigFragment extends Fragment implements Handler.Callback {
                 continue;
             applicationInfoList.add(appInfo);
         }
+
+        requireActivity().addMenuProvider(new MenuProvider() {
+
+            @Override
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                menu.clear();
+                menuInflater.inflate(R.menu.config_menu, menu);
+
+                MenuItem searchItem = menu.findItem(R.id.search_view);
+                searchView = (SearchView)searchItem.getActionView();
+                if (searchView != null) {
+                    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                        @Override
+                        public boolean onQueryTextSubmit(String query) {//按下搜索触发
+                            Log.i(TAG, "onQueryTextSubmit: " + query);
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onQueryTextChange(String newText) {
+                            if(recycleAdapter != null)
+                                recycleAdapter.getFilter().filter(newText);
+                            return false;
+                        }
+                    });
+                }else{
+                    Log.e(TAG, "onCreateMenu: searchView == null");
+                }
+            }
+
+            @Override
+            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                return false;
+            }
+        }, this.getViewLifecycleOwner());
+
+
         new Thread(getWhitelistTask).start();
 
         return binding.getRoot();
@@ -90,11 +135,6 @@ public class ConfigFragment extends Fragment implements Handler.Callback {
 
         applicationInfoListSort.clear();
         for (ApplicationInfo info : applicationInfoList) {
-            if (whiteListForce.contains(info.packageName)) {
-                applicationInfoListSort.add(info);
-            }
-        }
-        for (ApplicationInfo info : applicationInfoList) {
             if (whiteListConf.contains(info.packageName)) {
                 applicationInfoListSort.add(info);
             }
@@ -102,6 +142,12 @@ public class ConfigFragment extends Fragment implements Handler.Callback {
 
         for (ApplicationInfo info : applicationInfoList) {
             if (!whiteListForce.contains(info.packageName) && !whiteListConf.contains(info.packageName)) {
+                applicationInfoListSort.add(info);
+            }
+        }
+
+        for (ApplicationInfo info : applicationInfoList) {
+            if (whiteListForce.contains(info.packageName)) {
                 applicationInfoListSort.add(info);
             }
         }

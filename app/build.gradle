@@ -9,10 +9,11 @@ android {
         applicationId "com.jark006.freezeit"
         minSdk 26
         targetSdk 32
-        versionCode 20000
-        versionName "2.0"
+        versionCode 20100
+        versionName "Ver2.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        resValue "string", "appVer", versionName
     }
 
     buildTypes {
@@ -25,7 +26,7 @@ android {
         variant ->
             variant.outputs.all {
                 if (variant.buildType.name =='release')
-                    outputFileName = "freezeit.apk"
+                    outputFileName = "freezeit${versionName}.apk"
             }
     }
     compileOptions {

@@ -3,26 +3,35 @@ package com.jark006.freezeit;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 
-import java.nio.charset.StandardCharsets;
-
+import com.google.android.material.snackbar.Snackbar;
 import com.jark006.freezeit.databinding.FragmentHomeBinding;
+
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 //                            _ooOoo_
 //                           o8888888o
@@ -47,10 +56,12 @@ import com.jark006.freezeit.databinding.FragmentHomeBinding;
 //                      佛祖坐镇 尔等bug小怪速速离去
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
-
+    private final String TAG = "HomeFragment";
     private FragmentHomeBinding binding;
     TextView moduleInfo, moduleState;
-    LinearLayout stateLayout, coolApkLink, qqGroupLink, qqChannelLink, tgLink, tgChannelLink, githubLink;
+    ConstraintLayout constraintLayout;
+    LinearLayout stateLayout, coolApkLink, qqGroupLink, qqChannelLink, tgLink, tgChannelLink,
+            githubLink, githubappLink, lanzouLink;
     ImageView wechatPay, aliPay, qqpay, ecnyPay, ethereumPay, bitcoinPay;
     boolean moduleIsRunning = false;
     String moduleName;
@@ -60,6 +71,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
 
+        constraintLayout = binding.constraintLayoutHome;
         moduleInfo = binding.infoText;
         moduleState = binding.stateText;
         stateLayout = binding.stateLayout;
@@ -77,8 +89,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         tgLink = binding.telegramLink;
         tgChannelLink = binding.telegramChannelLink;
         githubLink = binding.githubLink;
-
-        new Thread(statusTask).start();
+        githubappLink = binding.githubappLink;
+        lanzouLink = binding.lanzouLink;
 
         stateLayout.setOnClickListener(this);
 
@@ -95,7 +107,30 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         tgLink.setOnClickListener(this);
         tgChannelLink.setOnClickListener(this);
         githubLink.setOnClickListener(this);
+        githubappLink.setOnClickListener(this);
+        lanzouLink.setOnClickListener(this);
 
+        requireActivity().addMenuProvider(new MenuProvider() {
+            @Override
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                menu.clear();
+                menuInflater.inflate(R.menu.home_menu, menu);
+            }
+
+            @Override
+            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                int id = menuItem.getItemId();
+                if (id == R.id.update_app_name) {
+                    Snackbar.make(constraintLayout, getString(R.string.update_start), Snackbar.LENGTH_SHORT).show();
+                    new Thread(updateAppNameTask).start();
+                } else if (id == R.id.about) {
+                    aboutDialog();
+                }
+                return false;
+            }
+        }, this.getViewLifecycleOwner());
+
+        new Thread(statusTask).start();
         return binding.getRoot();
     }
 
@@ -105,7 +140,57 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         binding = null;
     }
 
-    private final Handler handler = new Handler(Looper.getMainLooper()) {
+    private final Handler appNameHandler = new Handler(Looper.getMainLooper()) {
+        @SuppressLint("SetTextI18n")
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            byte[] response = msg.getData().getByteArray("response");
+
+            if (response == null || response.length == 0) {
+                String errorTips = getString(R.string.freezeit_offline);
+                Snackbar.make(constraintLayout, errorTips, Snackbar.LENGTH_SHORT).show();
+                Log.e(TAG, errorTips);
+                return;
+            }
+
+            String res = new String(response, StandardCharsets.UTF_8);
+            if (res.equals("success")) {
+                Snackbar.make(constraintLayout, R.string.update_seccess, Snackbar.LENGTH_SHORT).show();
+            } else {
+                String errorTips = getString(R.string.update_fail) + " Receive:[" + res + "]";
+                Snackbar.make(constraintLayout, errorTips, Snackbar.LENGTH_SHORT).show();
+                Log.e(TAG, errorTips);
+            }
+        }
+    };
+
+    Runnable updateAppNameTask = () -> {
+        StringBuilder appName = new StringBuilder();
+
+        PackageManager pm = requireContext().getPackageManager();
+        List<ApplicationInfo> applicationsInfo = pm.getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES);
+        for (ApplicationInfo appInfo : applicationsInfo) {
+            if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) > 0)
+                continue;
+
+            String label = pm.getApplicationLabel(appInfo).toString();
+            if (label.endsWith("Application") || label.endsWith(".xml") || label.endsWith("false"))
+                label = appInfo.packageName;
+
+            appName.append(appInfo.packageName).append("####").append(label).append('\n');
+        }
+        Utils.freezeitTask(Utils.setAppName, appName.toString().getBytes(StandardCharsets.UTF_8), appNameHandler);
+    };
+
+    public void aboutDialog() {
+        Dialog dialog = new Dialog(requireContext());
+        dialog.setContentView(R.layout.about);
+        dialog.show();
+    }
+
+
+    private final Handler statusHandler = new Handler(Looper.getMainLooper()) {
         @SuppressLint("SetTextI18n")
         @Override
         public void handleMessage(Message msg) {
@@ -116,6 +201,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 stateLayout.setBackgroundResource(R.color.warn_red);
                 moduleInfo.setText(R.string.freezeit_offline);
                 moduleState.setText(R.string.freezeit_offline_tips);
+                Log.e(TAG, getString(R.string.freezeit_offline));
                 return;
             }
 
@@ -126,6 +212,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 stateLayout.setBackgroundResource(R.color.warn_red);
                 moduleInfo.setText(R.string.freezeit_offline);
                 moduleState.setText(R.string.freezeit_offline_tips);
+                Log.e(TAG, getString(R.string.freezeit_offline));
                 return;
             }
 
@@ -135,12 +222,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
             stateLayout.setBackgroundResource(R.color.normal_green);
             moduleInfo.setText(R.string.freezeit_online);
-            moduleState.setText(moduleVersion);
+            moduleState.setText(moduleVersion + getString(R.string.show_changelog_tip));
 
         }
     };
 
-    Runnable statusTask = () -> Utils.freezeitTask(Utils.getInfo, null, handler);
+    Runnable statusTask = () -> Utils.freezeitTask(Utils.getInfo, null, statusHandler);
 
 
     private final Handler changelogHandler = new Handler(Looper.getMainLooper()) {
@@ -151,7 +238,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             byte[] response = msg.getData().getByteArray("response");
 
             if (response == null || response.length == 0) {
-                Toast.makeText(getContext(), getString(R.string.freezeit_offline), Toast.LENGTH_SHORT).show();
+                Snackbar.make(constraintLayout, getString(R.string.freezeit_offline), Snackbar.LENGTH_SHORT).show();
                 return;
             }
 
@@ -166,7 +253,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
     };
 
-    Runnable changelogTask = () -> Utils.freezeitTask(Utils.getchangelog, null, changelogHandler);
+    Runnable changelogTask = () -> Utils.freezeitTask(Utils.getChangelog, null, changelogHandler);
 
 
     @Override
@@ -224,6 +311,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
         } else if (id == R.id.github_link) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.github_link))));
+        } else if (id == R.id.githubapp_link) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.githubapp_link))));
+        } else if (id == R.id.lanzou_link) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.lanzou_link))));
         }
     }
 

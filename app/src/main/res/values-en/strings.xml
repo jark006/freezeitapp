@@ -14,10 +14,10 @@
     <string name="communityTitle">Developers and Community</string>
     <string name="coolapk_text">Coolapk @JARK006</string>
     <string name="qqgroup_text">QQ Group 781222669</string>
-    <string name="qqchannel_text">QQ Channel【冻它模块】</string>
-    <string name="telegramgroup_text">TelegramGroup</string>
-    <string name="telegramchannel_text">TelegramChannel</string>
-    <string name="github_text">FreezeitApp open source</string>
+    <string name="qqchannel_text">QQ Channel [冻它模块]</string>
+    <string name="telegramgroup_text">Telegram Group</string>
+    <string name="telegramchannel_text">Telegram Channel</string>
+    <string name="github_text">Freezeit Module Release</string>
     <string name="update_app_name">Update Newly installed app</string>
     <string name="get_log_fail_tips">Failed to get work log</string>
     <string name="get_changelog_fail_tips">Failed to get Changelog</string>
@@ -26,9 +26,14 @@
     <string name="freezeit_offline">Freezeit is not installed or running</string>
     <string name="freezeit_offline_tips">Please check whether the freezeit module in Magisk is installed and enabled. If it is just installed, restart it to take effect.</string>
     <string name="app_aboutInfo">The freezeit module implements the IOS-like tombstone mechanism.\n\nPause background CPU usage of blacklisted apps.</string>
-    <string name="app_label">app label</string>
-    <string name="update_seccess">update seccess</string>
-    <string name="update_fail">update fail</string>
-    <string name="update_start">update start</string>
+    <string name="app_label">App label</string>
+    <string name="update_seccess">Update success</string>
+    <string name="update_fail">Update fail</string>
+    <string name="update_start">Update start</string>
     <string name="developer">Developer: JARK006</string>
+    <string name="lanzou_text">LanzouUpdate Password: dy6i</string>
+    <string name="githubapp_text">Freezeit App Opensource</string>
+    <string name="show_changelog_tip">" Click here"</string>
+    <string name="clear_log_text">Clear</string>
+    <string name="clear_log_tips">Log cleared</string>
 </resources>

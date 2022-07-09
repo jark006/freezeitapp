@@ -1,6 +1,5 @@
 package com.jark006.freezeit;
 
-import static androidx.constraintlayout.widget.ConstraintLayoutStates.TAG;
 
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
@@ -17,12 +16,13 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 
 public class Utils {
+    private static final String TAG = "Utils";
 
     // 获取信息 无附加数据
     public static byte getStatus = 1;     // return "Freezeit is running"
     public static byte getInfo = 2;       // return "moduleID\nmoduleName\nmoduleVersion\nmoduleVersionCode\nmoduleAuthor"
-    public static byte getchangelog = 3;  // return "changelog"
-    public static byte getlog = 4;        // return "log"
+    public static byte getChangelog = 3;  // return "changelog"
+    public static byte getLog = 4;        // return "log"
     public static byte getWhiteList = 5;  // return "packageName\npackageName\npackageName"
 
     // 依次为 物理内存, 虚拟内存(ZRAM/SWAP), 的 "全部 已用 剩余" in bytes
@@ -32,11 +32,12 @@ public class Utils {
     // 设置 需附加数据  xxx:包名 NAME:应用名称
     public static byte setWhiteList = 11; // send "xxx####NAME\nxxx####NAME\nxxx####NAME\n"
     public static byte setAppName = 12;   // send "xxx####NAME\nxxx####NAME\nxxx####NAME\n"
+    public static byte clearLog = 13;     // return "清理并返回空log"
 
     // 进程管理 需附加数据
-    public static byte kill_logd = 21;    // kill logd, needn't
-    public static byte kill_pid = 22;     // kill pid, need String(pid num)
-    public static byte kill_process = 23; // kill app, need String(packageName)
+    public static byte killLogd = 21;    // kill logd, needn't
+    public static byte killPid = 22;     // kill pid, need String(pid num)
+    public static byte killProcess = 23; // kill app, need String(packageName)
     public static byte tempAuthorization = 24; //临时授权后台 need String(packageName)
 
 

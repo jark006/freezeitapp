@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -22,26 +24,38 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-public class appListRecyclerAdapter extends RecyclerView.Adapter<appListRecyclerAdapter.MyViewHolder> {
+public class appListRecyclerAdapter extends RecyclerView.Adapter<appListRecyclerAdapter.MyViewHolder> implements Filterable {
 
     private final List<ApplicationInfo> applicationList;
+    private List<ApplicationInfo> applicationListFilter;
     private final HashSet<String> whiteListForce;
     private final HashSet<String> whiteListConf;
     Handler.Callback callback;
     Context context;
     PackageManager pm;
+    HashMap<String, String> appName = new HashMap<>();
 
     public appListRecyclerAdapter(Context context, List<ApplicationInfo> applicationList,
                                   HashSet<String> whiteListForce, HashSet<String> whiteListConf, Handler.Callback callback) {
         this.applicationList = applicationList;
+        this.applicationListFilter = applicationList;
         this.whiteListForce = whiteListForce;
         this.whiteListConf = whiteListConf;
         this.context = context;
         this.callback = callback;
         this.pm = context.getPackageManager();
+
+        for (ApplicationInfo appInfo : applicationList) {
+            String label = pm.getApplicationLabel(appInfo).toString();
+            if (label.endsWith("Application") || label.endsWith(".xml") || label.endsWith("false"))
+                label = appInfo.packageName;
+            appName.put(appInfo.packageName, label);
+        }
     }
 
     @NonNull
@@ -54,12 +68,10 @@ public class appListRecyclerAdapter extends RecyclerView.Adapter<appListRecycler
     @SuppressLint({"UseCompatLoadingForDrawables", "SetTextI18n"})
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        ApplicationInfo appInfo = applicationList.get(position);
+        ApplicationInfo appInfo = applicationListFilter.get(position);
 
-        String label = pm.getApplicationLabel(appInfo).toString();
-        if (label.endsWith("Application") || label.endsWith(".xml") || label.endsWith("false"))
-            label = appInfo.packageName;
 
+        String label = appName.get(appInfo.packageName);
         Drawable icon = appInfo.loadIcon(pm);
         holder.package_name.setText(appInfo.packageName);
 
@@ -76,9 +88,9 @@ public class appListRecyclerAdapter extends RecyclerView.Adapter<appListRecycler
         if (!whiteListForce.contains(appInfo.packageName)) {
             holder.itemBackground.setOnClickListener(v -> {
 //                Toast.makeText(context, "" + appInfo.packageName, Toast.LENGTH_SHORT).show();
-                if(whiteListConf.contains(appInfo.packageName)){
+                if (whiteListConf.contains(appInfo.packageName)) {
                     whiteListConf.remove(appInfo.packageName);
-                }else{
+                } else {
                     whiteListConf.add(appInfo.packageName);
                 }
 
@@ -86,17 +98,17 @@ public class appListRecyclerAdapter extends RecyclerView.Adapter<appListRecycler
                 for (String s : whiteListConf) {
                     newConf.append(s).append('\n');
                 }
-                Log.i(TAG, "onBindViewHolder: "+newConf);
+                Log.i(TAG, "onBindViewHolder: " + newConf);
 
                 Message msg = new Message();
                 Bundle data = new Bundle();
                 data.putString("response", newConf.toString());
                 data.putInt("position", position);
                 msg.setData(data);
-                Log.i(TAG, "onBindViewHolder: "+ newConf);
+                Log.i(TAG, "onBindViewHolder: " + newConf);
                 callback.handleMessage(msg);
             });
-        }else{
+        } else {
             holder.itemBackground.setOnClickListener(v ->
                     Toast.makeText(context, "达咩", Toast.LENGTH_SHORT).show());
         }
@@ -104,7 +116,41 @@ public class appListRecyclerAdapter extends RecyclerView.Adapter<appListRecycler
 
     @Override
     public int getItemCount() {
-        return applicationList.size();
+        return applicationListFilter.size();
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                List<ApplicationInfo> mApplicationListFilter= new ArrayList<>();
+
+                if (constraint == null || constraint.length() == 0) {
+                    mApplicationListFilter = applicationList;
+                } else {
+                    String keyWord = constraint.toString().toLowerCase();
+                    for (ApplicationInfo appInfo : applicationList) {
+                        String label = appName.get(appInfo.packageName);
+                        if(label == null || label.length() == 0)
+                            continue;
+
+                        if (appInfo.packageName.toLowerCase().contains(keyWord) ||
+                                label.toLowerCase().contains(keyWord)) {
+                            mApplicationListFilter.add(appInfo);
+                        }
+                    }
+                }
+                applicationListFilter = mApplicationListFilter;
+                return new FilterResults();
+            }
+
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                notifyDataSetChanged();
+            }
+        };
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {

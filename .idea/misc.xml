@@ -36,6 +36,17 @@
         <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/menu/config_menu.xml" value="0.3546875" />
         <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.182" />
         <entry key="..\:/AndroidWSP/freezeitapp/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.182" />
+        <entry key="..\:/Project-github/freezeitapp/app/src/main/res/layout/about.xml" value="0.16927083333333334" />
+        <entry key="..\:/Project-github/freezeitapp/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/Project-github/freezeitapp/app/src/main/res/layout/alipay.xml" value="0.14010416666666667" />
+        <entry key="..\:/Project-github/freezeitapp/app/src/main/res/layout/fragment_config.xml" value="0.3546875" />
+        <entry key="..\:/Project-github/freezeitapp/app/src/main/res/layout/fragment_home.xml" value="0.1381340579710145" />
+        <entry key="..\:/Project-github/freezeitapp/app/src/main/res/layout/fragment_logcat.xml" value="0.2" />
+        <entry key="..\:/Project-github/freezeitapp/app/src/main/res/layout/qqpay.xml" value="0.3546875" />
+        <entry key="..\:/Project-github/freezeitapp/app/src/main/res/menu/bottom_nav_menu.xml" value="0.3546875" />
+        <entry key="..\:/Project-github/freezeitapp/app/src/main/res/menu/config_menu.xml" value="0.14010416666666667" />
+        <entry key="..\:/Project-github/freezeitapp/app/src/main/res/menu/home_menu.xml" value="0.14010416666666667" />
+        <entry key="..\:/Project-github/freezeitapp/app/src/main/res/menu/logcat_menu.xml" value="0.25" />
       </map>
     </option>
   </component>

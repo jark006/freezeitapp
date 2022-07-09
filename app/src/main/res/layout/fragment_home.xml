@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/constraintLayout_home"
     tools:context=".HomeFragment">
 
     <ScrollView
@@ -14,9 +15,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="10dp">
 
             <androidx.cardview.widget.CardView
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                card_view:cardUseCompatPadding="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="20dp"
@@ -66,12 +69,11 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:orientation="vertical"/>
+
 
             <androidx.cardview.widget.CardView
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                card_view:cardUseCompatPadding="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="16dp">
@@ -110,6 +112,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:paddingTop="14dp"
+                            android:contentDescription="@string/icon"
                             android:src="@drawable/wechatpay_logo" />
 
                         <ImageView
@@ -118,6 +121,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:paddingTop="14dp"
+                            android:contentDescription="@string/icon"
                             android:src="@drawable/qq_logo" />
 
                         <ImageView
@@ -126,6 +130,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:paddingTop="14dp"
+                            android:contentDescription="@string/icon"
                             android:src="@drawable/alipay_logo" />
 
                         <ImageView
@@ -134,6 +139,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:paddingTop="14dp"
+                            android:contentDescription="@string/icon"
                             android:src="@drawable/ecnypay_logo" />
 
                         <ImageView
@@ -142,6 +148,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:paddingTop="14dp"
+                            android:contentDescription="@string/icon"
                             android:src="@drawable/ethereum_logo" />
 
                         <ImageView
@@ -150,19 +157,16 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:paddingTop="14dp"
+                            android:contentDescription="@string/icon"
                             android:src="@drawable/bitcoin_logo" />
 
                     </LinearLayout>
                 </LinearLayout>
-
             </androidx.cardview.widget.CardView>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:orientation="vertical" />
-
             <androidx.cardview.widget.CardView
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                card_view:cardUseCompatPadding="true"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:cardCornerRadius="16dp">
@@ -192,9 +196,10 @@
 
                         <ImageView
                             android:layout_width="30dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="30dp"
                             android:adjustViewBounds="true"
                             android:scaleType="centerInside"
+                            android:contentDescription="@string/icon"
                             android:src="@drawable/coolapk_logo" />
 
                         <TextView
@@ -214,9 +219,10 @@
 
                         <ImageView
                             android:layout_width="30dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="30dp"
                             android:adjustViewBounds="true"
                             android:scaleType="centerInside"
+                            android:contentDescription="@string/icon"
                             android:src="@drawable/qq_logo" />
 
                         <TextView
@@ -236,9 +242,10 @@
 
                         <ImageView
                             android:layout_width="30dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="30dp"
                             android:adjustViewBounds="true"
                             android:scaleType="centerInside"
+                            android:contentDescription="@string/icon"
                             android:src="@drawable/qqchannel_logo" />
 
                         <TextView
@@ -258,9 +265,10 @@
 
                         <ImageView
                             android:layout_width="30dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="30dp"
                             android:adjustViewBounds="true"
                             android:scaleType="centerInside"
+                            android:contentDescription="@string/icon"
                             android:src="@drawable/telegram_logo" />
 
                         <TextView
@@ -280,9 +288,10 @@
 
                         <ImageView
                             android:layout_width="30dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="30dp"
                             android:adjustViewBounds="true"
                             android:scaleType="centerInside"
+                            android:contentDescription="@string/icon"
                             android:src="@drawable/telegram_logo" />
 
                         <TextView
@@ -302,9 +311,10 @@
 
                         <ImageView
                             android:layout_width="30dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="30dp"
                             android:adjustViewBounds="true"
                             android:scaleType="centerInside"
+                            android:contentDescription="@string/icon"
                             android:src="@drawable/github_logo" />
 
                         <TextView
@@ -313,6 +323,51 @@
                             android:gravity="center_vertical"
                             android:paddingHorizontal="10dp"
                             android:text="@string/github_text" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/githubapp_link"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:orientation="horizontal"
+                        android:padding="10dp">
+
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="centerInside"
+                            android:contentDescription="@string/icon"
+                            android:src="@drawable/github_logo" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical"
+                            android:paddingHorizontal="10dp"
+                            android:text="@string/githubapp_text" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/lanzou_link"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:orientation="horizontal"
+                        android:padding="10dp">
+
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="centerInside"
+                            android:contentDescription="@string/icon"
+                            android:src="@drawable/lanzou_logo" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical"
+                            android:paddingHorizontal="10dp"
+                            android:text="@string/lanzou_text" />
                     </LinearLayout>
                 </LinearLayout>
 

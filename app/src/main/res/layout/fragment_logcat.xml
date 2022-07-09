@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/constraintLayout_logcat"
     android:paddingHorizontal="12dp"
     tools:context=".LogcatFragment">
 
@@ -31,7 +32,8 @@
                 android:layout_height="1dp"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
-                android:orientation="horizontal" />
+                android:orientation="horizontal"
+                tools:ignore="SpeakableTextPresentCheck" />
         </LinearLayout>
     </ScrollView>
 

@@ -8,5 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:srcCompat="@drawable/qqpay"
-        tools:ignore="MissingConstraints" />
+        tools:ignore="MissingConstraints"
+        android:contentDescription="@string/icon" />
 </LinearLayout>
