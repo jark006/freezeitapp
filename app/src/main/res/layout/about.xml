@@ -6,8 +6,8 @@
     android:layout_height="wrap_content">
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:padding="5dp"
+        android:layout_height="120dp"
+        android:padding="10dp"
         app:srcCompat="@drawable/avatar"
         tools:ignore="MissingConstraints"
         android:contentDescription="@string/icon" />
@@ -33,9 +33,10 @@
             app:srcCompat="@drawable/ic_launcher"
             android:contentDescription="@string/icon" />
         <TextView
+            android:paddingHorizontal="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/app_name" />
+            android:text="@string/freezeit_app_name" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

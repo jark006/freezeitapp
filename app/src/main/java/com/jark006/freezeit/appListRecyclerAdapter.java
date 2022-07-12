@@ -38,7 +38,7 @@ public class appListRecyclerAdapter extends RecyclerView.Adapter<appListRecycler
     Handler.Callback callback;
     Context context;
     PackageManager pm;
-    HashMap<String, String> appName = new HashMap<>();
+//    HashMap<String, String> appName = new HashMap<>();
 
     public appListRecyclerAdapter(Context context, List<ApplicationInfo> applicationList,
                                   HashSet<String> whiteListForce, HashSet<String> whiteListConf, Handler.Callback callback) {
@@ -50,12 +50,12 @@ public class appListRecyclerAdapter extends RecyclerView.Adapter<appListRecycler
         this.callback = callback;
         this.pm = context.getPackageManager();
 
-        for (ApplicationInfo appInfo : applicationList) {
-            String label = pm.getApplicationLabel(appInfo).toString();
-            if (label.endsWith("Application") || label.endsWith(".xml") || label.endsWith("false"))
-                label = appInfo.packageName;
-            appName.put(appInfo.packageName, label);
-        }
+//        for (ApplicationInfo appInfo : applicationList) {
+//            String label = pm.getApplicationLabel(appInfo).toString();
+//            if (label.endsWith("Application") || label.endsWith(".xml") || label.endsWith("false"))
+//                label = appInfo.packageName;
+//            appName.put(appInfo.packageName, label);
+//        }
     }
 
     @NonNull
@@ -70,8 +70,10 @@ public class appListRecyclerAdapter extends RecyclerView.Adapter<appListRecycler
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         ApplicationInfo appInfo = applicationListFilter.get(position);
 
+        String label = pm.getApplicationLabel(appInfo).toString();
+        if (label.endsWith("Application") || label.endsWith(".xml") || label.endsWith("false"))
+            label = appInfo.packageName;
 
-        String label = appName.get(appInfo.packageName);
         Drawable icon = appInfo.loadIcon(pm);
         holder.package_name.setText(appInfo.packageName);
 
@@ -124,16 +126,16 @@ public class appListRecyclerAdapter extends RecyclerView.Adapter<appListRecycler
         return new Filter() {
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
-                List<ApplicationInfo> mApplicationListFilter= new ArrayList<>();
+                List<ApplicationInfo> mApplicationListFilter = new ArrayList<>();
 
                 if (constraint == null || constraint.length() == 0) {
                     mApplicationListFilter = applicationList;
                 } else {
                     String keyWord = constraint.toString().toLowerCase();
                     for (ApplicationInfo appInfo : applicationList) {
-                        String label = appName.get(appInfo.packageName);
-                        if(label == null || label.length() == 0)
-                            continue;
+                        String label = pm.getApplicationLabel(appInfo).toString();
+                        if (label.endsWith("Application") || label.endsWith(".xml") || label.endsWith("false"))
+                            label = appInfo.packageName;
 
                         if (appInfo.packageName.toLowerCase().contains(keyWord) ||
                                 label.toLowerCase().contains(keyWord)) {

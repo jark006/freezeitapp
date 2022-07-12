@@ -9,11 +9,11 @@ android {
         applicationId "com.jark006.freezeit"
         minSdk 26
         targetSdk 32
-        versionCode 20100
-        versionName "Ver2.1"
+        versionCode 20101
+        versionName "2.1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        resValue "string", "appVer", versionName
+        resValue "string", "appVer", "v${versionName}"
     }
 
     buildTypes {

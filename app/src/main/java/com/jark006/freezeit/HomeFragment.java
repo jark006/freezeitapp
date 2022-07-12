@@ -222,7 +222,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
             stateLayout.setBackgroundResource(R.color.normal_green);
             moduleInfo.setText(R.string.freezeit_online);
-            moduleState.setText(moduleVersion + getString(R.string.show_changelog_tip));
+            moduleState.setText(getString(R.string.freezeit_mod_name)+": "+moduleVersion + "\n"+
+                    getString(R.string.freezeit_app_name)+": v"+BuildConfig.VERSION_NAME);
 
         }
     };

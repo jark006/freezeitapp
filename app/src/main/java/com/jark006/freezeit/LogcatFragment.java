@@ -75,8 +75,10 @@ public class LogcatFragment extends Fragment {
                 int id = menuItem.getItemId();
                 if (id == R.id.clear_log) {
                     new Thread(clearLogTask).start();
+                }else if (id == R.id.refresh_log) {
+                    new Thread(getLogTask).start();
                 }
-                return false;
+                return true;
             }
         }, this.getViewLifecycleOwner());
 

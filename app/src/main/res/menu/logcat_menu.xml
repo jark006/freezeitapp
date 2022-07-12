@@ -2,6 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/refresh_log"
+        android:orderInCategory="100"
+        android:title="@string/refresh_log"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_refresh_24dp"/>
+    <item
         android:id="@+id/clear_log"
         android:orderInCategory="100"
         android:title="@string/clear_log_text"

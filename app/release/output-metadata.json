@@ -11,9 +11,9 @@
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 20100,
-      "versionName": "Ver2.1",
-      "outputFile": "freezeitVer2.1.apk"
+      "versionCode": 20101,
+      "versionName": "2.1.1",
+      "outputFile": "freezeit2.1.1.apk"
     }
   ],
   "elementType": "File"

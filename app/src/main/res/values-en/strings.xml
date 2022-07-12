@@ -17,7 +17,7 @@
     <string name="qqchannel_text">QQ Channel [冻它模块]</string>
     <string name="telegramgroup_text">Telegram Group</string>
     <string name="telegramchannel_text">Telegram Channel</string>
-    <string name="github_text">Freezeit Module Release</string>
+    <string name="github_text">Freezeit Module ReleasePage</string>
     <string name="update_app_name">Update Newly installed app</string>
     <string name="get_log_fail_tips">Failed to get work log</string>
     <string name="get_changelog_fail_tips">Failed to get Changelog</string>
@@ -29,11 +29,14 @@
     <string name="app_label">App label</string>
     <string name="update_seccess">Update success</string>
     <string name="update_fail">Update fail</string>
-    <string name="update_start">Update start</string>
+    <string name="update_start">Updating new installed apps</string>
     <string name="developer">Developer: JARK006</string>
     <string name="lanzou_text">LanzouUpdate Password: dy6i</string>
     <string name="githubapp_text">Freezeit App Opensource</string>
     <string name="show_changelog_tip">" Click here"</string>
     <string name="clear_log_text">Clear</string>
-    <string name="clear_log_tips">Log cleared</string>
+    <string name="clear_log_tips">Cleared</string>
+    <string name="refresh_log">Refresh</string>
+    <string name="freezeit_app_name">FreezeitApp</string>
+    <string name="freezeit_mod_name">FreezeitModule</string>
 </resources>

@@ -12,6 +12,8 @@
     <color name="gray_22">#222222</color>
     <color name="gray_33">#333333</color>
     <color name="gray_44">#444444</color>
+    <color name="gray_bb">#bbbbbb</color>
+    <color name="gray_icon">#a0a0a0</color>
 
     <color name="warn_red">#66FF2000</color>
     <color name="normal_green">#6620FF00</color>

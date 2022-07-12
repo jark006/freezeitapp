@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">冻它</string>
+    <string name="freezeit_app_name">冻它APP</string>
+    <string name="freezeit_mod_name">冻它模块</string>
     <string name="title_home">冻它</string>
     <string name="title_config">配置</string>
     <string name="title_logcat">日志</string>
@@ -16,10 +18,10 @@
     <string name="coolapk_text">酷安 @JARK006</string>
     <string name="qqgroup_text">QQ群 781222669</string>
     <string name="qqchannel_text">QQ频道【冻它模块】</string>
-    <string name="telegramgroup_text">Telegram群组</string>
-    <string name="telegramchannel_text">Telegram频道</string>
-    <string name="github_text">Github模块发布页</string>
-    <string name="githubapp_text">冻它APP项目开源</string>
+    <string name="telegramgroup_text">Telegram 群组</string>
+    <string name="telegramchannel_text">Telegram 频道</string>
+    <string name="github_text">冻它模块 Github发布页</string>
+    <string name="githubapp_text">冻它APP 项目开源</string>
     <string name="lanzou_text">蓝奏云更新通道 密码:dy6i</string>
 
     <string name="update_app_name">更新[新安装应用]</string>
@@ -49,12 +51,13 @@
     <string name="lanzou_link" translatable="false">https://jark006.lanzout.com/b017oz9if</string>
     <string name="update_seccess">更新成功</string>
     <string name="update_fail">更新失败</string>
-    <string name="update_start">开始更新</string>
+    <string name="update_start">开始更新 [新安装应用]</string>
     <string name="app_label">应用名称</string>
     <string name="show_changelog_tip">" 点这里"</string>
     <string name="package_name" translatable="false">com.jark006.freezeit</string>
     <string name="clear_log_text">清空日志</string>
     <string name="clear_log_tips">已清空日志</string>
     <string name="todo" translatable="false">TODO</string>
+    <string name="refresh_log">刷新日志</string>
 
 </resources>
