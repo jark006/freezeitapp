@@ -1,6 +1,8 @@
 package com.jark006.freezeit;
 
 
+import static androidx.constraintlayout.widget.ConstraintLayoutStates.TAG;
+
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.Drawable;
@@ -12,100 +14,121 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.Arrays;
 
 public class Utils {
     private static final String TAG = "Utils";
 
-    // 获取信息 无附加数据
-    public static byte getStatus = 1;     // return "Freezeit is running"
-    public static byte getInfo = 2;       // return "moduleID\nmoduleName\nmoduleVersion\nmoduleVersionCode\nmoduleAuthor"
-    public static byte getChangelog = 3;  // return "changelog"
-    public static byte getLog = 4;        // return "log"
-    public static byte getWhiteList = 5;  // return "packageName\npackageName\npackageName"
+    // 获取信息 无附加数据 No additional data required
+    public final static byte getStatus = 1;       // return string: "Freezeit is running"
+    public final static byte getInfo = 2;         // return string: "ID\nName\nVersion\nVersionCode\nAuthor"
+    public final static byte getChangelog = 3;    // return string: "changelog"
+    public final static byte getLog = 4;          // return string: "log"
+    public final static byte getWhiteList = 5;    // return string: "package\npackage\npackage####package\npackage\npackage" 内置白名单####自定义白名单
+    public final static byte getRealTimeInfo = 6; // return bytes[variable]: (rawBitmap 内存 频率 使用率 电流)
+    public final static byte getProcessInfo = 7;  // return string: "process cpu(%) mem(MB)\nprocess cpu(%) mem(MB)\nprocess cpu(%) mem(MB)\n..."
+    public final static byte getSettings = 8;     // return bytes[256]: all settings parameter
 
-    // 依次为 物理内存, 虚拟内存(ZRAM/SWAP), 的 "全部 已用 剩余" in bytes
-    public static byte getMemoryInfo = 6;  // return "xxx xxx xxx \nxxx xxx xxx\n"
-    public static byte getProcessInfo = 7; // return "process cpu(%) mem(MB)\nprocess cpu(%) mem(MB)\nprocess cpu(%) mem(MB)\n"
-
-    // 设置 需附加数据  xxx:包名 NAME:应用名称
-    public static byte setWhiteList = 11; // send "xxx####NAME\nxxx####NAME\nxxx####NAME\n"
-    public static byte setAppName = 12;   // send "xxx####NAME\nxxx####NAME\nxxx####NAME\n"
-    public static byte clearLog = 13;     // return "清理并返回空log"
+    // 设置 需附加数据
+    public final static byte setWhiteList = 21;   // send "package####label\npackage####label\npackage####label\n..."
+    public final static byte setAppLabel = 22;    // send "package####label\npackage####label\npackage####label\n..."
+    public final static byte setSettingsVar = 23; // send bytes[2]: [0]index [1]value
 
     // 进程管理 需附加数据
-    public static byte killLogd = 21;    // kill logd, needn't
-    public static byte killPid = 22;     // kill pid, need String(pid num)
-    public static byte killProcess = 23; // kill app, need String(packageName)
-    public static byte tempAuthorization = 24; //临时授权后台 need String(packageName)
+    public final static byte killPid = 41;        // send string: "1234"  //pid num
+    public final static byte killApp = 42;        // send string: "packageName"
+    public final static byte discharged = 43;     // send string: "packageName"  //临时放行后台
+
+    // 其他命令 无附加数据 No additional data required
+    public final static byte clearLog = 61;       // return string: "clear log" //清理并返回空log
+    public final static byte reboot = 81;
+    public final static byte rebootRecovery = 82;
+    public final static byte rebootBootloader = 83;
+    public final static byte rebootEdl = 84;
 
 
-    static public void freezeitTask(byte command, byte[] AdditionalData, Handler handler) {
+    public static synchronized void freezeitTask(byte command, byte[] AdditionalData, Handler handler) {
         final String hostname = "127.0.0.1";
-        final int port = 50000;
+        final int port = 60613;
 
-        // 前4字节代表附带数据大小(unsigned int32 大端),最后的0是附带数据的异或校验值
-        // 第五位命令：2:获取模块信息, 3:获取更新日志, 4:获取运行日志, 5:获取自定义白名单
-        byte[] cmd = {0, 0, 0, 0, command, 0};
+        // 前4字节代表附带数据大小(unsigned int32 大端),最后一个字节是附带数据的异或校验值
+        // 第五位字节：2:获取模块信息, 3:获取更新日志, 4:获取运行日志, 5:获取白名单.  其他命令参考上面
+        byte[] dataHeader = {0, 0, 0, 0, command, 0};
         byte[] responseBuf = null;
         try {
-            Socket s = new Socket();
-            s.connect(new InetSocketAddress(hostname, port), 1000);
-            InputStream is = s.getInputStream();
-            OutputStream os = s.getOutputStream();
+            Socket socket = new Socket();
+            socket.connect(new InetSocketAddress(hostname, port), 3000);
+            InputStream is = socket.getInputStream();
+            OutputStream os = socket.getOutputStream();
 
-
-            if(AdditionalData != null && AdditionalData.length > 0) {
+            int sendLen = 0;
+            if (AdditionalData != null && AdditionalData.length > 0) {
                 byte XOR = 0;
                 for (byte b : AdditionalData) {
                     XOR ^= b;
                 }
-                int len = AdditionalData.length;
+                dataHeader[5] = XOR;
+
+                sendLen = AdditionalData.length;
                 for (int i = 3; i >= 0; i--) {
-                    cmd[i] = (byte)(len&0xff);
-                    len >>= 8;
+                    dataHeader[i] = (byte) (sendLen & 0xff);
+                    sendLen >>= 8;
                 }
-                cmd[5] = XOR;
             }
 
-            Log.i(TAG, "freezeitTask: "+(AdditionalData==null?"null":String.valueOf(AdditionalData.length)));
-            os.write(cmd);
+            Log.i(TAG, "freezeitTask: additionalData bytes: " + sendLen);
+            os.write(dataHeader);
 
-            if(AdditionalData != null && AdditionalData.length > 0)
+            if (AdditionalData != null && AdditionalData.length > 0)
                 os.write(AdditionalData);
 
             os.flush();
 
-            byte[] dataHeader = new byte[6];
-            int readCnt = is.read(dataHeader);
-            if(readCnt != dataHeader.length){
-                return;
-            }
-            int wholeLen=0;
-            for (int i = 0; i < 4; i++) {
-                wholeLen = (wholeLen<<8) | Byte.toUnsignedInt(dataHeader[i]);
-            }
-            responseBuf = new byte[wholeLen];
-//            readCnt = is.read(responseBuf, 0, wholeLen);//若无意外，这行应该够了
-
-            readCnt = 0;
-            while(readCnt < wholeLen){ //欲求不满
-                int cnt = is.read(responseBuf, readCnt, wholeLen-readCnt);
-                if(cnt < 0){
-                    Log.e(TAG, "Get Content Fail");
+            if (handler != null) {
+                int receiveLen = is.read(dataHeader, 0, 6);
+                if (receiveLen != 6) {
+                    Log.e(TAG, "Receive dataHeader Fail, receiveLen:" + receiveLen);
                     return;
                 }
-                readCnt += cnt;
+
+                int requireLen = (Byte.toUnsignedInt(dataHeader[0]) << 24) |
+                        (Byte.toUnsignedInt(dataHeader[1]) << 16) |
+                        (Byte.toUnsignedInt(dataHeader[2]) << 8) |
+                        (Byte.toUnsignedInt(dataHeader[3]));
+
+                responseBuf = new byte[requireLen];
+//                receiveLen = is.read(responseBuf, 0, requireLen);
+//                if (receiveLen != requireLen) {
+//                    Log.e(TAG, "Receive data Fail, requireLen:" + requireLen + ", receiveLen:" + receiveLen);
+//                    return;
+//                }
+
+                int readCnt = 0;
+                while(readCnt < requireLen){ //欲求不满
+                    int cnt = is.read(responseBuf, readCnt, requireLen-readCnt);
+                    if(cnt < 0){
+                        Log.e(TAG, "Get Content Fail");
+                        return;
+                    }
+                    readCnt += cnt;
+                }
             }
 
             is.close();
             os.close();
-            s.close();
+            socket.close();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        if (handler == null)
+            return;
 
         Message msg = new Message();
         Bundle data = new Bundle();
@@ -114,8 +137,25 @@ public class Utils {
         handler.sendMessage(msg);
     }
 
-    public static Drawable convertToGrayscale(Drawable drawable)
-    {
+    public static synchronized void freezeitUDP_Log(byte[] Data) {
+        final String targetIP = "192.168.0.120";
+        final int targetPort = 8080;
+
+        if (Data == null || Data.length == 0)
+            return;
+
+        try {
+            DatagramSocket ds = new DatagramSocket();
+            DatagramPacket dp = new DatagramPacket(Data, Data.length, InetAddress.getByName(targetIP), targetPort);
+            ds.send(dp);
+            ds.close();
+        } catch (Exception e) {
+            Log.e(TAG, "freezeitUDP_Log: send Fail:" + Arrays.toString(Data));
+            e.printStackTrace();
+        }
+    }
+
+    public static Drawable convertToGrayscale(Drawable drawable) {
         Drawable newDrawable = drawable.getConstantState().newDrawable().mutate();
         ColorMatrix matrix = new ColorMatrix();
         matrix.setSaturation(0);
@@ -123,4 +163,6 @@ public class Utils {
         newDrawable.setColorFilter(filter);
         return newDrawable;
     }
+
+
 }

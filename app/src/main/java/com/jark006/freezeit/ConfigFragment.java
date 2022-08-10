@@ -1,5 +1,8 @@
 package com.jark006.freezeit;
 
+import static android.content.pm.ApplicationInfo.FLAG_SYSTEM;
+import static android.content.pm.ApplicationInfo.FLAG_UPDATED_SYSTEM_APP;
+
 import android.annotation.SuppressLint;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -57,7 +60,7 @@ import java.util.List;
 //                      佛祖坐镇 尔等bug小怪速速离去
 
 public class ConfigFragment extends Fragment implements Handler.Callback {
-    final String TAG = "ConfigFragment";
+    private final static String TAG = "ConfigFragment";
 
     private FragmentConfigBinding binding;
     SearchView searchView;
@@ -85,7 +88,7 @@ public class ConfigFragment extends Fragment implements Handler.Callback {
         PackageManager pm = requireContext().getPackageManager();
         List<ApplicationInfo> aLLApplicationInfoList = pm.getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES);
         for (ApplicationInfo appInfo : aLLApplicationInfoList) {
-            if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) > 0)
+            if ((appInfo.flags & (FLAG_SYSTEM | FLAG_UPDATED_SYSTEM_APP)) != 0)
                 continue;
             applicationInfoList.add(appInfo);
         }

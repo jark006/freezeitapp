@@ -1,13 +1,9 @@
 package com.jark006.freezeit;
 
-import android.annotation.SuppressLint;
-import android.os.Build;
 import android.os.Bundle;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -33,13 +29,11 @@ import com.jark006.freezeit.databinding.ActivityMainBinding;
 //         ======`-.____`-.___\_____/___.-`____.-'======
 //                            `=---='
 //        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//                     佛祖保佑，代码永无BUG，阿弥陀佛
+//                     佛祖保佑, 代码永无BUG, 阿弥陀佛
 //                      佛祖坐镇 尔等bug小怪速速离去
 
 public class MainActivity extends AppCompatActivity {
-    TextView aboutAppName;
 
-    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,9 +53,5 @@ public class MainActivity extends AppCompatActivity {
 
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
-
     }
-
-
-
 }

@@ -14,22 +14,26 @@
     <string name="changelogTitle">更新日志</string>
     <string name="changelogText">冻它模块更新日志</string>
 
-    <string name="communityTitle">开发者及社区</string>
-    <string name="coolapk_text">酷安 @JARK006</string>
-    <string name="qqgroup_text">QQ群 781222669</string>
-    <string name="qqchannel_text">QQ频道【冻它模块】</string>
+    <string name="communityTitle">社区交流</string>
+    <string name="coolapk_text">酷安主页 @JARK006</string>
+    <string name="qqgroup_text">QQ群组 781222669</string>
+    <string name="qqchannel_text">QQ频道 [冻它模块]</string>
     <string name="telegramgroup_text">Telegram 群组</string>
     <string name="telegramchannel_text">Telegram 频道</string>
-    <string name="github_text">冻它模块 Github发布页</string>
-    <string name="githubapp_text">冻它APP 项目开源</string>
+    <string name="github_text">Github 发布页面</string>
+    <string name="githubapp_text">APP开源</string>
     <string name="lanzou_text">蓝奏云更新通道 密码:dy6i</string>
 
-    <string name="update_app_name">更新[新安装应用]</string>
+    <string name="update_app_name">更新应用</string>
     <string name="about">关于</string>
     <string name="developer">开发者: JARK006</string>
 
-    <string name="freezeit_online">冻它 正在运行中</string>
-    <string name="freezeit_offline">冻它 未安装或未运行</string>
+    <string name="magisk_online">Magisk 已激活</string>
+    <string name="magisk_offline">Magisk 未安装或未运行</string>
+    <string name="xposed_online">LSPosed已激活</string>
+    <string name="xposed_offline">LSPosed未激活</string>
+    <string name="freezeit_offline">Magisk 冻它 未安装或未运行</string>
+
     <string name="freezeit_offline_tips">请检查Magisk冻它模块是否安装并启用，若是刚刚安装，则重启生效</string>
 
     <string name="get_log_fail_tips">工作日志获取失败</string>
@@ -53,11 +57,21 @@
     <string name="update_fail">更新失败</string>
     <string name="update_start">开始更新 [新安装应用]</string>
     <string name="app_label">应用名称</string>
-    <string name="show_changelog_tip">" 点这里"</string>
     <string name="package_name" translatable="false">com.jark006.freezeit</string>
     <string name="clear_log_text">清空日志</string>
     <string name="clear_log_tips">已清空日志</string>
     <string name="todo" translatable="false">TODO</string>
     <string name="refresh_log">刷新日志</string>
+    <string name="xposed_description">冻它模块辅助</string>
+    <string name="title_activity_setting">设置</string>
+    <string name="title_activity_taskmanager">任务管理</string>
+    <string name="developer_link">相关链接</string>
+    <string name="unsupported">暂不支持</string>
+    <string name="bind_core_text">绑定核心: CPU%1$d</string>
+    <string name="timeout_text">超时冻结: %1$d 秒</string>
+    <string name="refreeze_text">定时压制: %1$d 分</string>
+    <string name="main_oom_text">主进程OOM: %1$d</string>
+    <string name="sub_oom_text">副进程OOM: %1$d</string>
+    <string name="slowly_tips">不要操作太快</string>
 
 </resources>

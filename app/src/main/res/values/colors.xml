@@ -15,8 +15,9 @@
     <color name="gray_bb">#bbbbbb</color>
     <color name="gray_icon">#a0a0a0</color>
 
-    <color name="warn_red">#66FF2000</color>
-    <color name="normal_green">#6620FF00</color>
+    <color name="warn_red">#66FF0000</color>
+    <color name="warn_orange">#66FF8800</color>
+    <color name="normal_green">#6600FF00</color>
     <color name="gray_white">#10000000</color>
-    <color name="gray_white_backgrounp">#10FFFFFF</color>
+    <color name="gray_white_background">#10FFFFFF</color>
 </resources>

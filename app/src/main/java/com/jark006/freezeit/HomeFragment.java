@@ -1,10 +1,14 @@
 package com.jark006.freezeit;
 
+import static android.content.Context.ACTIVITY_SERVICE;
+
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +21,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -30,8 +35,11 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.jark006.freezeit.databinding.FragmentHomeBinding;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 //                            _ooOoo_
 //                           o8888888o
@@ -56,25 +64,54 @@ import java.util.List;
 //                      佛祖坐镇 尔等bug小怪速速离去
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
-    private final String TAG = "HomeFragment";
+    private final static String TAG = "HomeFragment";
     private FragmentHomeBinding binding;
-    TextView moduleInfo, moduleState;
+
     ConstraintLayout constraintLayout;
-    LinearLayout stateLayout, coolApkLink, qqGroupLink, qqChannelLink, tgLink, tgChannelLink,
-            githubLink, githubappLink, lanzouLink;
-    ImageView wechatPay, aliPay, qqpay, ecnyPay, ethereumPay, bitcoinPay;
+    LinearLayout stateLayout, memLayout, coolApkLink, lanzouLink, githubLink;
+    TextView moduleStatus, memInfo, zramInfo, qqGroupLink, qqChannelLink, tgLink, tgChannelLink,
+            cpu, cpu0, cpu1, cpu2, cpu3, cpu4, cpu5, cpu6, cpu7;
+    ImageView cpuImg, wechatPay, aliPay, qqpay, ecnyPay, ethereumPay, bitcoinPay;
+
     boolean moduleIsRunning = false;
     String moduleName;
     String moduleVersion;
+
+    Timer timer;
+
+    int viewWidth = 0;
+    int viewHeight = 0;
+    long availMem = 0;
+
+    ActivityManager am;
+    ActivityManager.MemoryInfo memoryInfo;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
 
+        am = (ActivityManager) requireActivity().getSystemService(ACTIVITY_SERVICE);
+        memoryInfo = new ActivityManager.MemoryInfo();
+
         constraintLayout = binding.constraintLayoutHome;
-        moduleInfo = binding.infoText;
-        moduleState = binding.stateText;
+        moduleStatus = binding.statusText;
         stateLayout = binding.stateLayout;
+        memLayout = binding.memLayout;
+
+        cpu = binding.cpu;
+        cpu0 = binding.cpu0;
+        cpu1 = binding.cpu1;
+        cpu2 = binding.cpu2;
+        cpu3 = binding.cpu3;
+        cpu4 = binding.cpu4;
+        cpu5 = binding.cpu5;
+        cpu6 = binding.cpu6;
+        cpu7 = binding.cpu7;
+
+        cpuImg = binding.cpuImg;
+        memInfo = binding.memInfo;
+        zramInfo = binding.zramInfo;
+
 
         wechatPay = binding.wechatpay;
         aliPay = binding.alipay;
@@ -89,10 +126,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         tgLink = binding.telegramLink;
         tgChannelLink = binding.telegramChannelLink;
         githubLink = binding.githubLink;
-        githubappLink = binding.githubappLink;
         lanzouLink = binding.lanzouLink;
 
         stateLayout.setOnClickListener(this);
+        memLayout.setOnClickListener(this);
 
         wechatPay.setOnClickListener(this);
         aliPay.setOnClickListener(this);
@@ -107,7 +144,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         tgLink.setOnClickListener(this);
         tgChannelLink.setOnClickListener(this);
         githubLink.setOnClickListener(this);
-        githubappLink.setOnClickListener(this);
         lanzouLink.setOnClickListener(this);
 
         requireActivity().addMenuProvider(new MenuProvider() {
@@ -121,18 +157,60 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
                 int id = menuItem.getItemId();
                 if (id == R.id.update_app_name) {
-                    Snackbar.make(constraintLayout, getString(R.string.update_start), Snackbar.LENGTH_SHORT).show();
-                    new Thread(updateAppNameTask).start();
+                    if (moduleIsRunning) {
+                        Snackbar.make(constraintLayout, getString(R.string.update_start), Snackbar.LENGTH_SHORT).show();
+                        new Thread(updateAppLabelTask).start();
+                    } else
+                        Snackbar.make(constraintLayout, getString(R.string.freezeit_offline), Snackbar.LENGTH_SHORT).show();
+
                 } else if (id == R.id.about) {
                     aboutDialog();
+                } else if (id == R.id.settings) {
+                    if (moduleIsRunning)
+                        startActivity(new Intent(requireContext(), Settings.class));
+                    else
+                        Snackbar.make(constraintLayout, getString(R.string.freezeit_offline), Snackbar.LENGTH_SHORT).show();
                 }
                 return false;
             }
         }, this.getViewLifecycleOwner());
 
-        new Thread(statusTask).start();
+        cpuImg.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                viewWidth = cpuImg.getWidth();
+                viewHeight = cpuImg.getHeight();
+                cpuImg.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                new Thread(realTimeTask).start();
+            }
+        });
+
+        new Thread(() -> Utils.freezeitTask(Utils.getInfo, null, statusHandler)).start();
+
         return binding.getRoot();
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        timer.cancel();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (viewHeight == 0 || viewWidth == 0)
+                    return;
+                new Thread(realTimeTask).start();
+            }
+        }, 2000, 3000);
+    }
+
 
     @Override
     public void onDestroyView() {
@@ -165,7 +243,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
     };
 
-    Runnable updateAppNameTask = () -> {
+    Runnable updateAppLabelTask = () -> {
         StringBuilder appName = new StringBuilder();
 
         PackageManager pm = requireContext().getPackageManager();
@@ -180,7 +258,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
             appName.append(appInfo.packageName).append("####").append(label).append('\n');
         }
-        Utils.freezeitTask(Utils.setAppName, appName.toString().getBytes(StandardCharsets.UTF_8), appNameHandler);
+        Utils.freezeitTask(Utils.setAppLabel, appName.toString().getBytes(StandardCharsets.UTF_8), appNameHandler);
     };
 
     public void aboutDialog() {
@@ -190,8 +268,113 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
 
+    //TODO
+    private final Handler realTimeHandler = new Handler(Looper.getMainLooper()) {
+        @SuppressLint({"SetTextI18n", "DefaultLocale"})
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            byte[] response = msg.getData().getByteArray("response");
+
+
+            if (response == null || response.length == 0) {
+                memLayout.setVisibility(View.GONE);
+                return;
+            }
+
+            Bitmap bitmap = Bitmap.createBitmap(viewWidth / 3, viewHeight / 3, Bitmap.Config.ARGB_8888);
+            ByteBuffer buffer = ByteBuffer.wrap(response);
+            bitmap.copyPixelsFromBuffer(buffer);
+
+            cpuImg.setImageBitmap(bitmap);
+
+            int offset = (viewWidth / 3) * (viewHeight / 3) * 4;
+
+            if (response.length - offset <= 0) {
+                String tmp = "handleMessage: viewWidth" + viewWidth + " viewHeight" +
+                        viewHeight + " response.length" + response.length + " offset" + offset;
+                Log.e(TAG, tmp);
+                memInfo.setText(tmp);
+                return;
+            }
+
+            byte[] tmpBytes = new byte[response.length - offset];
+            System.arraycopy(response, offset, tmpBytes, 0, response.length - offset);
+
+            String tmpStr = new String(tmpBytes, StandardCharsets.UTF_8);
+
+            Log.i(TAG, "handleMessage: " + tmpStr);
+
+            String[] realTimeInfo = tmpStr.split(" ");
+
+            // [0/1/2/3]内存情况 [4/5/6]小中大核频率 [7]CPU总使用率 [8-15]八个核心使用率cpu0-cpu7
+            // [16]CPU温度(需除以1000) [17]电流(mA)
+            if (realTimeInfo.length < 18) {
+                StringBuilder tmp = new StringBuilder("handleMessage: memSplit.length" + realTimeInfo.length);
+                for (int i = 0; i < realTimeInfo.length; i++)
+                    tmp.append(" [").append(i).append("]").append(realTimeInfo[i]);
+
+                Log.e(TAG, tmp.toString());
+                memInfo.setText(tmp);
+//                memLayout.setVisibility(View.GONE);
+                return;
+            }
+
+            long[] memList = new long[4];
+            try {
+                for (int i = 0; i < 4; i++)
+                    memList[i] = Long.parseLong(realTimeInfo[i]);
+            }catch (Exception e) {
+                Log.e(TAG, "handleMessage: memList long:"+tmpStr+"\n"+e);
+                cpu.setText("tmpStr"+tmpStr);
+                return;
+            }
+
+            @SuppressLint("DefaultLocale")
+            String tmp = String.format("[物理内存] 全部: %.2f GiB\n已用:%.1f%% 剩余: %.2f %s",
+                    (memList[0] / Math.pow(1024, 3)), 100.0 * (memList[0] - availMem) / memList[0],
+                    availMem > Math.pow(1024, 3) ? (availMem / Math.pow(1024, 3)) : (availMem / Math.pow(1024, 2)),
+                    availMem > Math.pow(1024, 3) ? "GiB" : "MiB");
+            memInfo.setText(tmp);
+
+            if (memList[2] > 0) { //可能没有 虚拟内存
+                tmp = String.format("[虚拟内存] 全部: %.2f GiB\n已用:%.1f%% 剩余: %.2f %s",
+                        (memList[2] / Math.pow(1024, 3)), 100.0 * (memList[2] - memList[3]) / memList[2],
+                        memList[3] > Math.pow(1024, 3) ? (memList[3] / Math.pow(1024, 3)) : (memList[3] / Math.pow(1024, 2)),
+                        memList[3] > Math.pow(1024, 3) ? "GiB" : "MiB");
+                zramInfo.setText(tmp);
+            }
+
+            // [4/5/6]小中大核频率 [7]CPU总使用率 [8-15]八个核心使用率cpu0-cpu7
+            // [16]CPU温度(需除以1000) [17]电流(uA)
+            try {
+                int temperature = Integer.parseInt(realTimeInfo[16]);
+                int mA = Integer.parseInt(realTimeInfo[17]);
+                double temperatureDouble = temperature / 1000.0;
+                double mADouble = (mA == 0) ? 0 : (-mA / 1000.0);
+                cpu.setText("CPU总使用率: " + realTimeInfo[7] + "%  温度: " + temperatureDouble + "℃  电流: " + mADouble + "mA");
+            }catch (Exception e) {
+                Log.e(TAG, "handleMessage: "+realTimeInfo[16]+" "+realTimeInfo[17]+"\n"+e);
+                cpu.setText("["+realTimeInfo[16]+"] ["+realTimeInfo[17]+"]");
+                return;
+            }
+
+            cpu0.setText("cpu0\n" + realTimeInfo[4] + "MHz\n" + realTimeInfo[8] + "%");
+            cpu1.setText("cpu1\n" + realTimeInfo[4] + "MHz\n" + realTimeInfo[9] + "%");
+            cpu2.setText("cpu2\n" + realTimeInfo[4] + "MHz\n" + realTimeInfo[10] + "%");
+            cpu3.setText("cpu3\n" + realTimeInfo[4] + "MHz\n" + realTimeInfo[11] + "%");
+
+            cpu4.setText("cpu4\n" + realTimeInfo[5] + "MHz\n" + realTimeInfo[12] + "%");
+            cpu5.setText("cpu5\n" + realTimeInfo[5] + "MHz\n" + realTimeInfo[13] + "%");
+            cpu6.setText("cpu6\n" + realTimeInfo[5] + "MHz\n" + realTimeInfo[14] + "%");
+
+            cpu7.setText("cpu7\n" + realTimeInfo[6] + "MHz\n" + realTimeInfo[15] + "%");
+
+        }
+    };
+
     private final Handler statusHandler = new Handler(Looper.getMainLooper()) {
-        @SuppressLint("SetTextI18n")
+        @SuppressLint({"SetTextI18n", "DefaultLocale"})
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -199,36 +382,53 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
             if (response == null || response.length == 0) {
                 stateLayout.setBackgroundResource(R.color.warn_red);
-                moduleInfo.setText(R.string.freezeit_offline);
-                moduleState.setText(R.string.freezeit_offline_tips);
+                moduleStatus.setText(R.string.freezeit_offline);
                 Log.e(TAG, getString(R.string.freezeit_offline));
+                memLayout.setVisibility(View.GONE);
                 return;
             }
 
             // info [0]:moduleID [1]:moduleName [2]:moduleVersion [3]:moduleVersionCode [4]:moduleAuthor
+            //      [5]:xxx xxx xxx xxx (全部内存 可用内存 全部虚拟内存 可用虚拟内存: bytes)
             String[] info = new String(response, StandardCharsets.UTF_8).split("\n");
 
             if (info.length < 5 || !info[0].equals("freezeit")) {
                 stateLayout.setBackgroundResource(R.color.warn_red);
-                moduleInfo.setText(R.string.freezeit_offline);
-                moduleState.setText(R.string.freezeit_offline_tips);
+                moduleStatus.setText(R.string.freezeit_offline);
                 Log.e(TAG, getString(R.string.freezeit_offline));
+                memLayout.setVisibility(View.GONE);
                 return;
             }
+
+            boolean xposedState = isXposedActive();
 
             moduleIsRunning = true;
             moduleName = info[1];
             moduleVersion = info[2];
 
-            stateLayout.setBackgroundResource(R.color.normal_green);
-            moduleInfo.setText(R.string.freezeit_online);
-            moduleState.setText(getString(R.string.freezeit_mod_name)+": "+moduleVersion + "\n"+
-                    getString(R.string.freezeit_app_name)+": v"+BuildConfig.VERSION_NAME);
+            if (xposedState) stateLayout.setBackgroundResource(R.color.normal_green);
+            else stateLayout.setBackgroundResource(R.color.warn_orange);
+
+
+            StringBuilder statusStr = new StringBuilder();
+            statusStr.append(getString(R.string.magisk_online)).append(' ').append(moduleVersion).append('\n');
+            if (xposedState)
+                statusStr.append(getString(R.string.xposed_online)).append(" v").append(BuildConfig.VERSION_NAME);
+            else
+                statusStr.append(getString(R.string.xposed_offline));
+
+            moduleStatus.setText(statusStr);
 
         }
     };
 
-    Runnable statusTask = () -> Utils.freezeitTask(Utils.getInfo, null, statusHandler);
+
+    Runnable realTimeTask = () -> {
+        am.getMemoryInfo(memoryInfo);
+        availMem = memoryInfo.availMem;
+
+        Utils.freezeitTask(Utils.getRealTimeInfo, ("" + (viewHeight / 3) + " " + (viewWidth / 3) + " " + availMem).getBytes(), realTimeHandler);
+    };
 
 
     private final Handler changelogHandler = new Handler(Looper.getMainLooper()) {
@@ -254,14 +454,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
     };
 
-    Runnable changelogTask = () -> Utils.freezeitTask(Utils.getChangelog, null, changelogHandler);
-
 
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        if (id == R.id.stateLayout && moduleIsRunning) {
-            new Thread(changelogTask).start();
+        if (id == R.id.stateLayout) {
+            if (moduleIsRunning)
+                new Thread(() -> Utils.freezeitTask(Utils.getChangelog, null, changelogHandler)).start();
+            else
+                Snackbar.make(constraintLayout, getString(R.string.freezeit_offline), Snackbar.LENGTH_SHORT).show();
+        } else if (id == R.id.memLayout) {
+//            startActivity(new Intent(requireContext(), TaskManager.class));
+            Snackbar.make(constraintLayout, getString(R.string.unsupported), Snackbar.LENGTH_SHORT).show();
         } else if (id == R.id.wechatpay) {
             donateDialog(R.layout.wechatpay);
         } else if (id == R.id.qqpay) {
@@ -312,8 +516,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
         } else if (id == R.id.github_link) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.github_link))));
-        } else if (id == R.id.githubapp_link) {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.githubapp_link))));
         } else if (id == R.id.lanzou_link) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.lanzou_link))));
         }
@@ -323,6 +525,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         Dialog dialog = new Dialog(getContext());
         dialog.setContentView(ID);
         dialog.show();
+    }
+
+    public boolean isXposedActive() {
+        Log.e(TAG, "isXposedActive: Hook Fail");
+        return false;
     }
 
 }

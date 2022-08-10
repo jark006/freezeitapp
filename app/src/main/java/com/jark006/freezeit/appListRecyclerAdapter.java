@@ -1,7 +1,5 @@
 package com.jark006.freezeit;
 
-import static androidx.constraintlayout.widget.Constraints.TAG;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -25,12 +23,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
 public class appListRecyclerAdapter extends RecyclerView.Adapter<appListRecyclerAdapter.MyViewHolder> implements Filterable {
-
+    private final static String TAG = "appListRecyclerAdapter";
     private final List<ApplicationInfo> applicationList;
     private List<ApplicationInfo> applicationListFilter;
     private final HashSet<String> whiteListForce;
@@ -38,7 +35,6 @@ public class appListRecyclerAdapter extends RecyclerView.Adapter<appListRecycler
     Handler.Callback callback;
     Context context;
     PackageManager pm;
-//    HashMap<String, String> appName = new HashMap<>();
 
     public appListRecyclerAdapter(Context context, List<ApplicationInfo> applicationList,
                                   HashSet<String> whiteListForce, HashSet<String> whiteListConf, Handler.Callback callback) {
@@ -49,13 +45,6 @@ public class appListRecyclerAdapter extends RecyclerView.Adapter<appListRecycler
         this.context = context;
         this.callback = callback;
         this.pm = context.getPackageManager();
-
-//        for (ApplicationInfo appInfo : applicationList) {
-//            String label = pm.getApplicationLabel(appInfo).toString();
-//            if (label.endsWith("Application") || label.endsWith(".xml") || label.endsWith("false"))
-//                label = appInfo.packageName;
-//            appName.put(appInfo.packageName, label);
-//        }
     }
 
     @NonNull
@@ -89,7 +78,6 @@ public class appListRecyclerAdapter extends RecyclerView.Adapter<appListRecycler
         }
         if (!whiteListForce.contains(appInfo.packageName)) {
             holder.itemBackground.setOnClickListener(v -> {
-//                Toast.makeText(context, "" + appInfo.packageName, Toast.LENGTH_SHORT).show();
                 if (whiteListConf.contains(appInfo.packageName)) {
                     whiteListConf.remove(appInfo.packageName);
                 } else {

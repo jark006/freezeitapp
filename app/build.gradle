@@ -9,8 +9,8 @@ android {
         applicationId "com.jark006.freezeit"
         minSdk 26
         targetSdk 32
-        versionCode 20101
-        versionName "2.1.1"
+        versionCode 20116
+        versionName "2.1.16.RC"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resValue "string", "appVer", "v${versionName}"
@@ -26,7 +26,7 @@ android {
         variant ->
             variant.outputs.all {
                 if (variant.buildType.name =='release')
-                    outputFileName = "freezeit${versionName}.apk"
+                    outputFileName = "freezeit_v${versionName}.apk"
             }
     }
     compileOptions {
@@ -39,6 +39,8 @@ android {
 }
 
 dependencies {
+
+    compileOnly 'de.robv.android.xposed:api:82'
 
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'com.google.android.material:material:1.6.1'

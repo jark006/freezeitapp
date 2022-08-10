@@ -30,7 +30,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:padding="5dp"
-            app:srcCompat="@drawable/ic_launcher"
+            app:srcCompat="@drawable/ic_launcher_round"
             android:contentDescription="@string/icon" />
         <TextView
             android:paddingHorizontal="10dp"

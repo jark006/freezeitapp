@@ -13,4 +13,10 @@
         app:showAsAction="ifRoom"
         android:title="@string/about"
         android:icon="@drawable/ic_info_24dp" />
+    <item
+        android:id="@+id/settings"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom"
+        android:title="@string/title_activity_setting"
+        android:icon="@drawable/ic_settings_24dp" />
 </menu>
