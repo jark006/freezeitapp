@@ -324,9 +324,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             try {
                 for (int i = 0; i < 4; i++)
                     memList[i] = Long.parseLong(realTimeInfo[i]);
-            }catch (Exception e) {
-                Log.e(TAG, "handleMessage: memList long:"+tmpStr+"\n"+e);
-                cpu.setText("tmpStr"+tmpStr);
+            } catch (Exception e) {
+                Log.e(TAG, "handleMessage: memList long:" + tmpStr + "\n" + e);
+                cpu.setText("tmpStr" + tmpStr);
                 return;
             }
 
@@ -347,17 +347,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
             // [4/5/6]小中大核频率 [7]CPU总使用率 [8-15]八个核心使用率cpu0-cpu7
             // [16]CPU温度(需除以1000) [17]电流(uA)
+            int percent = 0, temperature = 0, mA = 0;
+
             try {
-                int temperature = Integer.parseInt(realTimeInfo[16]);
-                int mA = Integer.parseInt(realTimeInfo[17]);
-                double temperatureDouble = temperature / 1000.0;
-                double mADouble = (mA == 0) ? 0 : (-mA / 1000.0);
-                cpu.setText("CPU总使用率: " + realTimeInfo[7] + "%  温度: " + temperatureDouble + "℃  电流: " + mADouble + "mA");
-            }catch (Exception e) {
-                Log.e(TAG, "handleMessage: "+realTimeInfo[16]+" "+realTimeInfo[17]+"\n"+e);
-                cpu.setText("["+realTimeInfo[16]+"] ["+realTimeInfo[17]+"]");
-                return;
+                percent = Integer.parseInt(realTimeInfo[7]);
+                temperature = Integer.parseInt(realTimeInfo[16]);
+                mA = Integer.parseInt(realTimeInfo[17]);
+            } catch (Exception e) {
+                Log.e(TAG, "fail temperature_mA:[" + realTimeInfo[7] + "] [" + realTimeInfo[16] + "] [" + realTimeInfo[17] + "]");
             }
+            cpu.setText(String.format(getString(R.string.realtime_text), percent, temperature / 1000.0, (mA == 0) ? 0 : (mA / -1000)));
+
 
             cpu0.setText("cpu0\n" + realTimeInfo[4] + "MHz\n" + realTimeInfo[8] + "%");
             cpu1.setText("cpu1\n" + realTimeInfo[4] + "MHz\n" + realTimeInfo[9] + "%");

@@ -2,10 +2,12 @@ package com.jark006.freezeit;
 
 import android.annotation.SuppressLint;
 import android.content.res.ColorStateList;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.SeekBar;
@@ -17,7 +19,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.chip.Chip;
 
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 
 public class Settings extends AppCompatActivity implements View.OnClickListener {
     final String TAG = "Settings";
@@ -25,7 +29,7 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
     Chip chipForeground, chipPlay, chipCapture, chipBattery, chipDynamic, chipOOM;
     SeekBar seekbarCPU, seekbarTimeouts, seekbarRefreeze, seekbarMain, seekbarSub;
     TextView reboot, rebootRecovery, rebootBootloader, rebootEdl;
-    TextView cpuText, timeoutsText, refreezeText, mainOomText, subOomText;
+    TextView cpuText, timeoutsText, refreezeText, mainOomText, subOomText, systemInfo;
 
     byte[] settingsVar = new byte[256];
     long lastTimestamp = System.currentTimeMillis();
@@ -66,6 +70,9 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
         rebootRecovery.setOnClickListener(this);
         rebootBootloader.setOnClickListener(this);
         rebootEdl.setOnClickListener(this);
+
+
+        systemInfo = findViewById(R.id.system_info);
 
 
         cpuText = findViewById(R.id.cpu_text);
@@ -315,6 +322,74 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
         seekbarSub.setProgress(settingsVar[11]);
         subOomText.setText(String.format(getString(R.string.sub_oom_text), settingsVar[11] * 100 - 1000));
 
+        StringBuilder infoString = new StringBuilder();
+        try {
+            infoString.append("Build.ID: ").append(Build.ID).append('\n');
+            infoString.append("Build.DISPLAY: ").append(Build.DISPLAY).append('\n');
+            infoString.append("Build.PRODUCT: ").append(Build.PRODUCT).append('\n');
+            infoString.append("Build.DEVICE: ").append(Build.DEVICE).append('\n');
+            infoString.append("Build.BOARD: ").append(Build.BOARD).append('\n');
+
+
+            infoString.append("Build.MANUFACTURER: ").append(Build.MANUFACTURER).append('\n');
+            infoString.append("Build.BRAND: ").append(Build.BRAND).append('\n');
+            infoString.append("Build.MODEL: ").append(Build.MODEL).append('\n');
+            if(Build.VERSION.SDK_INT >= 31) {
+                infoString.append("Build.SOC_MANUFACTURER: ").append(Build.SOC_MANUFACTURER).append('\n');
+                infoString.append("Build.SOC_MODEL: ").append(Build.SOC_MODEL).append('\n');
+                infoString.append("Build.SKU: ").append(Build.SKU).append('\n');
+                infoString.append("Build.ODM_SKU: ").append(Build.ODM_SKU).append('\n');
+            }
+            infoString.append("Build.BOOTLOADER: ").append(Build.BOOTLOADER).append('\n');
+            infoString.append("Build.HARDWARE: ").append(Build.HARDWARE).append('\n');
+
+            infoString.append("Build.SUPPORTED_ABIS: \n");
+            for(String abi:Build.SUPPORTED_ABIS){
+                infoString.append('[').append(abi).append("]\n");
+            }
+
+            infoString.append("Build.SUPPORTED_32_BIT_ABIS: \n");
+            for(String abi:Build.SUPPORTED_32_BIT_ABIS){
+                infoString.append('[').append(abi).append("]\n");
+            }
+
+            infoString.append("Build.SUPPORTED_64_BIT_ABIS: \n");
+            for(String abi:Build.SUPPORTED_64_BIT_ABIS){
+                infoString.append('[').append(abi).append("]\n");
+            }
+
+
+            infoString.append("Build.VERSION.INCREMENTAL: ").append(Build.VERSION.INCREMENTAL).append('\n');
+            infoString.append("Build.VERSION.RELEASE: ").append(Build.VERSION.RELEASE).append('\n');
+            if(Build.VERSION.SDK_INT >= 30)
+                infoString.append("Build.VERSION.RELEASE_OR_CODENAME: ").append(Build.VERSION.RELEASE_OR_CODENAME).append('\n');
+
+            infoString.append("Build.VERSION.BASE_OS: ").append(Build.VERSION.BASE_OS).append('\n');
+            infoString.append("Build.VERSION.SECURITY_PATCH: ").append(Build.VERSION.SECURITY_PATCH).append('\n');
+            infoString.append("Build.VERSION.SDK_INT: ").append(Build.VERSION.SDK_INT).append('\n');
+            infoString.append("Build.VERSION.CODENAME: ").append(Build.VERSION.CODENAME).append('\n');
+
+            infoString.append("Build.TYPE: ").append(Build.TYPE).append('\n');
+            infoString.append("Build.TAGS: ").append(Build.TAGS).append('\n');
+            infoString.append("Build.FINGERPRINT: ").append(Build.FINGERPRINT).append('\n');
+
+            infoString.append("Build.TIME: ").append(Build.TIME).append(' ');
+
+            @SuppressLint("SimpleDateFormat")
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = new Date(Build.TIME);
+            infoString.append(simpleDateFormat.format(date)).append('\n');
+
+            infoString.append("Build.USER: ").append(Build.USER).append('\n');
+            infoString.append("Build.HOST: ").append(Build.HOST).append('\n');
+
+            infoString.append("RadioVersion: ").append(Build.getRadioVersion()).append('\n');
+
+        }catch (Exception e) {
+            Log.e(TAG, "refreshView: "+e );
+            infoString.append(e);
+        }
+        systemInfo.setText(infoString);
     }
 
 

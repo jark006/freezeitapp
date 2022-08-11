@@ -52,4 +52,5 @@
     <string name="main_oom_text">Main proc OOM: %1$d</string>
     <string name="sub_oom_text">Sub proc OOM: %1$d</string>
     <string name="slowly_tips">Don\'t operate too quickly</string>
+    <string name="realtime_text">CPU: %2d%%  Tempe: %.1f℃  Battery: %dmA</string>
 </resources>

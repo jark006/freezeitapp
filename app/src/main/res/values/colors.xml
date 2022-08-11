@@ -9,15 +9,24 @@
     <color name="white">#FFFFFF</color>
 
     <color name="gray_11">#111111</color>
-    <color name="gray_22">#222222</color>
     <color name="gray_33">#333333</color>
-    <color name="gray_44">#444444</color>
+    <color name="gray_55">#444444</color>
+    <color name="gray_77">#444444</color>
+    <color name="gray_99">#444444</color>
     <color name="gray_bb">#bbbbbb</color>
+    <color name="gray_dd">#bbbbbb</color>
     <color name="gray_icon">#a0a0a0</color>
+
+    <color name="black_11">#11000000</color>
+    <color name="black_33">#33000000</color>
+    <color name="black_55">#55000000</color>
+    <color name="black_77">#77000000</color>
+    <color name="black_99">#99000000</color>
+
 
     <color name="warn_red">#66FF0000</color>
     <color name="warn_orange">#66FF8800</color>
     <color name="normal_green">#6600FF00</color>
     <color name="gray_white">#10000000</color>
-    <color name="gray_white_background">#10FFFFFF</color>
+    <color name="gray_white_background">#10555555</color>
 </resources>

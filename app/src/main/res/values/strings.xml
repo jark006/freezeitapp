@@ -40,8 +40,7 @@
     <string name="get_changelog_fail_tips">更新日志获取失败</string>
 
     <string name="app_aboutInfo">冻它模块可以实现类似IOS后台机制(墓碑机制)。\n\n当黑名单的应用进入后台，将会被暂停运行，
-        暂停其全部进程的CPU使用权，而切回前台时将会恢复，可有效遏制应用浪费CPU算力、消耗额外电量。\n\n冻它目前所有运作机制升级为系统同步机制，
-        不但自身耗能极低，还可以遏制其他非必要后台应用的耗电，极大提升手机续航。</string>
+        暂停其全部进程的CPU使用权，而切回前台时将会恢复，可有效遏制应用浪费CPU算力、消耗额外电量。</string>
 
     <string name="coolapk_link" translatable="false">http://www.coolapk.com/u/1212220</string>
     <string name="qqgroup_link" translatable="false">https://jq.qq.com/?_wv=1027&amp;k=ZsyKpCP8</string>
@@ -67,6 +66,7 @@
     <string name="title_activity_taskmanager">任务管理</string>
     <string name="developer_link">相关链接</string>
     <string name="unsupported">暂不支持</string>
+    <string name="realtime_text">CPU: %2d%%  温度: %.1f℃  电流: %dmA</string>
     <string name="bind_core_text">绑定核心: CPU%1$d</string>
     <string name="timeout_text">超时冻结: %1$d 秒</string>
     <string name="refreeze_text">定时压制: %1$d 分</string>
