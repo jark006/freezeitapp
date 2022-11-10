@@ -9,69 +9,78 @@
     <string name="state">未知状态</string>
     <string name="icon">图标</string>
     <string name="supportTitle">支持开发</string>
-    <string name="supportDescriptText">模块完全免费使用，捐赠开发者以获得更多开发动力。</string>
+    <string name="supportDescriptionText">模块完全免费使用，捐赠开发者以获得更多开发动力。</string>
 
     <string name="changelogTitle">更新日志</string>
     <string name="changelogText">冻它模块更新日志</string>
 
     <string name="communityTitle">社区交流</string>
-    <string name="coolapk_text">酷安主页 @JARK006</string>
-    <string name="qqgroup_text">QQ群组 781222669</string>
-    <string name="qqchannel_text">QQ频道 [冻它模块]</string>
-    <string name="telegramgroup_text">Telegram 群组</string>
-    <string name="telegramchannel_text">Telegram 频道</string>
-    <string name="github_text">Github 发布页面</string>
-    <string name="githubapp_text">APP开源</string>
-    <string name="lanzou_text">蓝奏云更新通道 密码:dy6i</string>
+    <string name="coolapk_text">酷安 @JARK006</string>
+    <string name="qq_group_text">QQ群组 781222669</string>
+    <string name="qq_channel_text">QQ频道 冻它模块</string>
+    <string name="tg_group_text">Telegram 群组</string>
+    <string name="tg_channel_text">Telegram 频道</string>
+    <string name="github_text">发布 Github</string>
+    <string name="github_app_text">APP开源</string>
+    <string name="lanzou_text">更新 蓝奏云密码:dy6i</string>
 
     <string name="update_app_name">更新应用</string>
     <string name="about">关于</string>
-    <string name="developer">开发者: JARK006</string>
+    <string name="developer" translatable="false">JARK006</string>
 
     <string name="magisk_online">Magisk 已激活</string>
     <string name="magisk_offline">Magisk 未安装或未运行</string>
     <string name="xposed_online">LSPosed已激活</string>
     <string name="xposed_offline">LSPosed未激活</string>
-    <string name="freezeit_offline">Magisk 冻它 未安装或未运行</string>
+    <string name="freezeit_offline">1.请检查面具模块列表中是否启用了冻它。\n2.若是刚开机，请等几秒后再打开冻它APP。\n3.如果运行异常, 请检查异常日志[ /sdcard/Android/freezeit_crash_log.txt ]</string>
 
     <string name="freezeit_offline_tips">请检查Magisk冻它模块是否安装并启用，若是刚刚安装，则重启生效</string>
 
     <string name="get_log_fail_tips">工作日志获取失败</string>
     <string name="get_changelog_fail_tips">更新日志获取失败</string>
 
-    <string name="app_aboutInfo">冻它模块可以实现类似IOS后台机制(墓碑机制)。\n\n当黑名单的应用进入后台，将会被暂停运行，
-        暂停其全部进程的CPU使用权，而切回前台时将会恢复，可有效遏制应用浪费CPU算力、消耗额外电量。</string>
+    <string name="app_aboutInfo">冻它模块可以实现类似IOS后台机制(墓碑机制)。\n\n当黑名单的应用进入后台，将会被暂停运行，暂停其全部进程的CPU使用权，而切回前台时将会恢复，可有效遏制应用浪费CPU算力、消耗额外电量。</string>
 
     <string name="coolapk_link" translatable="false">http://www.coolapk.com/u/1212220</string>
-    <string name="qqgroup_link" translatable="false">https://jq.qq.com/?_wv=1027&amp;k=ZsyKpCP8</string>
-    <string name="qqchannel_link" translatable="false">https://qun.qq.com/qqweb/qunpro/share?_wv=3&amp;_wwv=128&amp;appChannel=share&amp;inviteCode=1W6opB7&amp;appChannel=share&amp;businessType=9&amp;from=246610&amp;biz=ka</string>
-    <string name="tg_link" translatable="false">tg://resolve?domain=freezeitModule</string>
-    <string name="tg_https_link" translatable="false">https://t.me/freezeitModule</string>
-    <string name="tgchannel_link" translatable="false">tg://resolve?domain=freezeitRelease</string>
-    <string name="tgchannel_https_link" translatable="false">https://t.me/freezeitRelease</string>
+    <string name="qq_group_link" translatable="false">https://jq.qq.com/?_wv=1027&amp;k=ZsyKpCP8</string>
+    <string name="qq_channel_link" translatable="false">https://qun.qq.com/qqweb/qunpro/share?_wv=3&amp;_wwv=128&amp;appChannel=share&amp;inviteCode=1W6opB7&amp;appChannel=share&amp;businessType=9&amp;from=246610&amp;biz=ka</string>
+    <string name="tg_link" translatable="false">tg://join?invite=sjDX1oTk31ZmYjY1</string>
+    <string name="tg_https_link" translatable="false">https://t.me/+sjDX1oTk31ZmYjY1</string>
+    <string name="tg_channel_link" translatable="false">tg://resolve?domain=freezeitRelease</string>
+    <string name="tg_channel_https_link" translatable="false">https://t.me/freezeitRelease</string>
     <string name="github_link" translatable="false">https://github.com/jark006/freezeitRelease</string>
-    <string name="githubapp_link" translatable="false">https://github.com/jark006/freezeitapp</string>
+    <string name="github_app_link" translatable="false">https://github.com/jark006/freezeitapp</string>
     <string name="lanzou_link" translatable="false">https://jark006.lanzout.com/b017oz9if</string>
-    <string name="update_seccess">更新成功</string>
+    <string name="update_success">更新成功</string>
     <string name="update_fail">更新失败</string>
-    <string name="update_start">开始更新 [新安装应用]</string>
+    <string name="update_start">开始更新 应用名称</string>
     <string name="app_label">应用名称</string>
     <string name="package_name" translatable="false">com.jark006.freezeit</string>
     <string name="clear_log_text">清空日志</string>
     <string name="clear_log_tips">已清空日志</string>
     <string name="todo" translatable="false">TODO</string>
     <string name="refresh_log">刷新日志</string>
-    <string name="xposed_description">冻它模块辅助</string>
+    <string name="xposed_description">解决应用无响应、广播堵塞导致的卡通话等等问题</string>
     <string name="title_activity_setting">设置</string>
-    <string name="title_activity_taskmanager">任务管理</string>
+    <string name="title_activity_task_manager">应用CPU时间</string>
     <string name="developer_link">相关链接</string>
     <string name="unsupported">暂不支持</string>
-    <string name="realtime_text">CPU: %2d%%  温度: %.1f℃  电流: %dmA</string>
-    <string name="bind_core_text">绑定核心: CPU%1$d</string>
-    <string name="timeout_text">超时冻结: %1$d 秒</string>
-    <string name="refreeze_text">定时压制: %1$d 分</string>
-    <string name="main_oom_text">主进程OOM: %1$d</string>
-    <string name="sub_oom_text">副进程OOM: %1$d</string>
+    <string name="realtime_text">CPU:%2d%%  %.1f℃</string>
+    <string name="bind_core_text">绑定核心: %s</string>
+    <string name="timeout_text">超时冻结: %2d 秒</string>
+    <string name="refreeze_text">定时解冻: %2d 分</string>
+    <string name="terminate_text">超时杀死: %2d 秒</string>
+    <string name="mode_text">冻结模式: %s</string>
+    <string name="main_oom_text">主进程OOM:%5d</string>
+    <string name="sub_oom_text">副进程OOM:%5d</string>
     <string name="slowly_tips">不要操作太快</string>
+    <string name="confirm">确定</string>
+    <string name="cancel">取消</string>
+    <string name="reboot">重启到 系统</string>
+    <string name="reboot2recovery">重启到 Recovery</string>
+    <string name="reboot2bootloader">重启到 BootLoader(FASTBOOT)</string>
+    <string name="reboot2edl">重启到 EDL(9008) 高通专用</string>
+    <string name="help">帮助</string>
+    <string name="check_freezer">查看冻结</string>
 
 </resources>

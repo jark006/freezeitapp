@@ -1,13 +1,10 @@
-package com.jark006.freezeit;
+package com.jark006.freezeit.fragment;
 
 import static android.content.Context.ACTIVITY_SERVICE;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
-import android.app.Dialog;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,11 +30,18 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.jark006.freezeit.AppTimeActivity;
+import com.jark006.freezeit.BuildConfig;
+import com.jark006.freezeit.R;
+import com.jark006.freezeit.SettingsActivity;
+import com.jark006.freezeit.Utils;
 import com.jark006.freezeit.databinding.FragmentHomeBinding;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -61,21 +65,26 @@ import java.util.TimerTask;
 //                            `=---='
 //        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //                     佛祖保佑，代码永无BUG，阿弥陀佛
-//                      佛祖坐镇 尔等bug小怪速速离去
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
     private final static String TAG = "HomeFragment";
     private FragmentHomeBinding binding;
 
     ConstraintLayout constraintLayout;
-    LinearLayout stateLayout, memLayout, coolApkLink, lanzouLink, githubLink;
+    LinearLayout stateLayout, memLayout;
     TextView moduleStatus, memInfo, zramInfo, qqGroupLink, qqChannelLink, tgLink, tgChannelLink,
-            cpu, cpu0, cpu1, cpu2, cpu3, cpu4, cpu5, cpu6, cpu7;
+            updateTips, battery, cpu, cpu0, cpu1, cpu2, cpu3, cpu4, cpu5, cpu6, cpu7;
     ImageView cpuImg, wechatPay, aliPay, qqpay, ecnyPay, ethereumPay, bitcoinPay;
 
     boolean moduleIsRunning = false;
     String moduleName;
     String moduleVersion;
+    int moduleVersionCode = 0;
+
+    String version = "";
+    int versionCode = 0;
+    String zipUrl = "";
+    String changelog = "";
 
     Timer timer;
 
@@ -98,6 +107,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         stateLayout = binding.stateLayout;
         memLayout = binding.memLayout;
 
+        updateTips = binding.updateTips;
+        battery = binding.battery;
         cpu = binding.cpu;
         cpu0 = binding.cpu0;
         cpu1 = binding.cpu1;
@@ -120,16 +131,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         ethereumPay = binding.ethereumpay;
         bitcoinPay = binding.bitcoinpay;
 
-        coolApkLink = binding.coolapkLink;
         qqGroupLink = binding.qqgroupLink;
         qqChannelLink = binding.qqchannelLink;
         tgLink = binding.telegramLink;
         tgChannelLink = binding.telegramChannelLink;
-        githubLink = binding.githubLink;
-        lanzouLink = binding.lanzouLink;
 
         stateLayout.setOnClickListener(this);
         memLayout.setOnClickListener(this);
+
+        updateTips.setOnClickListener(this);
 
         wechatPay.setOnClickListener(this);
         aliPay.setOnClickListener(this);
@@ -138,13 +148,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         ethereumPay.setOnClickListener(this);
         bitcoinPay.setOnClickListener(this);
 
-        coolApkLink.setOnClickListener(this);
         qqGroupLink.setOnClickListener(this);
         qqChannelLink.setOnClickListener(this);
         tgLink.setOnClickListener(this);
         tgChannelLink.setOnClickListener(this);
-        githubLink.setOnClickListener(this);
-        lanzouLink.setOnClickListener(this);
 
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
@@ -156,18 +163,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             @Override
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
                 int id = menuItem.getItemId();
-                if (id == R.id.update_app_name) {
-                    if (moduleIsRunning) {
-                        Snackbar.make(constraintLayout, getString(R.string.update_start), Snackbar.LENGTH_SHORT).show();
-                        new Thread(updateAppLabelTask).start();
-                    } else
-                        Snackbar.make(constraintLayout, getString(R.string.freezeit_offline), Snackbar.LENGTH_SHORT).show();
-
-                } else if (id == R.id.about) {
-                    aboutDialog();
+                if (id == R.id.help_home) {
+                    Utils.imgDialog(requireContext(), R.drawable.help_home);
                 } else if (id == R.id.settings) {
                     if (moduleIsRunning)
-                        startActivity(new Intent(requireContext(), Settings.class));
+                        startActivity(new Intent(requireContext(), SettingsActivity.class));
                     else
                         Snackbar.make(constraintLayout, getString(R.string.freezeit_offline), Snackbar.LENGTH_SHORT).show();
                 }
@@ -218,57 +218,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         binding = null;
     }
 
-    private final Handler appNameHandler = new Handler(Looper.getMainLooper()) {
-        @SuppressLint("SetTextI18n")
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            byte[] response = msg.getData().getByteArray("response");
-
-            if (response == null || response.length == 0) {
-                String errorTips = getString(R.string.freezeit_offline);
-                Snackbar.make(constraintLayout, errorTips, Snackbar.LENGTH_SHORT).show();
-                Log.e(TAG, errorTips);
-                return;
-            }
-
-            String res = new String(response, StandardCharsets.UTF_8);
-            if (res.equals("success")) {
-                Snackbar.make(constraintLayout, R.string.update_seccess, Snackbar.LENGTH_SHORT).show();
-            } else {
-                String errorTips = getString(R.string.update_fail) + " Receive:[" + res + "]";
-                Snackbar.make(constraintLayout, errorTips, Snackbar.LENGTH_SHORT).show();
-                Log.e(TAG, errorTips);
-            }
-        }
-    };
-
-    Runnable updateAppLabelTask = () -> {
-        StringBuilder appName = new StringBuilder();
-
-        PackageManager pm = requireContext().getPackageManager();
-        List<ApplicationInfo> applicationsInfo = pm.getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES);
-        for (ApplicationInfo appInfo : applicationsInfo) {
-            if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) > 0)
-                continue;
-
-            String label = pm.getApplicationLabel(appInfo).toString();
-            if (label.endsWith("Application") || label.endsWith(".xml") || label.endsWith("false"))
-                label = appInfo.packageName;
-
-            appName.append(appInfo.packageName).append("####").append(label).append('\n');
-        }
-        Utils.freezeitTask(Utils.setAppLabel, appName.toString().getBytes(StandardCharsets.UTF_8), appNameHandler);
-    };
-
-    public void aboutDialog() {
-        Dialog dialog = new Dialog(requireContext());
-        dialog.setContentView(R.layout.about);
-        dialog.show();
-    }
-
-
-    //TODO
     private final Handler realTimeHandler = new Handler(Looper.getMainLooper()) {
         @SuppressLint({"SetTextI18n", "DefaultLocale"})
         @Override
@@ -276,11 +225,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             super.handleMessage(msg);
             byte[] response = msg.getData().getByteArray("response");
 
-
             if (response == null || response.length == 0) {
                 memLayout.setVisibility(View.GONE);
                 return;
             }
+
+            if (viewHeight == 0 || viewWidth == 0)
+                return;
 
             Bitmap bitmap = Bitmap.createBitmap(viewWidth / 3, viewHeight / 3, Bitmap.Config.ARGB_8888);
             ByteBuffer buffer = ByteBuffer.wrap(response);
@@ -316,7 +267,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                 Log.e(TAG, tmp.toString());
                 memInfo.setText(tmp);
-//                memLayout.setVisibility(View.GONE);
                 return;
             }
 
@@ -352,22 +302,23 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             try {
                 percent = Integer.parseInt(realTimeInfo[7]);
                 temperature = Integer.parseInt(realTimeInfo[16]);
-                mA = Integer.parseInt(realTimeInfo[17]);
+
+                mA = Integer.parseInt(realTimeInfo[17].trim());
+                mA = (mA == 0) ? 0 : (mA / -1000);
+
             } catch (Exception e) {
                 Log.e(TAG, "fail temperature_mA:[" + realTimeInfo[7] + "] [" + realTimeInfo[16] + "] [" + realTimeInfo[17] + "]");
             }
-            cpu.setText(String.format(getString(R.string.realtime_text), percent, temperature / 1000.0, (mA == 0) ? 0 : (mA / -1000)));
-
+            cpu.setText(String.format(getString(R.string.realtime_text), percent, temperature / 1000.0));
+            battery.setText(Math.abs(mA) > 1000 ? String.format("%.1f A", mA / 1e3) : (mA + " mA"));
 
             cpu0.setText("cpu0\n" + realTimeInfo[4] + "MHz\n" + realTimeInfo[8] + "%");
             cpu1.setText("cpu1\n" + realTimeInfo[4] + "MHz\n" + realTimeInfo[9] + "%");
             cpu2.setText("cpu2\n" + realTimeInfo[4] + "MHz\n" + realTimeInfo[10] + "%");
             cpu3.setText("cpu3\n" + realTimeInfo[4] + "MHz\n" + realTimeInfo[11] + "%");
-
             cpu4.setText("cpu4\n" + realTimeInfo[5] + "MHz\n" + realTimeInfo[12] + "%");
             cpu5.setText("cpu5\n" + realTimeInfo[5] + "MHz\n" + realTimeInfo[13] + "%");
             cpu6.setText("cpu6\n" + realTimeInfo[5] + "MHz\n" + realTimeInfo[14] + "%");
-
             cpu7.setText("cpu7\n" + realTimeInfo[6] + "MHz\n" + realTimeInfo[15] + "%");
 
         }
@@ -405,6 +356,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             moduleIsRunning = true;
             moduleName = info[1];
             moduleVersion = info[2];
+            try {
+                moduleVersionCode = Integer.parseInt(info[3]);
+            } catch (Exception ignored) {
+            }
 
             if (xposedState) stateLayout.setBackgroundResource(R.color.normal_green);
             else stateLayout.setBackgroundResource(R.color.warn_orange);
@@ -419,9 +374,45 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
             moduleStatus.setText(statusStr);
 
+            new Thread(() -> Utils.getData("https://raw.fastgit.org/jark006/freezeitRelease/master/update.json", checkUpdateHandler)).start();
         }
     };
 
+
+    private final Handler checkUpdateHandler = new Handler(Looper.getMainLooper()) {
+        @SuppressLint({"SetTextI18n", "DefaultLocale"})
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            byte[] response = msg.getData().getByteArray("response");
+
+            if (response == null || response.length == 0)
+                return;
+
+            try {
+                JSONObject json = new JSONObject(new String(response, StandardCharsets.UTF_8));
+                version = json.getString("version");
+                versionCode = json.getInt("versionCode");
+                zipUrl = json.getString("zipUrl");
+                changelog = json.getString("changelog");
+            } catch (JSONException e) {
+                updateTips.setText("");
+                zipUrl = null;
+                e.printStackTrace();
+                return;
+            }
+
+            if (versionCode > moduleVersionCode)
+                updateTips.setText("\uD83D\uDCCC可更新 " + version);
+            else if (versionCode == moduleVersionCode) {
+                updateTips.setText("已是最新版");
+                zipUrl = null;
+            } else {
+                updateTips.setText("测试版");
+                zipUrl = null;
+            }
+        }
+    };
 
     Runnable realTimeTask = () -> {
         am.getMemoryInfo(memoryInfo);
@@ -464,31 +455,22 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             else
                 Snackbar.make(constraintLayout, getString(R.string.freezeit_offline), Snackbar.LENGTH_SHORT).show();
         } else if (id == R.id.memLayout) {
-//            startActivity(new Intent(requireContext(), TaskManager.class));
-            Snackbar.make(constraintLayout, getString(R.string.unsupported), Snackbar.LENGTH_SHORT).show();
+            startActivity(new Intent(requireContext(), AppTimeActivity.class));
         } else if (id == R.id.wechatpay) {
-            donateDialog(R.layout.wechatpay);
+            Utils.imgDialog(requireContext(), R.drawable.wechatpay);
         } else if (id == R.id.qqpay) {
-            donateDialog(R.layout.qqpay);
+            Utils.imgDialog(requireContext(), R.drawable.qqpay);
         } else if (id == R.id.alipay) {
-            donateDialog(R.layout.alipay);
+            Utils.imgDialog(requireContext(), R.drawable.alipay);
         } else if (id == R.id.ecnypay) {
-            donateDialog(R.layout.ecnypay);
+            Utils.imgDialog(requireContext(), R.drawable.ecnypay);
         } else if (id == R.id.ethereumpay) {
-            donateDialog(R.layout.ethereumpay);
+            Utils.imgDialog(requireContext(), R.drawable.ethereumpay);
         } else if (id == R.id.bitcoinpay) {
-            donateDialog(R.layout.bitcoinpay);
-        } else if (id == R.id.coolapk_link) {
-            try {
-                Intent intent = new Intent();
-                intent.setClassName("com.coolapk.market", "com.coolapk.market.view.AppLinkActivity");
-                intent.setAction("android.intent.action.VIEW");
-                intent.setData(Uri.parse("coolmarket://u/1212220"));
-                startActivity(intent);
-            } catch (Exception e) {
-                e.printStackTrace();
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.coolapk_link))));
-            }
+            Utils.imgDialog(requireContext(), R.drawable.bitcoinpay);
+        } else if (id == R.id.updateTips) {
+            if (zipUrl != null && zipUrl.length() > 0)
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(zipUrl)));
         } else if (id == R.id.qqgroup_link) {
             try {
                 //【冻它模块 freezeit】(781222669) 的 key 为： ntLAwm7WxB0hVcetV7DsxfNTVN16cGUD
@@ -498,10 +480,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             } catch (Exception e) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.qqgroup_link))));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.qq_group_link))));
             }
         } else if (id == R.id.qqchannel_link) {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.qqchannel_link))));
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.qq_channel_link))));
         } else if (id == R.id.telegram_link) {
             try {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.tg_link))));
@@ -510,21 +492,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
         } else if (id == R.id.telegram_channel_link) {
             try {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.tgchannel_link))));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.tg_channel_link))));
             } catch (Exception e) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.tgchannel_https_link))));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.tg_channel_https_link))));
             }
-        } else if (id == R.id.github_link) {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.github_link))));
-        } else if (id == R.id.lanzou_link) {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.lanzou_link))));
         }
-    }
-
-    public void donateDialog(int ID) {
-        Dialog dialog = new Dialog(getContext());
-        dialog.setContentView(ID);
-        dialog.show();
     }
 
     public boolean isXposedActive() {

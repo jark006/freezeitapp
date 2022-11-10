@@ -3,9 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/update_label"
+        app:showAsAction="always"
+        android:title="@string/update_app_name"
+        android:icon="@drawable/ic_update_app_name_24dp"/>
+    <item
+        android:id="@+id/printf_freeze"
+        android:title="@string/check_freezer"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_check_freezer_24dp"/>
+    <item
         android:id="@+id/clear_log"
-        android:orderInCategory="100"
         android:title="@string/clear_log_text"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:icon="@drawable/ic_clear_log_24dp"/>
+    <item
+        android:id="@+id/help_log"
+        android:title="@string/help"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_help_24dp"/>
 </menu>

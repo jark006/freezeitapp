@@ -1,8 +1,9 @@
 package com.jark006.freezeit;
 
 
-import static androidx.constraintlayout.widget.ConstraintLayoutStates.TAG;
-
+import android.app.Dialog;
+import android.content.ContentValues;
+import android.content.Context;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.Drawable;
@@ -10,15 +11,19 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.widget.ImageView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URL;
 import java.util.Arrays;
 
 public class Utils {
@@ -29,13 +34,14 @@ public class Utils {
     public final static byte getInfo = 2;         // return string: "ID\nName\nVersion\nVersionCode\nAuthor"
     public final static byte getChangelog = 3;    // return string: "changelog"
     public final static byte getLog = 4;          // return string: "log"
-    public final static byte getWhiteList = 5;    // return string: "package\npackage\npackage####package\npackage\npackage" 内置白名单####自定义白名单
+    public final static byte getAppCfg = 5;       // return string: "package x\n..."   "包名 配置号\n..."
     public final static byte getRealTimeInfo = 6; // return bytes[variable]: (rawBitmap 内存 频率 使用率 电流)
     public final static byte getProcessInfo = 7;  // return string: "process cpu(%) mem(MB)\nprocess cpu(%) mem(MB)\nprocess cpu(%) mem(MB)\n..."
     public final static byte getSettings = 8;     // return bytes[256]: all settings parameter
+    public final static byte getUidTime = 9;      // return "uid time_micro_seconds increase_micro_seconds\n..."
 
     // 设置 需附加数据
-    public final static byte setWhiteList = 21;   // send "package####label\npackage####label\npackage####label\n..."
+    public final static byte setAppCfg = 21;      // send "package x\n..."   "包名 配置号\n..."
     public final static byte setAppLabel = 22;    // send "package####label\npackage####label\npackage####label\n..."
     public final static byte setSettingsVar = 23; // send bytes[2]: [0]index [1]value
 
@@ -45,12 +51,13 @@ public class Utils {
     public final static byte discharged = 43;     // send string: "packageName"  //临时放行后台
 
     // 其他命令 无附加数据 No additional data required
-    public final static byte clearLog = 61;       // return string: "clear log" //清理并返回空log
+    public final static byte clearLog = 61;         // return string: "log" //清理并返回log
+    public final static byte printFreezerProc = 62; // return string: "log" //打印冻结状态进程并返回log
+
     public final static byte reboot = 81;
     public final static byte rebootRecovery = 82;
     public final static byte rebootBootloader = 83;
     public final static byte rebootEdl = 84;
-
 
     public static synchronized void freezeitTask(byte command, byte[] AdditionalData, Handler handler) {
         final String hostname = "127.0.0.1";
@@ -102,16 +109,11 @@ public class Utils {
                         (Byte.toUnsignedInt(dataHeader[3]));
 
                 responseBuf = new byte[requireLen];
-//                receiveLen = is.read(responseBuf, 0, requireLen);
-//                if (receiveLen != requireLen) {
-//                    Log.e(TAG, "Receive data Fail, requireLen:" + requireLen + ", receiveLen:" + receiveLen);
-//                    return;
-//                }
 
                 int readCnt = 0;
-                while(readCnt < requireLen){ //欲求不满
-                    int cnt = is.read(responseBuf, readCnt, requireLen-readCnt);
-                    if(cnt < 0){
+                while (readCnt < requireLen) { //欲求不满
+                    int cnt = is.read(responseBuf, readCnt, requireLen - readCnt);
+                    if (cnt < 0) {
                         Log.e(TAG, "Get Content Fail");
                         return;
                     }
@@ -164,5 +166,46 @@ public class Utils {
         return newDrawable;
     }
 
+    public static void getData(String link, Handler handler) {
+        byte[] res = null;
+        try {
+            URL url = new URL(link);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(5 * 1000);
+            int resCode = conn.getResponseCode();
+            if (resCode != 200) {
+                Log.i(ContentValues.TAG, "异常HTTP返回码["+resCode+"]");
+                return;
+            }
 
+            InputStream is = conn.getInputStream();
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            int len;
+            byte[] buffer = new byte[204800];  //200kb
+            while ((len = is.read(buffer)) != -1)
+                os.write(buffer, 0, len);
+
+            is.close();
+            os.close();
+            res = os.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.i(ContentValues.TAG, "Network IO异常");
+        }
+        if (res == null)
+            return;
+
+        Message msg = new Message();
+        Bundle data = new Bundle();
+        data.putByteArray("response", res);
+        msg.setData(data);
+        handler.sendMessage(msg);
+    }
+
+    public static void imgDialog(Context context, int drawableID) {
+        Dialog dialog = new Dialog(context);
+        dialog.setContentView(R.layout.img_dialog);
+        ((ImageView) dialog.findViewById(R.id.img)).setImageResource(drawableID);
+        dialog.show();
+    }
 }

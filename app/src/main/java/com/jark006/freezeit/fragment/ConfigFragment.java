@@ -1,4 +1,4 @@
-package com.jark006.freezeit;
+package com.jark006.freezeit.fragment;
 
 import static android.content.pm.ApplicationInfo.FLAG_SYSTEM;
 import static android.content.pm.ApplicationInfo.FLAG_UPDATED_SYSTEM_APP;
@@ -29,12 +29,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.jark006.freezeit.R;
+import com.jark006.freezeit.Utils;
+import com.jark006.freezeit.adapter.AppCfgAdapter;
 import com.jark006.freezeit.databinding.FragmentConfigBinding;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 
 //                            _ooOoo_
@@ -57,23 +59,26 @@ import java.util.List;
 //                            `=---='
 //        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //                     佛祖保佑，代码永无BUG，阿弥陀佛
-//                      佛祖坐镇 尔等bug小怪速速离去
 
-public class ConfigFragment extends Fragment implements Handler.Callback {
+public class ConfigFragment extends Fragment {
     private final static String TAG = "ConfigFragment";
 
     private FragmentConfigBinding binding;
     SearchView searchView;
     ConstraintLayout constraintLayout;
-    appListRecyclerAdapter recycleAdapter;
+    AppCfgAdapter recycleAdapter;
     List<ApplicationInfo> applicationInfoList = new ArrayList<>();
-    List<ApplicationInfo> applicationInfoListSort = new ArrayList<>();
-    HashSet<String> whiteListForce = new HashSet<>();
-    HashSet<String> whiteListConf = new HashSet<>();
-    byte[] newConf;
+    List<ApplicationInfo> applicationInfoListSort;
+
+
+    //配置名单 <package, action> [-2]:杀死 [-1]:kill [0]:freezer [1]:动态 [2]:配置 [3]:内置
+    HashMap<String, Integer> appCfg = new HashMap<>();
+
+    long lastTimestamp = 0;
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -83,11 +88,13 @@ public class ConfigFragment extends Fragment implements Handler.Callback {
         constraintLayout = binding.constraintLayoutConfig;
         recyclerView = binding.recyclerviewApp;
         swipeRefreshLayout = binding.swipeRefreshLayout;
-        swipeRefreshLayout.setOnRefreshListener(() -> new Thread(getWhitelistTask).start());
+        swipeRefreshLayout.setOnRefreshListener(() -> new Thread(() -> Utils.freezeitTask(Utils.getAppCfg, null, getAppCfgHandler)).start());
 
         PackageManager pm = requireContext().getPackageManager();
-        List<ApplicationInfo> aLLApplicationInfoList = pm.getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES);
-        for (ApplicationInfo appInfo : aLLApplicationInfoList) {
+        List<ApplicationInfo> allApplicationInfoList = pm.getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES);
+        for (ApplicationInfo appInfo : allApplicationInfoList) {
+            if (appInfo.uid < 10000)
+                continue;
             if ((appInfo.flags & (FLAG_SYSTEM | FLAG_UPDATED_SYSTEM_APP)) != 0)
                 continue;
             applicationInfoList.add(appInfo);
@@ -101,104 +108,129 @@ public class ConfigFragment extends Fragment implements Handler.Callback {
                 menuInflater.inflate(R.menu.config_menu, menu);
 
                 MenuItem searchItem = menu.findItem(R.id.search_view);
-                searchView = (SearchView)searchItem.getActionView();
+                searchView = (SearchView) searchItem.getActionView();
                 if (searchView != null) {
                     searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                         @Override
                         public boolean onQueryTextSubmit(String query) {//按下搜索触发
-                            Log.i(TAG, "onQueryTextSubmit: " + query);
                             return false;
                         }
 
                         @Override
                         public boolean onQueryTextChange(String newText) {
-                            if(recycleAdapter != null)
-                                recycleAdapter.getFilter().filter(newText);
+                            if (recycleAdapter != null) {
+                                recycleAdapter.filter(newText);
+                            }
                             return false;
                         }
                     });
-                }else{
+                } else {
                     Log.e(TAG, "onCreateMenu: searchView == null");
                 }
             }
 
             @Override
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-                return false;
+                int id = menuItem.getItemId();
+                if (id == R.id.help_config) {
+                    Utils.imgDialog(requireContext(), R.drawable.help_config);
+                }
+                return true;
             }
         }, this.getViewLifecycleOwner());
 
+        binding.fabSave.setOnClickListener(view -> {
+            if ((System.currentTimeMillis() - lastTimestamp) < 500) {
+                Toast.makeText(requireContext(), getString(R.string.slowly_tips), Toast.LENGTH_LONG).show();
+                return;
+            }
+            lastTimestamp = System.currentTimeMillis();
+            if (recycleAdapter != null) {
+                byte[] newConf = recycleAdapter.getCfgBytes();
+                new Thread(() -> Utils.freezeitTask(Utils.setAppCfg, newConf, setAppCfgHandler)).start();
+            }
+        });
 
-        new Thread(getWhitelistTask).start();
+        binding.fabConvert.setOnClickListener(view -> {
+            if ((System.currentTimeMillis() - lastTimestamp) < 500) {
+                Toast.makeText(requireContext(), getString(R.string.slowly_tips), Toast.LENGTH_LONG).show();
+                return;
+            }
+            lastTimestamp = System.currentTimeMillis();
+
+            if (recycleAdapter != null) {
+                recycleAdapter.convert();
+            }
+        });
+
+
+        new Thread(() -> Utils.freezeitTask(Utils.getAppCfg, null, getAppCfgHandler)).start();
 
         return binding.getRoot();
     }
 
-    private void refreshListView() {
-
-        applicationInfoListSort.clear();
-        for (ApplicationInfo info : applicationInfoList) {
-            if (whiteListConf.contains(info.packageName)) {
-                applicationInfoListSort.add(info);
-            }
-        }
-
-        for (ApplicationInfo info : applicationInfoList) {
-            if (!whiteListForce.contains(info.packageName) && !whiteListConf.contains(info.packageName)) {
-                applicationInfoListSort.add(info);
-            }
-        }
-
-        for (ApplicationInfo info : applicationInfoList) {
-            if (whiteListForce.contains(info.packageName)) {
-                applicationInfoListSort.add(info);
-            }
-        }
-
-        recycleAdapter = new appListRecyclerAdapter(requireContext(),
-                applicationInfoListSort, whiteListForce, whiteListConf, this);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(layoutManager);
-        layoutManager.setOrientation(RecyclerView.VERTICAL);
-        recyclerView.setAdapter(recycleAdapter);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-    }
-
-    private final Handler getWhitelistHandler = new Handler(Looper.getMainLooper()) {
+    private final Handler getAppCfgHandler = new Handler(Looper.getMainLooper()) {
         @SuppressLint("SetTextI18n")
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             byte[] response = msg.getData().getByteArray("response");
 
-            if (response == null || response.length == 0) {
+            if (response == null || response.length == 0)
                 return;
-            }
 
-            whiteListForce.clear();
-            whiteListConf.clear();
+            appCfg.clear();
+            String[] list = new String(response, StandardCharsets.UTF_8).split("\n");
+            for (String item : list) {
+                String[] package_mode = item.split(" ");
 
-            String[] towList = new String(response, StandardCharsets.UTF_8).split("####");
-            int len = towList.length;
+                if (package_mode.length != 2) {
+                    Log.e(TAG, "handleMessage: unknownItem:[" + item + "]");
+                    continue;
+                }
 
-            if (len > 0) {
-                String[] whitelistStr = towList[0].split("\n");
-                whiteListForce.addAll(Arrays.asList(whitelistStr));
-                if (len > 1) {
-                    whitelistStr = towList[1].split("\n");
-                    whiteListConf.addAll(Arrays.asList(whitelistStr));
+                try {
+                    appCfg.put(package_mode[0], Integer.parseInt(package_mode[1]));
+                } catch (Exception e) {
+                    Log.e(TAG, "handleMessage: unknownItem:[" + item + "]");
                 }
             }
 
-            refreshListView();
+            applicationInfoList.forEach((applicationInfo -> {
+                if (!appCfg.containsKey(applicationInfo.packageName))
+                    appCfg.put(applicationInfo.packageName, 0);
+            }));
+
+            // [-2]:杀死 [-1]:kill [0]:freezer [1]:动态 [2]:自由 [3]:内置
+            applicationInfoListSort = new ArrayList<>();
+            for (int i = 2; i >= -2; i--) {
+                for (ApplicationInfo info : applicationInfoList) {
+                    Integer mode = appCfg.get(info.packageName);
+                    if (mode != null && mode.equals(i)) {
+                        applicationInfoListSort.add(info);
+                    }
+                }
+            }
+            for (ApplicationInfo info : applicationInfoList) {
+                Integer mode = appCfg.get(info.packageName);
+                if (mode != null && mode.equals(3)) {
+                    applicationInfoListSort.add(info);
+                }
+            }
+
+            recycleAdapter = new AppCfgAdapter(requireContext(), applicationInfoListSort, appCfg);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+            recyclerView.setLayoutManager(layoutManager);
+            layoutManager.setOrientation(RecyclerView.VERTICAL);
+            recyclerView.setAdapter(recycleAdapter);
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
+
             swipeRefreshLayout.setRefreshing(false);
         }
     };
 
-    Runnable getWhitelistTask = () -> Utils.freezeitTask(Utils.getWhiteList, null, getWhitelistHandler);
 
-
-    private final Handler setWhitelistHandler = new Handler(Looper.getMainLooper()) {
+    private final Handler setAppCfgHandler = new Handler(Looper.getMainLooper()) {
         @SuppressLint("SetTextI18n")
         @Override
         public void handleMessage(Message msg) {
@@ -207,7 +239,7 @@ public class ConfigFragment extends Fragment implements Handler.Callback {
 
             String res = new String(response, StandardCharsets.UTF_8);
             if (res.equals("success")) {
-                Toast.makeText(getContext(), R.string.update_seccess, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.update_success, Toast.LENGTH_SHORT).show();
             } else {
                 String errorTips = getString(R.string.update_fail) + " Receive:[" + res + "]";
                 Toast.makeText(getContext(), errorTips, Toast.LENGTH_SHORT).show();
@@ -215,34 +247,11 @@ public class ConfigFragment extends Fragment implements Handler.Callback {
             }
         }
     };
-    Runnable setWhitelistTask = () -> Utils.freezeitTask(Utils.setWhiteList, newConf, setWhitelistHandler);
 
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    @Override
-    public boolean handleMessage(@NonNull Message msg) {
-        String response = msg.getData().getString("response");
-        int position = msg.getData().getInt("position");
-
-        if (response == null || response.length() == 0) {
-            newConf = null;
-        } else {
-            Log.i(TAG, "handleMessage: " + response);
-            String[] newConfStr = response.split("\n");
-            whiteListConf.clear();
-            whiteListConf.addAll(Arrays.asList(newConfStr));
-            newConf = response.getBytes(StandardCharsets.UTF_8);
-        }
-        recycleAdapter.notifyItemChanged(position, 0);
-
-        new Thread(setWhitelistTask).start();
-
-        return true;
     }
 }

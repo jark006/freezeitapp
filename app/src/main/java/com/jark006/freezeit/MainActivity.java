@@ -3,7 +3,6 @@ package com.jark006.freezeit;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -31,7 +30,6 @@ import com.jark006.freezeit.databinding.ActivityMainBinding;
 //                            `=---='
 //        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //                     佛祖保佑, 代码永无BUG, 阿弥陀佛
-//                      佛祖坐镇 尔等bug小怪速速离去
 
 public class MainActivity extends AppCompatActivity {
 

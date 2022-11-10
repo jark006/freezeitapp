@@ -1,0 +1,613 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_white_background"
+    tools:context=".SettingsActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:contentDescription="@string/icon"
+                    android:padding="5dp"
+                    app:srcCompat="@drawable/avatar" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    tools:ignore="UseCompoundDrawables">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/developer"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/appVer" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/coolapk_link"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_gravity="center_vertical"
+                            android:contentDescription="@string/icon"
+                            android:padding="5dp"
+                            app:srcCompat="@drawable/logo_coolapk" />
+
+                        <ImageView
+                            android:id="@+id/github_link"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_gravity="center_vertical"
+                            android:contentDescription="@string/icon"
+                            android:padding="5dp"
+                            app:srcCompat="@drawable/logo_github" />
+
+                        <ImageView
+                            android:id="@+id/lanzou_link"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_gravity="center_vertical"
+                            android:contentDescription="@string/icon"
+                            android:padding="5dp"
+                            app:srcCompat="@drawable/logo_lanzou" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="蓝奏云密码: dy6i"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingVertical="5dp">
+
+                <TextView
+                    android:id="@+id/cpu_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="绑定核心"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="绑定冻它进程到核心群,小核心群(0-3)省电,中大核心群(4-7)解冻快,重启生效" />
+
+                <SeekBar
+                    android:id="@+id/seekBarCPU"
+                    style="@style/Widget.AppCompat.SeekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="2"
+                    android:maxHeight="25dp"
+                    android:min="0"
+                    android:minHeight="25dp"
+                    android:padding="5dp"
+                    android:progressDrawable="@drawable/seekbar_bg"
+                    android:progressTint="@color/purple_500"
+                    android:thumb="@null"
+                    android:thumbOffset="0dp"
+                    android:thumbTint="@null" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingVertical="5dp">
+
+                <TextView
+                    android:id="@+id/timeout_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="超时冻结"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="设为冻结的应用进入后台之后，需要多久冻结" />
+
+                <SeekBar
+                    android:id="@+id/seekBarTimeout"
+                    style="@style/Widget.AppCompat.SeekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="60"
+                    android:maxHeight="25dp"
+                    android:min="1"
+                    android:minHeight="25dp"
+                    android:padding="5dp"
+                    android:progressDrawable="@drawable/seekbar_bg"
+                    android:progressTint="@color/purple_500"
+                    android:thumb="@null"
+                    android:thumbOffset="0dp"
+                    android:thumbTint="@null" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingVertical="5dp">
+
+                <TextView
+                    android:id="@+id/wakeup_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="定时解冻"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="定时解冻被冻结的后台应用，解冻时长为[超时冻结]参数。若应用经常闪弹闪退，建议调短时间，不易冻死。设为最大值120则关闭定时解冻。如果使用FreezerV1存在内存泄漏，请不要关闭，否则无法释放内存。" />
+
+                <SeekBar
+                    android:id="@+id/seekBarWakeup"
+                    style="@style/Widget.AppCompat.SeekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="120"
+                    android:maxHeight="25dp"
+                    android:min="5"
+                    android:minHeight="25dp"
+                    android:padding="5dp"
+                    android:progressDrawable="@drawable/seekbar_bg"
+                    android:progressTint="@color/purple_500"
+                    android:thumb="@null"
+                    android:thumbOffset="0dp"
+                    android:thumbTint="@null" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingVertical="5dp">
+
+                <TextView
+                    android:id="@+id/terminate_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="超时杀死"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="设为超时杀死的应用进入后台之后，需要多久杀死" />
+
+                <SeekBar
+                    android:id="@+id/seekBarTerminate"
+                    style="@style/Widget.AppCompat.SeekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="120"
+                    android:maxHeight="25dp"
+                    android:min="5"
+                    android:minHeight="25dp"
+                    android:padding="5dp"
+                    android:progressDrawable="@drawable/seekbar_bg"
+                    android:progressTint="@color/purple_500"
+                    android:thumb="@null"
+                    android:thumbOffset="0dp"
+                    android:thumbTint="@null" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingVertical="5dp">
+
+                <TextView
+                    android:id="@+id/mode_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="冻结模式"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="选定Kill-19模式会使全局Freezer策略退化为Kill-19。选定Freezer模式则为对应的Freezer策略。重启生效" />
+
+                <SeekBar
+                    android:id="@+id/seekBarMode"
+                    style="@style/Widget.AppCompat.SeekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="5"
+                    android:maxHeight="25dp"
+                    android:min="0"
+                    android:minHeight="25dp"
+                    android:padding="5dp"
+                    android:progressDrawable="@drawable/seekbar_bg"
+                    android:progressTint="@color/purple_500"
+                    android:thumb="@null"
+                    android:thumbOffset="0dp"
+                    android:thumbTint="@null" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?android:attr/listDivider" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="10dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="激进识别"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="略微省电的任务切换识别，Android12+建议开启，但方式激进，小概率导致冻结/解冻失效。重启生效" />
+
+                </LinearLayout>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_foreground"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="10dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="音频监控"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="记录设备的音频通道使用情况，仅日志开关，不影响播放状态识别" />
+
+                </LinearLayout>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_play"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="10dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="录音监控"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="记录设备的录音通道使用情况" />
+
+                </LinearLayout>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_capture"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="10dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="电池监控"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="记录电池充/放电时长、功率、温度等" />
+
+                </LinearLayout>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_battery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!--            <LinearLayout-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:orientation="horizontal"-->
+            <!--                android:paddingVertical="10dp">-->
+
+            <!--                <LinearLayout-->
+            <!--                    android:layout_width="0dp"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:layout_weight="5"-->
+            <!--                    android:orientation="vertical">-->
+
+            <!--                    <TextView-->
+            <!--                        android:layout_width="match_parent"-->
+            <!--                        android:layout_height="wrap_content"-->
+            <!--                        android:text="动态冻结"-->
+            <!--                        android:textSize="18sp" />-->
+
+            <!--                    <TextView-->
+            <!--                        android:layout_width="match_parent"-->
+            <!--                        android:layout_height="wrap_content"-->
+            <!--                        android:text="播放时不冻结，停止则冻结。暂不支持蓝牙。若关闭，动态策略的应用则变为Kill-19冻结。" />-->
+
+            <!--                </LinearLayout>-->
+
+            <!--                <com.google.android.material.chip.Chip-->
+            <!--                    android:id="@+id/chip_dynamic"-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content" />-->
+            <!--            </LinearLayout>-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="10dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="电流校准"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="电流或功率数值接近或等于0则需要开启，例如ColorOS" />
+
+                </LinearLayout>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_current"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="10dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="杀死MSF"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="冻结QQ/TIM时，是否需要杀死MSF进程，杀死后可由HMSPush或MiPush接管消息推送" />
+
+                </LinearLayout>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_kill_msf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="10dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="调整lmk参数"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="调整安卓11-15的lmk参数，缓解lmkd杀后台，重启生效" />
+
+                </LinearLayout>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_lmk"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="10dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="息屏Doze"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="息屏状态超时3分钟后，尝试强制进入深度Doze(低功耗待机模式)，充电状态无法进入。开启会将电池优化白名单的三方应用换成冻它自由后台应用" />
+
+                </LinearLayout>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_doze"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="10dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="挂载FreezerV2"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="若设备不支持FreezerV2, 将尝试挂载, 仅针对安卓11-13(内核4.14-5.4), 若设备默认已支持V2, 请不要开启, 重启生效" />
+
+                </LinearLayout>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_mount_v2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?android:attr/listDivider" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:text="系统信息"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/system_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp" />
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

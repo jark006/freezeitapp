@@ -5,7 +5,7 @@
     android:id="@+id/constraintLayout_home"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HomeFragment">
+    tools:context=".fragment.HomeFragment">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -34,7 +34,7 @@
 
                     <ImageView
                         android:layout_width="60dp"
-                        android:layout_height="60dp"
+                        android:layout_height="match_parent"
                         android:layout_gravity="center"
                         android:adjustViewBounds="true"
                         android:contentDescription="@string/icon"
@@ -78,11 +78,18 @@
 
                         <TextView
                             android:id="@+id/cpu"
-                            android:typeface="monospace"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:textSize="14sp" />
+                            android:textSize="14sp"
+                            android:typeface="monospace" />
+
+                        <TextView
+                            android:id="@+id/battery"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
+                            android:typeface="monospace" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -97,7 +104,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:textColor="#44ff00"
+                            android:textColor="#00BB00"
                             android:textSize="8sp"
                             tools:ignore="SmallSp" />
 
@@ -107,7 +114,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:textColor="#44ff00"
+                            android:textColor="#00BB00"
                             android:textSize="8sp"
                             tools:ignore="SmallSp" />
 
@@ -117,7 +124,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:textColor="#44ff00"
+                            android:textColor="#00BB00"
                             android:textSize="8sp"
                             tools:ignore="SmallSp" />
 
@@ -127,7 +134,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:textColor="#44ff00"
+                            android:textColor="#00BB00"
                             android:textSize="8sp"
                             tools:ignore="SmallSp" />
 
@@ -137,7 +144,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:textColor="#00aaff"
+                            android:textColor="#0088CC"
                             android:textSize="8sp"
                             tools:ignore="SmallSp" />
 
@@ -147,7 +154,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:textColor="#00aaff"
+                            android:textColor="#0088CC"
                             android:textSize="8sp"
                             tools:ignore="SmallSp" />
 
@@ -157,7 +164,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:textColor="#00aaff"
+                            android:textColor="#0088CC"
                             android:textSize="8sp"
                             tools:ignore="SmallSp" />
 
@@ -167,7 +174,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:textColor="#ff4400"
+                            android:textColor="#DD2222"
                             android:textSize="8sp"
                             tools:ignore="SmallSp" />
 
@@ -235,7 +242,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingHorizontal="10dp"
-                        android:text="@string/supportDescriptText"
+                        android:text="@string/supportDescriptionText"
                         android:textSize="10sp"
                         tools:ignore="SmallSp" />
 
@@ -251,7 +258,7 @@
                             android:layout_weight="1"
                             android:contentDescription="@string/icon"
                             android:paddingTop="14dp"
-                            android:src="@drawable/wechatpay_logo" />
+                            android:src="@drawable/logo_wechatpay" />
 
                         <ImageView
                             android:id="@+id/qqpay"
@@ -260,7 +267,7 @@
                             android:layout_weight="1"
                             android:contentDescription="@string/icon"
                             android:paddingTop="14dp"
-                            android:src="@drawable/qq_pay" />
+                            android:src="@drawable/logo_qqpay" />
 
                         <ImageView
                             android:id="@+id/alipay"
@@ -269,7 +276,7 @@
                             android:layout_weight="1"
                             android:contentDescription="@string/icon"
                             android:paddingTop="14dp"
-                            android:src="@drawable/alipay_logo" />
+                            android:src="@drawable/logo_alipay" />
 
                         <ImageView
                             android:id="@+id/ecnypay"
@@ -278,7 +285,7 @@
                             android:layout_weight="1"
                             android:contentDescription="@string/icon"
                             android:paddingTop="14dp"
-                            android:src="@drawable/ecnypay_logo" />
+                            android:src="@drawable/logo_ecnypay" />
 
                         <ImageView
                             android:id="@+id/ethereumpay"
@@ -287,7 +294,7 @@
                             android:layout_weight="1"
                             android:contentDescription="@string/icon"
                             android:paddingTop="14dp"
-                            android:src="@drawable/ethereum_logo" />
+                            android:src="@drawable/logo_ethereum" />
 
                         <ImageView
                             android:id="@+id/bitcoinpay"
@@ -296,11 +303,12 @@
                             android:layout_weight="1"
                             android:contentDescription="@string/icon"
                             android:paddingTop="14dp"
-                            android:src="@drawable/bitcoin_logo" />
+                            android:src="@drawable/logo_bitcoin" />
 
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
+
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
@@ -315,107 +323,25 @@
                     android:orientation="vertical"
                     android:padding="10dp">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingHorizontal="10dp"
-                        android:text="@string/developer_link"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-
                     <LinearLayout
-                        android:id="@+id/coolapk_link"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="match_parent"
                         android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:contentDescription="@string/icon"
-                            android:padding="10dp"
-                            android:scaleType="centerInside"
-                            android:src="@drawable/coolapk_logo" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center_vertical"
-                            android:paddingHorizontal="10dp"
-                            android:text="@string/coolapk_text" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/github_link"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:contentDescription="@string/icon"
-                            android:padding="10dp"
-                            android:scaleType="centerInside"
-                            android:src="@drawable/github_logo" />
 
                         <TextView
                             android:layout_width="0dp"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:gravity="start|center_vertical"
                             android:paddingHorizontal="10dp"
-                            android:text="@string/github_text" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/lanzou_link"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:contentDescription="@string/icon"
-                            android:padding="10dp"
-                            android:scaleType="centerInside"
-                            android:src="@drawable/lanzou_logo" />
+                            android:text="@string/communityTitle"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
 
                         <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center_vertical"
-                            android:paddingHorizontal="10dp"
-                            android:text="@string/lanzou_text" />
+                            android:id="@+id/updateTips"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
                     </LinearLayout>
-
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:cardCornerRadius="16dp"
-                app:cardUseCompatPadding="true">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/gray_white"
-                    android:orientation="vertical"
-                    android:padding="10dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingHorizontal="10dp"
-                        android:text="@string/communityTitle"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -429,7 +355,7 @@
                             android:contentDescription="@string/icon"
                             android:padding="10dp"
                             android:scaleType="centerInside"
-                            android:src="@drawable/qq_logo" />
+                            android:src="@drawable/logo_qq" />
 
                         <TextView
                             android:id="@+id/qqgroup_link"
@@ -438,7 +364,7 @@
                             android:layout_weight="1"
                             android:gravity="start|center_vertical"
                             android:paddingStart="10dp"
-                            android:text="@string/qqgroup_text" />
+                            android:text="@string/qq_group_text" />
 
                         <TextView
                             android:id="@+id/qqchannel_link"
@@ -446,7 +372,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:gravity="start|center_vertical"
-                            android:text="@string/qqchannel_text" />
+                            android:text="@string/qq_channel_text" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -460,7 +386,7 @@
                             android:contentDescription="@string/icon"
                             android:padding="10dp"
                             android:scaleType="centerInside"
-                            android:src="@drawable/telegram_logo" />
+                            android:src="@drawable/logo_telegram" />
 
                         <TextView
                             android:id="@+id/telegram_link"
@@ -469,7 +395,7 @@
                             android:layout_weight="1"
                             android:gravity="start|center_vertical"
                             android:paddingStart="10dp"
-                            android:text="@string/telegramgroup_text" />
+                            android:text="@string/tg_group_text" />
 
                         <TextView
                             android:id="@+id/telegram_channel_link"
@@ -477,7 +403,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:gravity="start|center_vertical"
-                            android:text="@string/telegramchannel_text" />
+                            android:text="@string/tg_channel_text" />
                     </LinearLayout>
 
                 </LinearLayout>

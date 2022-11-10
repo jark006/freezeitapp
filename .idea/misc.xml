@@ -39,10 +39,12 @@
         <entry key="..\:/Project-github/freezeitapp/app/src/main/res/drawable/ic_changelog_24dp.xml" value="0.1795" />
         <entry key="..\:/Project-github/freezeitapp/app/src/main/res/drawable/ic_clear_log_24dp.xml" value="0.1795" />
         <entry key="..\:/Project-github/freezeitapp/app/src/main/res/drawable/ic_config_24dp.xml" value="0.1795" />
+        <entry key="..\:/Project-github/freezeitapp/app/src/main/res/drawable/ic_convert_24.xml" value="0.211" />
         <entry key="..\:/Project-github/freezeitapp/app/src/main/res/drawable/ic_home_24dp.xml" value="0.2355" />
         <entry key="..\:/Project-github/freezeitapp/app/src/main/res/drawable/ic_info_24dp.xml" value="0.1795" />
         <entry key="..\:/Project-github/freezeitapp/app/src/main/res/drawable/ic_logcat_24dp.xml" value="0.1795" />
         <entry key="..\:/Project-github/freezeitapp/app/src/main/res/drawable/ic_refresh_24dp.xml" value="0.1795" />
+        <entry key="..\:/Project-github/freezeitapp/app/src/main/res/drawable/ic_save_24.xml" value="0.2265" />
         <entry key="..\:/Project-github/freezeitapp/app/src/main/res/drawable/ic_search_24dp.xml" value="0.1795" />
         <entry key="..\:/Project-github/freezeitapp/app/src/main/res/drawable/ic_settings_24dp.xml" value="0.19" />
         <entry key="..\:/Project-github/freezeitapp/app/src/main/res/drawable/ic_update_app_name_24dp.xml" value="0.1795" />
@@ -50,14 +52,15 @@
         <entry key="..\:/Project-github/freezeitapp/app/src/main/res/drawable/seekbar_bg.xml" value="0.1635" />
         <entry key="..\:/Project-github/freezeitapp/app/src/main/res/layout/about.xml" value="0.33" />
         <entry key="..\:/Project-github/freezeitapp/app/src/main/res/layout/activity_main.xml" value="0.20081595648232095" />
-        <entry key="..\:/Project-github/freezeitapp/app/src/main/res/layout/activity_setting.xml" value="0.22780797101449277" />
+        <entry key="..\:/Project-github/freezeitapp/app/src/main/res/layout/activity_setting.xml" value="0.3057591623036649" />
         <entry key="..\:/Project-github/freezeitapp/app/src/main/res/layout/activity_taskmanager.xml" value="0.2911500641299701" />
         <entry key="..\:/Project-github/freezeitapp/app/src/main/res/layout/alipay.xml" value="0.14010416666666667" />
         <entry key="..\:/Project-github/freezeitapp/app/src/main/res/layout/app_item_layout.xml" value="0.2911500641299701" />
+        <entry key="..\:/Project-github/freezeitapp/app/src/main/res/layout/app_list.xml" value="0.19324497648567765" />
         <entry key="..\:/Project-github/freezeitapp/app/src/main/res/layout/bitcoinpay.xml" value="0.2911500641299701" />
         <entry key="..\:/Project-github/freezeitapp/app/src/main/res/layout/content_setting.xml" value="0.11500641299700727" />
         <entry key="..\:/Project-github/freezeitapp/app/src/main/res/layout/ecnypay.xml" value="0.2911500641299701" />
-        <entry key="..\:/Project-github/freezeitapp/app/src/main/res/layout/fragment_config.xml" value="0.3240963855421687" />
+        <entry key="..\:/Project-github/freezeitapp/app/src/main/res/layout/fragment_config.xml" value="0.22" />
         <entry key="..\:/Project-github/freezeitapp/app/src/main/res/layout/fragment_home.xml" value="0.25" />
         <entry key="..\:/Project-github/freezeitapp/app/src/main/res/layout/fragment_logcat.xml" value="0.2" />
         <entry key="..\:/Project-github/freezeitapp/app/src/main/res/layout/layout_setting.xml" value="0.11415134672937152" />
@@ -87,7 +90,7 @@
   <component name="VisualizationToolProject">
     <option name="state">
       <ProjectState>
-        <option name="scale" value="0.22780797101449277" />
+        <option name="scale" value="0.2911500641299701" />
       </ProjectState>
     </option>
   </component>

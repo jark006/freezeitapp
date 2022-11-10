@@ -1,15 +1,17 @@
 package com.jark006.freezeit;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,13 +25,56 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
-public class Settings extends AppCompatActivity implements View.OnClickListener {
+//                            _ooOoo_
+//                           o8888888o
+//                           88" . "88
+//                           (| -_- |)
+//                           O\  =  /O
+//                        ____/`---'\____
+//                      .'  \\|     |//  `.
+//                     /  \\|||  :  |||//  \
+//                    /  _||||| -:- |||||-  \
+//                    |   | \\\  -  /// |   |
+//                    | \_|  ''\---/''  |   |
+//                    \  .-\__  `-`  ___/-. /
+//                  ___`. .'  /--.--\  `. . __
+//               ."" '<  `.___\_<|>_/___.'  >'"".
+//              | | :  `- \`.;`\ _ /`;.`/ - ` : | |
+//              \  \ `-.   \_ __\ /__ _/   .-` /  /
+//         ======`-.____`-.___\_____/___.-`____.-'======
+//                            `=---='
+//        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//                     佛祖保佑，代码永无BUG，阿弥陀佛
+
+public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
     final String TAG = "Settings";
 
-    Chip chipForeground, chipPlay, chipCapture, chipBattery, chipDynamic, chipOOM;
-    SeekBar seekbarCPU, seekbarTimeouts, seekbarRefreeze, seekbarMain, seekbarSub;
-    TextView reboot, rebootRecovery, rebootBootloader, rebootEdl;
-    TextView cpuText, timeoutsText, refreezeText, mainOomText, subOomText, systemInfo;
+    Chip chipForeground, chipPlay, chipCapture, chipBatteryMonitor,
+            chipBatteryFix, chipKillMsf, chipLmk, chipDoze, chipMountV2;
+    SeekBar seekbarCPU, seekbarTimeouts, seekbarWakeup, seekbarTerminate, seekbarMode;
+    TextView cpuText, timeoutsText, wakeupText, terminateText, modeText, systemInfo;
+
+    ImageView coolApkLink, lanzouLink, githubLink;
+
+    //    final int verIdx = 0;
+    final int clusterBindIdx = 1;
+    final int freezeTimeoutIdx = 2;
+    final int wakeupTimeoutIdx = 3;
+    final int terminateTimeoutIdx = 4;
+    final int setModeIdx = 5;
+
+    final int radicalIdx = 10;
+    final int playIdx = 11;
+    final int captureIdx = 12;
+    final int batteryMonitorIdx = 13;
+    final int batteryFixIdx = 14;
+    final int killMsfIdx = 15;
+    final int lmkAdjustIdx = 16;
+    final int dozeIdx = 17;
+    final int mountV2Idx = 18;
+
+    final String[] freezerModeText = {"全局Kill-19", "FreezerV1(uid)", "FreezerV1(frozen)", "FreezerV2(uid)", "FreezerV2(frozen)", "自动选择",};
+    final String[] clusterBindText = {"小核[CPU0-3]", "中核[CPU4-6]", "大核[CPU7]"};
 
     byte[] settingsVar = new byte[256];
     long lastTimestamp = System.currentTimeMillis();
@@ -44,55 +89,60 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_setting);
+        setContentView(R.layout.activity_settings);
+
+
+        coolApkLink = findViewById(R.id.coolapk_link);
+        githubLink = findViewById(R.id.github_link);
+        lanzouLink = findViewById(R.id.lanzou_link);
+
+        coolApkLink.setOnClickListener(this);
+        githubLink.setOnClickListener(this);
+        lanzouLink.setOnClickListener(this);
+
 
         chipForeground = findViewById(R.id.chip_foreground);
         chipPlay = findViewById(R.id.chip_play);
         chipCapture = findViewById(R.id.chip_capture);
-        chipBattery = findViewById(R.id.chip_battery);
-        chipDynamic = findViewById(R.id.chip_dynamic);
-        chipOOM = findViewById(R.id.chip_oom);
+        chipBatteryMonitor = findViewById(R.id.chip_battery);
+//        chipDynamic = findViewById(R.id.chip_dynamic);
+        chipBatteryFix = findViewById(R.id.chip_current);
+        chipKillMsf = findViewById(R.id.chip_kill_msf);
+        chipLmk = findViewById(R.id.chip_lmk);
+        chipDoze = findViewById(R.id.chip_doze);
+        chipMountV2 = findViewById(R.id.chip_mount_v2);
 
         chipForeground.setOnClickListener(this);
         chipPlay.setOnClickListener(this);
         chipCapture.setOnClickListener(this);
-        chipBattery.setOnClickListener(this);
-        chipDynamic.setOnClickListener(this);
-        chipOOM.setOnClickListener(this);
-
-
-        reboot = findViewById(R.id.reboot);
-        rebootRecovery = findViewById(R.id.reboot_recovery);
-        rebootBootloader = findViewById(R.id.reboot_bootloader);
-        rebootEdl = findViewById(R.id.reboot_edl);
-
-        reboot.setOnClickListener(this);
-        rebootRecovery.setOnClickListener(this);
-        rebootBootloader.setOnClickListener(this);
-        rebootEdl.setOnClickListener(this);
-
+        chipBatteryMonitor.setOnClickListener(this);
+//        chipDynamic.setOnClickListener(this);
+        chipBatteryFix.setOnClickListener(this);
+        chipKillMsf.setOnClickListener(this);
+        chipLmk.setOnClickListener(this);
+        chipDoze.setOnClickListener(this);
+        chipMountV2.setOnClickListener(this);
 
         systemInfo = findViewById(R.id.system_info);
 
-
         cpuText = findViewById(R.id.cpu_text);
         timeoutsText = findViewById(R.id.timeout_text);
-        refreezeText = findViewById(R.id.refreeze_text);
-        mainOomText = findViewById(R.id.main_oom_text);
-        subOomText = findViewById(R.id.sub_oom_text);
+        wakeupText = findViewById(R.id.wakeup_text);
+        terminateText = findViewById(R.id.terminate_text);
+        modeText = findViewById(R.id.mode_text);
 
         seekbarCPU = findViewById(R.id.seekBarCPU);
         seekbarTimeouts = findViewById(R.id.seekBarTimeout);
-        seekbarRefreeze = findViewById(R.id.seekBarRefreeze);
-        seekbarMain = findViewById(R.id.seekBarMain);
-        seekbarSub = findViewById(R.id.seekBarSub);
+        seekbarWakeup = findViewById(R.id.seekBarWakeup);
+        seekbarTerminate = findViewById(R.id.seekBarTerminate);
+        seekbarMode = findViewById(R.id.seekBarMode);
 
 
         seekbarCPU.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 int value = seekBar.getProgress();
-                cpuText.setText(String.format(getString(R.string.bind_core_text), value));
+                cpuText.setText(String.format(getString(R.string.bind_core_text), clusterBindText[value]));
             }
 
             @Override
@@ -104,17 +154,16 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
                 seekBarForHandle = seekbarCPU;
                 textViewForHandle = cpuText;
                 stringIndexForHandle = R.string.bind_core_text;
-                varIndexForHandle = 1;
+                varIndexForHandle = clusterBindIdx;
 
                 final byte value = (byte) seekBar.getProgress();
                 if ((System.currentTimeMillis() - lastTimestamp) < 1000) {
                     Toast.makeText(getBaseContext(), getString(R.string.slowly_tips), Toast.LENGTH_LONG).show();
-                    seekBarForHandle.setProgress((int) settingsVar[varIndexForHandle]);
-                    textViewForHandle.setText(String.format(getString(stringIndexForHandle), (int) settingsVar[varIndexForHandle]));
+                    seekBarForHandle.setProgress(settingsVar[varIndexForHandle]);
+                    textViewForHandle.setText(String.format(getString(stringIndexForHandle), clusterBindText[settingsVar[varIndexForHandle]]));
                     return;
                 }
                 lastTimestamp = System.currentTimeMillis();
-//                settingsVar[varIndexForHandle] = value;
                 new Thread(() -> Utils.freezeitTask(Utils.setSettingsVar, new byte[]{(byte) varIndexForHandle, value}, seekbarHandler)).start();
             }
         });
@@ -135,26 +184,25 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
                 seekBarForHandle = seekbarTimeouts;
                 textViewForHandle = timeoutsText;
                 stringIndexForHandle = R.string.timeout_text;
-                varIndexForHandle = 2;
+                varIndexForHandle = freezeTimeoutIdx;
 
                 final byte value = (byte) seekBar.getProgress();
                 if ((System.currentTimeMillis() - lastTimestamp) < 1000) {
                     Toast.makeText(getBaseContext(), getString(R.string.slowly_tips), Toast.LENGTH_LONG).show();
-                    seekBarForHandle.setProgress((int) settingsVar[varIndexForHandle]);
+                    seekBarForHandle.setProgress(settingsVar[varIndexForHandle]);
                     textViewForHandle.setText(String.format(getString(stringIndexForHandle), (int) settingsVar[varIndexForHandle]));
                     return;
                 }
                 lastTimestamp = System.currentTimeMillis();
-//                settingsVar[varIndexForHandle] = value;
                 new Thread(() -> Utils.freezeitTask(Utils.setSettingsVar, new byte[]{(byte) varIndexForHandle, value}, seekbarHandler)).start();
             }
         });
 
-        seekbarRefreeze.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        seekbarWakeup.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 int value = seekBar.getProgress();
-                refreezeText.setText(String.format(getString(R.string.refreeze_text), value));
+                wakeupText.setText(String.format(getString(R.string.refreeze_text), value));
             }
 
             @Override
@@ -163,29 +211,28 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                seekBarForHandle = seekbarRefreeze;
-                textViewForHandle = refreezeText;
+                seekBarForHandle = seekbarWakeup;
+                textViewForHandle = wakeupText;
                 stringIndexForHandle = R.string.refreeze_text;
-                varIndexForHandle = 3;
+                varIndexForHandle = wakeupTimeoutIdx;
 
                 final byte value = (byte) seekBar.getProgress();
                 if ((System.currentTimeMillis() - lastTimestamp) < 1000) {
                     Toast.makeText(getBaseContext(), getString(R.string.slowly_tips), Toast.LENGTH_LONG).show();
-                    seekBarForHandle.setProgress((int) settingsVar[varIndexForHandle]);
+                    seekBarForHandle.setProgress(settingsVar[varIndexForHandle]);
                     textViewForHandle.setText(String.format(getString(stringIndexForHandle), (int) settingsVar[varIndexForHandle]));
                     return;
                 }
                 lastTimestamp = System.currentTimeMillis();
-//                settingsVar[varIndexForHandle] = value;
                 new Thread(() -> Utils.freezeitTask(Utils.setSettingsVar, new byte[]{(byte) varIndexForHandle, value}, seekbarHandler)).start();
             }
         });
 
-        seekbarMain.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        seekbarTerminate.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 int value = seekBar.getProgress();
-                mainOomText.setText(String.format(getString(R.string.main_oom_text), value * 100 - 1000));
+                terminateText.setText(String.format(getString(R.string.terminate_text), value));
             }
 
             @Override
@@ -194,29 +241,28 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                seekBarForHandle = seekbarMain;
-                textViewForHandle = mainOomText;
-                stringIndexForHandle = R.string.main_oom_text;
-                varIndexForHandle = 10;
+                seekBarForHandle = seekbarTerminate;
+                textViewForHandle = terminateText;
+                stringIndexForHandle = R.string.terminate_text;
+                varIndexForHandle = terminateTimeoutIdx;
 
                 final byte value = (byte) seekBar.getProgress();
                 if ((System.currentTimeMillis() - lastTimestamp) < 1000) {
                     Toast.makeText(getBaseContext(), getString(R.string.slowly_tips), Toast.LENGTH_LONG).show();
-                    seekBarForHandle.setProgress((int) settingsVar[varIndexForHandle]);
-                    textViewForHandle.setText(String.format(getString(stringIndexForHandle), (int) settingsVar[varIndexForHandle] * 100 - 1000));
+                    seekBarForHandle.setProgress(settingsVar[varIndexForHandle]);
+                    textViewForHandle.setText(String.format(getString(stringIndexForHandle), (int) settingsVar[varIndexForHandle]));
                     return;
                 }
                 lastTimestamp = System.currentTimeMillis();
-//                settingsVar[varIndexForHandle] = value;
                 new Thread(() -> Utils.freezeitTask(Utils.setSettingsVar, new byte[]{(byte) varIndexForHandle, value}, seekbarHandler)).start();
             }
         });
 
-        seekbarSub.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        seekbarMode.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 int value = seekBar.getProgress();
-                subOomText.setText(String.format(getString(R.string.sub_oom_text), value * 100 - 1000));
+                modeText.setText(String.format(getString(R.string.mode_text), freezerModeText[value]));
             }
 
             @Override
@@ -225,24 +271,22 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                seekBarForHandle = seekbarSub;
-                textViewForHandle = subOomText;
-                stringIndexForHandle = R.string.sub_oom_text;
-                varIndexForHandle = 11;
+                seekBarForHandle = seekbarMode;
+                textViewForHandle = modeText;
+                stringIndexForHandle = R.string.mode_text;
+                varIndexForHandle = setModeIdx;
 
                 final byte value = (byte) seekBar.getProgress();
                 if ((System.currentTimeMillis() - lastTimestamp) < 1000) {
                     Toast.makeText(getBaseContext(), getString(R.string.slowly_tips), Toast.LENGTH_LONG).show();
-                    seekBarForHandle.setProgress((int) settingsVar[varIndexForHandle]);
-                    textViewForHandle.setText(String.format(getString(stringIndexForHandle), (int) settingsVar[varIndexForHandle] * 100 - 1000));
+                    seekBarForHandle.setProgress(settingsVar[varIndexForHandle]);
+                    textViewForHandle.setText(String.format(getString(stringIndexForHandle), freezerModeText[settingsVar[varIndexForHandle]]));
                     return;
                 }
                 lastTimestamp = System.currentTimeMillis();
-//                settingsVar[varIndexForHandle] = value;
                 new Thread(() -> Utils.freezeitTask(Utils.setSettingsVar, new byte[]{(byte) varIndexForHandle, value}, seekbarHandler)).start();
             }
         });
-
     }
 
     private final Handler seekbarHandler = new Handler(Looper.getMainLooper()) {
@@ -259,14 +303,16 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
             String res = new String(response, StandardCharsets.UTF_8);
             if (res.equals("success")) {
                 Toast.makeText(getBaseContext(), "设置成功", Toast.LENGTH_LONG).show();
+                settingsVar[varIndexForHandle] = (byte) seekBarForHandle.getProgress();
             } else {
                 Toast.makeText(getBaseContext(), "设置失败" + res, Toast.LENGTH_LONG).show();
-                seekBarForHandle.setProgress(settingsVar[varIndexForHandle]);
-                if (varIndexForHandle == 10 || varIndexForHandle == 11) {
-                    textViewForHandle.setText(String.format(getString(stringIndexForHandle), (int) settingsVar[varIndexForHandle] * 100 - 1000));
-                } else {
-                    textViewForHandle.setText(String.format(getString(stringIndexForHandle), (int) settingsVar[varIndexForHandle]));
-                }
+                seekBarForHandle.setProgress(settingsVar[varIndexForHandle]); //进度条，文字 恢复原值
+                if (stringIndexForHandle == R.string.bind_core_text)
+                    textViewForHandle.setText(String.format(getString(stringIndexForHandle), clusterBindText[settingsVar[varIndexForHandle]]));
+                else if (stringIndexForHandle == R.string.mode_text)
+                    textViewForHandle.setText(String.format(getString(stringIndexForHandle), freezerModeText[settingsVar[varIndexForHandle]]));
+                else
+                    textViewForHandle.setText(String.format(getString(stringIndexForHandle), settingsVar[varIndexForHandle]));
             }
         }
     };
@@ -298,29 +344,38 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
     };
 
     void refreshView() {
+        if (settingsVar[clusterBindIdx] > 2) settingsVar[clusterBindIdx] = 0;
+        if (settingsVar[freezeTimeoutIdx] > 60) settingsVar[freezeTimeoutIdx] = 10;
+        if (settingsVar[wakeupTimeoutIdx] > 120) settingsVar[wakeupTimeoutIdx] = 30;
+        if (settingsVar[terminateTimeoutIdx] > 120) settingsVar[terminateTimeoutIdx] = 30;
+        if (settingsVar[setModeIdx] > 5) settingsVar[setModeIdx] = 0;
 
-        seekbarCPU.setProgress(settingsVar[1]);
-        cpuText.setText(String.format(getString(R.string.bind_core_text), settingsVar[1]));
 
-        seekbarTimeouts.setProgress(settingsVar[2]);
-        timeoutsText.setText(String.format(getString(R.string.timeout_text), settingsVar[2]));
+        seekbarCPU.setProgress(settingsVar[clusterBindIdx]);
+        cpuText.setText(String.format(getString(R.string.bind_core_text), clusterBindText[settingsVar[clusterBindIdx]]));
 
-        seekbarRefreeze.setProgress(settingsVar[3]);
-        refreezeText.setText(String.format(getString(R.string.refreeze_text), settingsVar[3]));
+        seekbarTimeouts.setProgress(settingsVar[freezeTimeoutIdx]);
+        timeoutsText.setText(String.format(getString(R.string.timeout_text), settingsVar[freezeTimeoutIdx]));
 
-        updateChip(chipForeground, settingsVar[4] != 0);
-        updateChip(chipPlay, settingsVar[5] != 0);
-        updateChip(chipCapture, settingsVar[6] != 0);
-        updateChip(chipBattery, settingsVar[7] != 0);
-        updateChip(chipDynamic, settingsVar[8] != 0);
+        seekbarWakeup.setProgress(settingsVar[wakeupTimeoutIdx]);
+        wakeupText.setText(String.format(getString(R.string.refreeze_text), settingsVar[wakeupTimeoutIdx]));
 
-        updateChip(chipOOM, settingsVar[9] != 0);
+        seekbarTerminate.setProgress(settingsVar[terminateTimeoutIdx]);
+        terminateText.setText(String.format(getString(R.string.terminate_text), settingsVar[terminateTimeoutIdx]));
 
-        seekbarMain.setProgress(settingsVar[10]);
-        mainOomText.setText(String.format(getString(R.string.main_oom_text), settingsVar[10] * 100 - 1000));
+        seekbarMode.setProgress(settingsVar[setModeIdx]);
+        modeText.setText(String.format(getString(R.string.mode_text), freezerModeText[settingsVar[setModeIdx]]));
 
-        seekbarSub.setProgress(settingsVar[11]);
-        subOomText.setText(String.format(getString(R.string.sub_oom_text), settingsVar[11] * 100 - 1000));
+        updateChip(chipForeground, settingsVar[radicalIdx] != 0);
+        updateChip(chipPlay, settingsVar[playIdx] != 0);
+        updateChip(chipCapture, settingsVar[captureIdx] != 0);
+        updateChip(chipBatteryMonitor, settingsVar[batteryMonitorIdx] != 0);
+        updateChip(chipBatteryFix, settingsVar[batteryFixIdx] != 0);
+        updateChip(chipKillMsf, settingsVar[killMsfIdx] != 0);
+        updateChip(chipLmk, settingsVar[lmkAdjustIdx] != 0);
+        updateChip(chipDoze, settingsVar[dozeIdx] != 0);
+        updateChip(chipMountV2, settingsVar[mountV2Idx] != 0);
+
 
         StringBuilder infoString = new StringBuilder();
         try {
@@ -334,7 +389,7 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
             infoString.append("Build.MANUFACTURER: ").append(Build.MANUFACTURER).append('\n');
             infoString.append("Build.BRAND: ").append(Build.BRAND).append('\n');
             infoString.append("Build.MODEL: ").append(Build.MODEL).append('\n');
-            if(Build.VERSION.SDK_INT >= 31) {
+            if (Build.VERSION.SDK_INT >= 31) {
                 infoString.append("Build.SOC_MANUFACTURER: ").append(Build.SOC_MANUFACTURER).append('\n');
                 infoString.append("Build.SOC_MODEL: ").append(Build.SOC_MODEL).append('\n');
                 infoString.append("Build.SKU: ").append(Build.SKU).append('\n');
@@ -343,25 +398,14 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
             infoString.append("Build.BOOTLOADER: ").append(Build.BOOTLOADER).append('\n');
             infoString.append("Build.HARDWARE: ").append(Build.HARDWARE).append('\n');
 
-            infoString.append("Build.SUPPORTED_ABIS: \n");
-            for(String abi:Build.SUPPORTED_ABIS){
-                infoString.append('[').append(abi).append("]\n");
-            }
-
-            infoString.append("Build.SUPPORTED_32_BIT_ABIS: \n");
-            for(String abi:Build.SUPPORTED_32_BIT_ABIS){
-                infoString.append('[').append(abi).append("]\n");
-            }
-
-            infoString.append("Build.SUPPORTED_64_BIT_ABIS: \n");
-            for(String abi:Build.SUPPORTED_64_BIT_ABIS){
-                infoString.append('[').append(abi).append("]\n");
-            }
-
+            infoString.append("Build.SUPPORTED_ABIS: ");
+            for (String abi : Build.SUPPORTED_ABIS)
+                infoString.append('[').append(abi).append("] ");
+            infoString.append('\n');
 
             infoString.append("Build.VERSION.INCREMENTAL: ").append(Build.VERSION.INCREMENTAL).append('\n');
             infoString.append("Build.VERSION.RELEASE: ").append(Build.VERSION.RELEASE).append('\n');
-            if(Build.VERSION.SDK_INT >= 30)
+            if (Build.VERSION.SDK_INT >= 30)
                 infoString.append("Build.VERSION.RELEASE_OR_CODENAME: ").append(Build.VERSION.RELEASE_OR_CODENAME).append('\n');
 
             infoString.append("Build.VERSION.BASE_OS: ").append(Build.VERSION.BASE_OS).append('\n');
@@ -385,8 +429,8 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
 
             infoString.append("RadioVersion: ").append(Build.getRadioVersion()).append('\n');
 
-        }catch (Exception e) {
-            Log.e(TAG, "refreshView: "+e );
+        } catch (Exception e) {
+            Log.e(TAG, "refreshView: " + e);
             infoString.append(e);
         }
         systemInfo.setText(infoString);
@@ -423,39 +467,62 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
         lastTimestamp = System.currentTimeMillis();
 
         int id = v.getId();
-        if (id == R.id.chip_foreground) { // 点击按钮进行切换，发送当前状态的 反命令
+        if (id == R.id.chip_foreground) {
             chipForHandle = chipForeground;
-            varIndexForHandle = 4;
-            new Thread(() -> Utils.freezeitTask(Utils.setSettingsVar, new byte[]{(byte) varIndexForHandle, (byte) (settingsVar[varIndexForHandle] == 0 ? 1 : 0)}, chipHandler)).start();
+            varIndexForHandle = radicalIdx;
         } else if (id == R.id.chip_play) {
             chipForHandle = chipPlay;
-            varIndexForHandle = 5;
-            new Thread(() -> Utils.freezeitTask(Utils.setSettingsVar, new byte[]{(byte) varIndexForHandle, (byte) (settingsVar[varIndexForHandle] == 0 ? 1 : 0)}, chipHandler)).start();
+            varIndexForHandle = playIdx;
         } else if (id == R.id.chip_capture) {
             chipForHandle = chipCapture;
-            varIndexForHandle = 6;
-            new Thread(() -> Utils.freezeitTask(Utils.setSettingsVar, new byte[]{(byte) varIndexForHandle, (byte) (settingsVar[varIndexForHandle] == 0 ? 1 : 0)}, chipHandler)).start();
+            varIndexForHandle = captureIdx;
         } else if (id == R.id.chip_battery) {
-            chipForHandle = chipBattery;
-            varIndexForHandle = 7;
-            new Thread(() -> Utils.freezeitTask(Utils.setSettingsVar, new byte[]{(byte) varIndexForHandle, (byte) (settingsVar[varIndexForHandle] == 0 ? 1 : 0)}, chipHandler)).start();
-        } else if (id == R.id.chip_dynamic) {
-            chipForHandle = chipDynamic;
-            varIndexForHandle = 8;
-            new Thread(() -> Utils.freezeitTask(Utils.setSettingsVar, new byte[]{(byte) varIndexForHandle, (byte) (settingsVar[varIndexForHandle] == 0 ? 1 : 0)}, chipHandler)).start();
-        } else if (id == R.id.chip_oom) {
-            chipForHandle = chipOOM;
-            varIndexForHandle = 9;
-            new Thread(() -> Utils.freezeitTask(Utils.setSettingsVar, new byte[]{(byte) varIndexForHandle, (byte) (settingsVar[varIndexForHandle] == 0 ? 1 : 0)}, chipHandler)).start();
-        } else if (id == R.id.reboot) {
-            new Thread(() -> Utils.freezeitTask(Utils.reboot, null, null)).start();
-        } else if (id == R.id.reboot_recovery) {
-            new Thread(() -> Utils.freezeitTask(Utils.rebootRecovery, null, null)).start();
-        } else if (id == R.id.reboot_bootloader) {
-            new Thread(() -> Utils.freezeitTask(Utils.rebootBootloader, null, null)).start();
-        } else if (id == R.id.reboot_edl) {
-            new Thread(() -> Utils.freezeitTask(Utils.rebootEdl, null, null)).start();
+            chipForHandle = chipBatteryMonitor;
+            varIndexForHandle = batteryMonitorIdx;
+        } else if (id == R.id.chip_current) {
+            chipForHandle = chipBatteryFix;
+            varIndexForHandle = batteryFixIdx;
+        } else if (id == R.id.chip_kill_msf) {
+            chipForHandle = chipKillMsf;
+            varIndexForHandle = killMsfIdx;
+        } else if (id == R.id.chip_lmk) {
+            chipForHandle = chipLmk;
+            varIndexForHandle = lmkAdjustIdx;
+        } else if (id == R.id.chip_doze) {
+            chipForHandle = chipDoze;
+            varIndexForHandle = dozeIdx;
+        } else if (id == R.id.chip_mount_v2) {
+            chipForHandle = chipMountV2;
+            varIndexForHandle = mountV2Idx;
+        } else if (id == R.id.coolapk_link) {
+            try {
+                Intent intent = new Intent();
+                intent.setClassName("com.coolapk.market", "com.coolapk.market.view.AppLinkActivity");
+                intent.setAction("android.intent.action.VIEW");
+                intent.setData(Uri.parse("coolmarket://u/1212220"));
+                startActivity(intent);
+            } catch (Exception e) {
+                e.printStackTrace();
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.coolapk_link))));
+            }
+            return;
+        } else if (id == R.id.github_link) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.github_link))));
+            return;
+        } else if (id == R.id.lanzou_link) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.lanzou_link))));
+            return;
+        } else {
+            return;
         }
+
+        // 点击按钮进行切换，发送当前的 相反状态
+        new Thread(() -> Utils.freezeitTask(
+                Utils.setSettingsVar,
+                new byte[]{(byte) varIndexForHandle, (byte) (settingsVar[varIndexForHandle] == 0 ? 1 : 0)},
+                chipHandler
+        )).start();
+
     }
 
 

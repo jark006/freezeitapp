@@ -1,6 +1,14 @@
 package com.jark006.freezeit.hook;
 
+import com.jark006.freezeit.BuildConfig;
+
 public class Enum {
+
+    public final static class Package{
+        public final static String self = BuildConfig.APPLICATION_ID;
+        public final static String powerkeeper = "com.miui.powerkeeper";
+        public final static String android = "android";
+    }
 
     public final static class Class{
         public final static String BroadcastQueue = "com.android.server.am.BroadcastQueue";
@@ -19,6 +27,11 @@ public class Enum {
         public final static String SleepModeControllerNew = "com.miui.powerkeeper.statemachine.SleepModeControllerNew";
 
         public final static String ActivityManagerService = "com.android.server.am.ActivityManagerService";
+        public final static String ProcessManager = "miui.process.ProcessManager";
+        public final static String ProcessConfig = "miui.process.ProcessConfig";
+
+        public final static String WakeLock = "android.os.PowerManager$WakeLock";
+        public final static String PowerManagerService = "com.android.server.power.PowerManagerService";
     }
 
     public final static class Method {
@@ -31,7 +44,10 @@ public class Enum {
         public final static String getEnable = "getEnable";
         public final static String clearAppWhenScreenOffTimeOutInNight = "clearAppWhenScreenOffTimeOutInNight";
         public final static String clearAppWhenScreenOffTimeOut = "clearAppWhenScreenOffTimeOut";
+        public final static String clearUnactiveApps = "clearUnactiveApps";
         public final static String clearApp = "clearApp";
+        public final static String kill = "kill";
+        public final static String acquire = "acquire";
     }
 
     public final static class Field {
@@ -44,6 +60,12 @@ public class Enum {
         public final static String owner = "owner";
         public final static String uid = "uid";
         public final static String callingPid = "callingPid";
+        public final static String mPackageName = "mPackageName";
+        public final static String mTag = "mTag";
+        public final static String mProcessList = "mProcessList";
+        public final static String mActiveUids = "mActiveUids";
+        public final static String owningUid = "owningUid";
+        public final static String callingUid = "callingUid";
     }
 
 }

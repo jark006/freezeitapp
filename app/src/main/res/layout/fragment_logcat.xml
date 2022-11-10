@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/constraintLayout_logcat"
-    tools:context=".LogcatFragment">
+    tools:context=".fragment.LogcatFragment">
 
     <ScrollView
         android:layout_width="match_parent"

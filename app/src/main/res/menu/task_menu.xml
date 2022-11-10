@@ -3,14 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/search_view"
-        android:orderInCategory="100"
-        app:actionViewClass="androidx.appcompat.widget.SearchView"
-        app:showAsAction="always"
-        android:title="" />
-    <item
-        android:id="@+id/help_config"
-        android:orderInCategory="100"
+        android:id="@+id/help_task"
         android:title="@string/help"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_help_24dp"/>

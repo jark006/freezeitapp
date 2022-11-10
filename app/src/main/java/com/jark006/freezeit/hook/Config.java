@@ -2,14 +2,14 @@ package com.jark006.freezeit.hook;
 
 import android.os.FileObserver;
 
-import com.jark006.freezeit.Utils;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,153 +18,170 @@ import de.robv.android.xposed.XposedBridge;
 
 public class Config extends FileObserver {
     final static String TAG = "Freezeit FileObserver:";
-    final boolean LOG2UDP = false;
 
-    final static String configDirPath = "/data/system/freezeit/";
-    final static String configFile = "xposed.conf";
+    final static String configFilePath = "/data/system/freezeit.conf";
+    final File configFile = new File(configFilePath);
 
-    public Set<String> whiteListDynamic = new HashSet<>();
-    public Set<String> whiteListForce = new HashSet<>();
-    public Set<String> whiteListConf = new HashSet<>();
-    public Set<String> thirdApp = new HashSet<>();
+    public int[] settings = new int[1024];
+    public Set<Integer> thirdApp = new HashSet<>();
+    public Set<Integer> whitelist = new HashSet<>();
+    public Set<Integer> dynamic = new HashSet<>();
 
-    public int[] settings = new int[256];
+    public Set<Integer> visibleOnTop = new HashSet<>(); //uid ，在前台的[非自由后台]应用
 
     public Config() {
-        // deprecation in SDK29, use FileObserver(File) instead
-        // now minsdk=26
-        super(configDirPath, CLOSE_WRITE);
+        super(configFilePath, CLOSE_WRITE); // deprecation in SDK29, use FileObserver(File) instead
+//        super(configFile, CLOSE_WRITE);   // SDK >= 29
 
-        log("WhiteList: Init begin");
+        parseFile(configFile);
+        startWatching();
 
-        File configDir = new File(configDirPath);
-        if (!configDir.exists()) {
-            boolean mkdir = configDir.mkdir();
-            if (!mkdir) {
-                log("configDir.mkdir fail");
-                return;
-            }
-            log("configDir.mkdir success");
-        }
-        parseFile(new File(configDirPath, configFile));
-
-        log("WhiteList: Init over");
-    }
-
-    @Override
-    public void startWatching() {
-        super.startWatching();
-        log("startWatching " + configDirPath);
+        UDPServerThread st = new UDPServerThread();
+        st.start();
     }
 
     @Override
     public void onEvent(int event, String path) {
-        log("onEvent: 0x" + Integer.toHexString(event) + ", File: " + path);
-
-        if (event == FileObserver.CLOSE_WRITE) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                log("onEvent Thread.sleep(500) InterruptedException:" + e);
-            }
-            parseFile(new File(configDirPath, configFile));
+//        log("onEvent: 0x" + Integer.toHexString(event) + ", File: " + path);
+        if ((event & CLOSE_WRITE) != 0) {
+            mySleep(100);
+            parseFile(configFile);
         }
     }
 
-    boolean isEnableDynamicWhiteList() {
-        return settings[8] != 0;
-    }
-
     /**
-     * File content text: (5 lines in total, "packageName" may not exist in the 3th/4th line)
-     * whiteListDynamic packageName packageName packageName ...
-     * whiteListForce packageName packageName packageName ...
-     * whiteListConf packageName packageName packageName ...
-     * thirdPackage packageName packageName packageName ...
-     * settings 0 1 6 ...
+     * 总共4行内容
+     * 第一行：设置数据
+     * 第二行：第三方应用UID列表
+     * 第三行：自由后台(含内置)UID列表
+     * 第四行：播放中不冻结UID列表 (此行可能为空)
      */
     void parseFile(File file) {
 
         if (!file.exists()) {
-            log("File doesn't exists, skip:" + file);
+            log("File doesn't exists, try create:" + file);
+            try {
+                if (file.createNewFile())
+                    log("File create success:" + file);
+                else
+                    log("File create Fail:" + file);
+            } catch (Exception e) {
+                log("File create Exception:" + e);
+            }
             return;
         }
 
-        log("Start parse: " + file);
-        int tryTimes = 1;
-        while (true) {
-            try {
-                HashSet<String> result = new HashSet<>();
-                BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    if (line.length() < 2) continue;
-
-                    String[] packageNameList = line.split(" ");
-                    if (packageNameList.length == 0) continue;
-
-                    result.clear();
-                    String target = packageNameList[0];
-                    if (packageNameList.length >= 2)
-                        result.addAll(Arrays.asList(packageNameList).subList(1, packageNameList.length));
-
-                    switch (target) {
-                        case "whiteListDynamic":
-                            whiteListDynamic.clear();
-                            whiteListDynamic.addAll(result);
-                            break;
-                        case "whiteListForce":
-                            whiteListForce.clear();
-                            whiteListForce.addAll(result);
-                            break;
-                        case "whiteListConf":
-                            whiteListConf.clear();
-                            whiteListConf.addAll(result);
-                            break;
-                        case "thirdPackage":
-                            thirdApp.clear();
-                            thirdApp.addAll(result);
-                            break;
-                        case "settings":
-                            for (int i = 1; i < Math.min(packageNameList.length, settings.length); i++) {
-                                settings[i - 1] = Integer.parseInt(packageNameList[i]);
-                            }
-                            break;
-                        default:
-                            log("Unknown key:" + target);
-                            break;
-                    }
-
-                    log("parse " + target + ":" + (target.equals("settings") ?
-                            Math.min(packageNameList.length, settings.length) : result.size()));
+        try {
+            log("Start parse: " + file);
+            int idx = 0;
+            String line;
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+            while (null != (line = bufferedReader.readLine())) {
+                // 旧版配置文件每行以 dynamic whitelist...开头，放弃解析
+                if (line.startsWith("dy") || line.startsWith("se") || line.startsWith("wh") || line.startsWith("th"))
+                    break;
+                String[] split = line.split(" ");
+                switch (idx) {
+                    case 0:
+                        for (int i = 0; i < split.length; i++)
+                            settings[i] = Integer.parseInt(split[i]);
+                        log("Parse settings " + split.length);
+                        break;
+                    case 1:
+                        thirdApp.clear();
+                        for (String s : split)
+                            if (s.length() == 5)
+                                thirdApp.add(Integer.parseInt(s));
+                        log("Parse thirdApp " + split.length);
+                        break;
+                    case 2:
+                        whitelist.clear();
+                        for (String s : split)
+                            if (s.length() == 5)
+                                whitelist.add(Integer.parseInt(s));
+                        log("Parse whitelist " + split.length);
+                        break;
+                    case 3:
+                        dynamic.clear();
+                        for (String s : split)
+                            if (s.length() == 5)
+                                dynamic.add(Integer.parseInt(s));
+                        log("Parse dynamic " + split.length);
+                        break;
                 }
-                bufferedReader.close();
-                log("Finish parse: " + file);
-                return;
-            } catch (IOException e) {
-                log("Catch IOException in file: " + file + ": " + e);
+                idx++;
             }
-
-            log("Read fail in " + tryTimes + "th times, retry in 2 second later.");
-
-            tryTimes++;
-            if (tryTimes >= 3) {
-                log("Reach max retry times:" + tryTimes);
-                return;
-            }
-
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                log("Exception Thread.sleep 1000:" + e);
-            }
+            log("Finish parse: " + file);
+        } catch (Exception e) {
+            log("IOException in file: " + file + ": " + e);
         }
     }
 
     void log(String str) {
-        if (LOG2UDP) Utils.freezeitUDP_Log(str.getBytes(StandardCharsets.UTF_8));
-        else XposedBridge.log(TAG + str);
+        XposedBridge.log(TAG + str);
     }
 
+    void mySleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (Exception ignored) {
+        }
+    }
+
+    // 接收前台窗口的应用
+    public class UDPServerThread extends Thread {
+
+        public void run() {
+            byte[] receiveBuff = new byte[1024];
+            DatagramPacket packet = new DatagramPacket(receiveBuff, receiveBuff.length);
+            DatagramSocket socket;
+            int failCnt = 0;
+            log("Listening visibleApp...");
+            while (true) {
+                try {
+                    socket = new DatagramSocket(61995, InetAddress.getLoopbackAddress());
+                } catch (SocketException e) {
+                    log("UDP Init Fail:" + e);
+                    if (++failCnt > 30) {
+                        log("达最大异常次数，已关闭UDP");
+                        return;
+                    }
+                    mySleep(1000);
+                    continue;
+                }
+
+                while (true) {
+                    try {
+                        socket.receive(packet);// 阻塞
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        break;
+                    }
+                    int len = packet.getLength();
+                    if (len == 0 || len > 10 || (len & 1) == 1) { //正常是偶数长度
+                        log("长度不正确：" + len);
+                        continue;
+                    }
+
+                    byte XOR = 0x5A; // 0B 0101 1010
+                    for (int i = 2; i < len; i++)
+                        XOR ^= receiveBuff[i];
+                    if (XOR != receiveBuff[0] || XOR != ~receiveBuff[1]) {
+                        log("校验不通过");
+                        continue;
+                    }
+
+                    visibleOnTop.clear();
+                    for (int i = 2; i < len; i += 2) {
+                        int uid = (Byte.toUnsignedInt(receiveBuff[i]) << 8) | Byte.toUnsignedInt(receiveBuff[i + 1]);
+                        if (uid < 10000 || uid > 12000)
+                            continue;
+                        visibleOnTop.add(uid);
+                    }
+                }
+                visibleOnTop.clear();
+                log("UDP异常" + failCnt + "次，清理实时前台");
+            }
+        }
+    }
 }

@@ -2,21 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/update_app_name"
-        android:orderInCategory="100"
-        app:showAsAction="ifRoom"
-        android:title="@string/update_app_name"
-        android:icon="@drawable/ic_update_app_name_24dp"/>
-    <item
-        android:id="@+id/about"
-        android:orderInCategory="100"
-        app:showAsAction="ifRoom"
-        android:title="@string/about"
-        android:icon="@drawable/ic_info_24dp" />
-    <item
         android:id="@+id/settings"
         android:orderInCategory="100"
         app:showAsAction="ifRoom"
         android:title="@string/title_activity_setting"
         android:icon="@drawable/ic_settings_24dp" />
+    <item
+        android:id="@+id/help_home"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom"
+        android:title="@string/about"
+        android:icon="@drawable/ic_help_24dp" />
 </menu>

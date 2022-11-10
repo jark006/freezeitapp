@@ -13,15 +13,15 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="center"
-        android:contentDescription="@string/icon"
-        app:srcCompat="@drawable/ic_home_24dp" />
+        android:contentDescription="@string/icon"/>
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:orientation="vertical"
-        android:paddingHorizontal="20dp">
+        android:paddingHorizontal="10dp">
 
         <TextView
             android:id="@+id/app_label"
@@ -38,4 +38,13 @@
             android:singleLine="true"
             android:text="@string/package_name" />
     </LinearLayout>
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:spinnerMode="dropdown"
+        android:entries="@array/mode"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" />
+
 </LinearLayout>
