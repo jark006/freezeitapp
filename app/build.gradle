@@ -7,10 +7,10 @@ android {
 
     defaultConfig {
         applicationId "com.jark006.freezeit"
-        minSdk 28
+        minSdk 29
         targetSdk 33
-        versionCode 20216
-        versionName "2.2.16Alpha"
+        versionCode 202170
+        versionName "2.2.17"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resValue "string", "appVer", "v${versionName}"

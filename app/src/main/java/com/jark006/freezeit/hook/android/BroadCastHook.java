@@ -10,13 +10,13 @@ import java.util.ArrayList;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
-import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 /**
  * note:
  * https://www.jianshu.com/p/bc290e328e56
  * https://www.jianshu.com/p/59ef3150b171
- * http://events.jianshu.io/p/6fbc1a43c837
+ * https://www.jianshu.com/p/6fbc1a43c837
  * https://blog.csdn.net/huaxun66/article/details/52935631
  */
 
@@ -28,22 +28,22 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
  */
 
 public class BroadCastHook {
-    final static String TAG = "Freezeit[BroadCastHandle]:";
+    final static String TAG = "Freezeit[BroadCastHook]:";
     Config config;
-    XC_LoadPackage.LoadPackageParam lpParam;
+    LoadPackageParam lpParam;
 
-    public BroadCastHook(Config config, XC_LoadPackage.LoadPackageParam lpParam) {
+    public BroadCastHook(Config config, LoadPackageParam lpParam) {
         this.config = config;
         this.lpParam = lpParam;
 
         try {
             XposedHelpers.findAndHookMethod(Enum.Class.BroadcastQueue, lpParam.classLoader,
-                    Enum.Method.deliverToRegisteredReceiverLocked, Enum.Class.BroadcastRecord,
-                    Enum.Class.BroadcastFilter, boolean.class, int.class,
+                    Enum.Method.deliverToRegisteredReceiverLocked,
+                    Enum.Class.BroadcastRecord, Enum.Class.BroadcastFilter, boolean.class, int.class,
                     deliverToRegisteredReceiverLockedHook);
-            log("hook BroadcastQueue: deliverToRegisteredReceiverLocked success");
+            log("hook success: " + Enum.Class.BroadcastQueue);
         } catch (Exception e) {
-            log("hook BroadcastQueue fail:" + e);
+            log("hook fail: " + Enum.Class.BroadcastQueue + "\n" + e);
         }
     }
 
@@ -58,7 +58,7 @@ public class BroadCastHook {
             Object[] args = param.args;
 
             // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/am/BroadcastRecord.java
-            Object broadcastRecord = args[0];
+//            Object broadcastRecord = args[0];
 //          int callerUid = (int) XposedHelpers.getObjectField(broadcastRecord, Enum.Field.callingUid);
 
             // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/am/BroadcastFilter.java
@@ -74,19 +74,20 @@ public class BroadCastHook {
             if (processRecord == null)
                 return;
 
-            // 跳过前台窗口的应用
-            if (config.visibleOnTop.contains(receiverUid)) {
-                String receiverPackage = (String) XposedHelpers.getObjectField(broadcastFilter, Enum.Field.packageName);
-                log("Skip foreground:" + receiverPackage);
+            // 跳过 在前台或暂未冻结的应用
+            if (config.topOrRunning.contains(receiverUid)) {
+//                String receiverPackage = (String) XposedHelpers.getObjectField(broadcastFilter, Enum.Field.packageName);
+//                log("跳过前台 " + receiverPackage);
                 return;
             }
 
-            // https://cs.android.com/android/platform/superproject/+/android-12.1.0_r27:frameworks/base/services/core/java/com/android/server/am/BroadcastQueue.java;drc=ac41939818667beefaa7fbbdc16ad7eeb63e65ee;l=680
+            // 清理广播 https://cs.android.com/android/platform/superproject/+/android-12.1.0_r27:frameworks/base/services/core/java/com/android/server/am/BroadcastQueue.java;drc=ac41939818667beefaa7fbbdc16ad7eeb63e65ee;l=680
             XposedHelpers.setObjectField(receiverList, Enum.Field.app, null);
-//          log("Clear broadcast of [" + callerUid + "] to [" + receiverUid + "]");
-            String receiverPackage = (String) XposedHelpers.getObjectField(broadcastFilter, Enum.Field.packageName);
-            String callerPackage = (String) XposedHelpers.getObjectField(broadcastRecord, Enum.Field.callerPackage);
-            log("Clear broadcast of [" + callerPackage + "] to [" + receiverPackage + "]");
+//            log("Clear broadcast of [" + callerUid + "] to [" + receiverUid + "]");
+
+//            String callerPackage = (String) XposedHelpers.getObjectField(broadcastRecord, Enum.Field.callerPackage);
+//            String receiverPackage = (String) XposedHelpers.getObjectField(broadcastFilter, Enum.Field.packageName);
+//            log("Clear broadcast of [" + callerPackage + "] to [" + receiverPackage + "]");
         }
     };
 }

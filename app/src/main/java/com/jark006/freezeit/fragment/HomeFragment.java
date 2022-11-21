@@ -72,8 +72,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     ConstraintLayout constraintLayout;
     LinearLayout stateLayout, memLayout;
-    TextView moduleStatus, memInfo, zramInfo, qqGroupLink, qqChannelLink, tgLink, tgChannelLink,
-            updateTips, battery, cpu, cpu0, cpu1, cpu2, cpu3, cpu4, cpu5, cpu6, cpu7;
+    TextView moduleStatus, memInfo, zramInfo,
+            updateTips, battery, cpu, cpu0, cpu1, cpu2, cpu3, cpu4, cpu5, cpu6, cpu7,
+            qqGroupLink, qqChannelLink, tgLink, tgChannelLink, tutorialLink;
     ImageView cpuImg, wechatPay, aliPay, qqpay, ecnyPay, ethereumPay, bitcoinPay;
 
     boolean moduleIsRunning = false;
@@ -135,6 +136,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         qqChannelLink = binding.qqchannelLink;
         tgLink = binding.telegramLink;
         tgChannelLink = binding.telegramChannelLink;
+        tutorialLink = binding.tutorialLink;
 
         stateLayout.setOnClickListener(this);
         memLayout.setOnClickListener(this);
@@ -152,6 +154,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         qqChannelLink.setOnClickListener(this);
         tgLink.setOnClickListener(this);
         tgChannelLink.setOnClickListener(this);
+        tutorialLink.setOnClickListener(this);
 
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
@@ -496,6 +499,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             } catch (Exception e) {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.tg_channel_https_link))));
             }
+        } else if (id == R.id.tutorial_link) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.tutorial_link))));
         }
     }
 

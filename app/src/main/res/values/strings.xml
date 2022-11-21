@@ -82,5 +82,7 @@
     <string name="reboot2edl">重启到 EDL(9008) 高通专用</string>
     <string name="help">帮助</string>
     <string name="check_freezer">查看冻结</string>
+    <string name="freezeit_tutorial_text">冻它教程说明(建议看完)</string>
+    <string name="tutorial_link" translatable="false">https://jark006.github.io/FreezeitIntroduction/</string>
 
 </resources>

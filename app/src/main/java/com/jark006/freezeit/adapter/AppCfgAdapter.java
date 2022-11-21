@@ -75,7 +75,7 @@ public class AppCfgAdapter extends RecyclerView.Adapter<AppCfgAdapter.MyViewHold
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int spinnerPosition, long id) {
 
-                // [-2]:杀死 [-1]:kill [0]:freezer [1]:动态 [2]:配置 [3]:内置
+                // [-2]:杀死 [-1]:SIGSTOP [0]:freezer [1]:动态 [2]:配置 [3]:内置
                 int modeInt = spinnerPosition - 2;
                 if (modeInt < -2 || modeInt > 2) {
                     Toast.makeText(context, "达咩", Toast.LENGTH_SHORT).show();

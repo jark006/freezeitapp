@@ -10,8 +10,7 @@ import com.jark006.freezeit.hook.Enum;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
-import de.robv.android.xposed.callbacks.XC_LoadPackage;
-
+import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 /*
  * SDK30, Android 11/R add AnrHelper.java
  * SourceCode frameworks/base/services/core/java/com/android/server/am/AnrHelper.java
@@ -22,11 +21,11 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
  */
 
 public class AnrHook {
-    final static String TAG = "Freezeit[AnrHandle]:";
+    final static String TAG = "Freezeit[AnrHook]:";
     Config config;
-    XC_LoadPackage.LoadPackageParam lpParam;
+    LoadPackageParam lpParam;
 
-    public AnrHook(Config config, XC_LoadPackage.LoadPackageParam lpParam) {
+    public AnrHook(Config config, LoadPackageParam lpParam) {
         this.config = config;
         this.lpParam = lpParam;
 

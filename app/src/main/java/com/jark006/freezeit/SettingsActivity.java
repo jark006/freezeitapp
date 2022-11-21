@@ -73,7 +73,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     final int dozeIdx = 17;
     final int mountV2Idx = 18;
 
-    final String[] freezerModeText = {"全局Kill-19", "FreezerV1(uid)", "FreezerV1(frozen)", "FreezerV2(uid)", "FreezerV2(frozen)", "自动选择",};
+    final String[] freezerModeText = {"全局SIGSTOP", "FreezerV1(uid)", "FreezerV1(frozen)", "FreezerV2(uid)", "FreezerV2(frozen)", "自动选择",};
     final String[] clusterBindText = {"小核[CPU0-3]", "中核[CPU4-6]", "大核[CPU7]"};
 
     byte[] settingsVar = new byte[256];
@@ -105,7 +105,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         chipPlay = findViewById(R.id.chip_play);
         chipCapture = findViewById(R.id.chip_capture);
         chipBatteryMonitor = findViewById(R.id.chip_battery);
-//        chipDynamic = findViewById(R.id.chip_dynamic);
         chipBatteryFix = findViewById(R.id.chip_current);
         chipKillMsf = findViewById(R.id.chip_kill_msf);
         chipLmk = findViewById(R.id.chip_lmk);
@@ -116,7 +115,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         chipPlay.setOnClickListener(this);
         chipCapture.setOnClickListener(this);
         chipBatteryMonitor.setOnClickListener(this);
-//        chipDynamic.setOnClickListener(this);
         chipBatteryFix.setOnClickListener(this);
         chipKillMsf.setOnClickListener(this);
         chipLmk.setOnClickListener(this);

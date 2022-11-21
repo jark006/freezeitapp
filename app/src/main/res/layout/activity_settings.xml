@@ -255,7 +255,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="选定Kill-19模式会使全局Freezer策略退化为Kill-19。选定Freezer模式则为对应的Freezer策略。重启生效" />
+                    android:text="选定[SIGSTOP模式]会使全局Freezer策略改为[SIGSTOP]。选定[Freezer模式]则为对应的Freezer策略。重启生效" />
 
                 <SeekBar
                     android:id="@+id/seekBarMode"
@@ -404,36 +404,6 @@
                     android:layout_height="wrap_content" />
             </LinearLayout>
 
-            <!--            <LinearLayout-->
-            <!--                android:layout_width="match_parent"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:orientation="horizontal"-->
-            <!--                android:paddingVertical="10dp">-->
-
-            <!--                <LinearLayout-->
-            <!--                    android:layout_width="0dp"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    android:layout_weight="5"-->
-            <!--                    android:orientation="vertical">-->
-
-            <!--                    <TextView-->
-            <!--                        android:layout_width="match_parent"-->
-            <!--                        android:layout_height="wrap_content"-->
-            <!--                        android:text="动态冻结"-->
-            <!--                        android:textSize="18sp" />-->
-
-            <!--                    <TextView-->
-            <!--                        android:layout_width="match_parent"-->
-            <!--                        android:layout_height="wrap_content"-->
-            <!--                        android:text="播放时不冻结，停止则冻结。暂不支持蓝牙。若关闭，动态策略的应用则变为Kill-19冻结。" />-->
-
-            <!--                </LinearLayout>-->
-
-            <!--                <com.google.android.material.chip.Chip-->
-            <!--                    android:id="@+id/chip_dynamic"-->
-            <!--                    android:layout_width="wrap_content"-->
-            <!--                    android:layout_height="wrap_content" />-->
-            <!--            </LinearLayout>-->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

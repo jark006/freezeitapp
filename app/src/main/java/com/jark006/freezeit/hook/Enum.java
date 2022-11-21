@@ -32,6 +32,8 @@ public class Enum {
 
         public final static String WakeLock = "android.os.PowerManager$WakeLock";
         public final static String PowerManagerService = "com.android.server.power.PowerManagerService";
+        public final static String AlarmManagerServiceR = "com.android.server.AlarmManagerService"; //SDK x ~ 30
+        public final static String AlarmManagerServiceS = "com.android.server.alarm.AlarmManagerService"; // SDK 31+
     }
 
     public final static class Method {
@@ -48,6 +50,8 @@ public class Enum {
         public final static String clearApp = "clearApp";
         public final static String kill = "kill";
         public final static String acquire = "acquire";
+        public final static String acquireWakeLockInternal = "acquireWakeLockInternal";
+        public final static String triggerAlarmsLocked = "triggerAlarmsLocked";
     }
 
     public final static class Field {

@@ -62,4 +62,5 @@
     <string name="reboot2edl">Reboot to EDL(9008) Qualcomm</string>
     <string name="help">Help</string>
     <string name="check_freezer">查看冻结</string>
+    <string name="freezeit_tutorial_text">Freezeit tutorial</string>
 </resources>

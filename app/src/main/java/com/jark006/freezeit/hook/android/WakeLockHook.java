@@ -1,88 +1,99 @@
 package com.jark006.freezeit.hook.android;
 
-import com.jark006.freezeit.hook.Config;
+import android.annotation.SuppressLint;
+import android.os.Build;
+import android.os.IBinder;
+import android.os.WorkSource;
 
-import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import com.jark006.freezeit.hook.Config;
+import com.jark006.freezeit.hook.Enum;
+
+import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedHelpers;
+import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 public class WakeLockHook {
     final static String TAG = "Freezeit[WakeLockHook]:";
     Config config;
-    XC_LoadPackage.LoadPackageParam lpParam;
+    LoadPackageParam lpParam;
 
-    // TODO
-    public WakeLockHook(Config config, XC_LoadPackage.LoadPackageParam lpParam) {
+    public WakeLockHook(Config config, LoadPackageParam lpParam) {
         this.config = config;
         this.lpParam = lpParam;
 
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                XposedHelpers.findAndHookMethod(Enum.Class.PowerManagerService, lpParam.classLoader,
+                        Enum.Method.acquireWakeLockInternal,
+                        IBinder.class, int.class, int.class, String.class,
+                        String.class, WorkSource.class, String.class, int.class, int.class,
+                        acquireWakeLockInternalHook);
+                log("hook success: acquireWakeLockInternal SDK S+ ");
+            }else{
+                XposedHelpers.findAndHookMethod(Enum.Class.PowerManagerService, lpParam.classLoader,
+                        Enum.Method.acquireWakeLockInternal,
+                        IBinder.class, int.class, String.class,
+                        String.class, WorkSource.class, String.class, int.class, int.class,
+                        acquireWakeLockInternalHook);
+                log("hook success: acquireWakeLockInternal X ~ R ");
+            }
+        } catch (Exception e) {
+            log("hook fail: acquireWakeLockInternal\n" + e);
+        }
     }
 
-//        XC_MethodHook acquireHook = new XC_MethodHook() {
-//            @SuppressLint("DefaultLocale")
-//            public void beforeHookedMethod(MethodHookParam param) {
-//                String mPackageName = (String) XposedHelpers.getObjectField(param.thisObject, Enum.Field.mPackageName);
-//                if (mPackageName == null || mPackageName.length() == 0)
-//                    return;
-//
-////                if (!config.thirdApp.contains(mPackageName))
-////                    return;
-//
-//                String mTag = (String) XposedHelpers.getObjectField(param.thisObject, Enum.Field.mTag);
-//                if (config.whitelist.contains(mPackageName)) {
-//                    log("WakeLock allow whitelist:" + mPackageName + " mTag:" + mTag);
-//                    return;
-//                }
-////                if (config.dynamic.contains(mPackageName) && soundDevices.playCount > 0) {
-////                    String mTag = (String) XposedHelpers.getObjectField(param.thisObject, Enum.Field.mTag);
-////                    log("WakeLock allow dynamic:" + mPackageName + " mTag:" + mTag);
-////                    return;
-////                }
-//                log("WakeLock block:" + mPackageName + " mTag:" + mTag);
-//                param.setResult(null); // 阻止继续执行 Hook的函数
-//            }
-//        };
-//        try {
-//            XposedHelpers.findAndHookMethod(Enum.Class.WakeLock, lpParam.classLoader, Enum.Method.acquire, acquireHook);
-//            XposedHelpers.findAndHookMethod(Enum.Class.WakeLock, lpParam.classLoader, Enum.Method.acquire, long.class, acquireHook);
-//            log("hook WakeLock acquire success");
-//        } catch (Exception e) {
-//            log("hook WakeLock acquire fail:" + e);
-//        }
+    void log(String str) {
+        XposedBridge.log(TAG + str);
+    }
 
-//
-//        try {
-//            Class<?> clazz = XposedHelpers.findClassIfExists(Enum.Class.PowerManagerService, lpParam.classLoader);
-//            if (clazz == null) {
-//                log("PowerManagerService class not find");
-//                return;
-//            }
-//            XposedHelpers.findAndHookMethod(clazz, "acquireWakeLockInternal", new XC_MethodHook() {
-//                @Override
-//                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//                    super.beforeHookedMethod(param);
-//
-//                    String packageName;
-//                    int uid;
-//
-//                    if (Build.VERSION.SDK_INT >= 31) {  //android 12+
-//                        // https://cs.android.com/android/platform/superproject/+/android-12.0.0_r34:frameworks/base/services/core/java/com/android/server/power/PowerManagerService.java;l=1358
-//                        packageName = (String) param.args[4];
-//                        uid = (int) param.args[7];
-//                    } else { //android 9~11
-//                        // https://cs.android.com/android/platform/superproject/+/android-11.0.0_r48:frameworks/base/services/core/java/com/android/server/power/PowerManagerService.java;l=1278
-//                        packageName = (String) param.args[3];
-//                        uid = (int) param.args[6];
-//                    }
-//
-//                    if (uid < 10000) return;
-//
-//                    if (!config.whitelist.contains(packageName)) {
-//                        log("WakeLock block:" + packageName);
-//                        param.setResult(null); // 阻止继续执行 被Hook函数
-//                    }
-//                }
-//            });
-//            log("hook WakeLock acquireWakeLockInternal success");
-//        } catch (Exception e) {
-//            log("hook WakeLock acquireWakeLockInternal fail:" + e);
-//        }
+
+    // SDK S+
+    // https://cs.android.com/android/platform/superproject/+/android-12.0.0_r34:frameworks/base/services/core/java/com/android/server/power/PowerManagerService.java;drc=62458f4b73f6f5a1e1b6c0045932192486f93601;l=1358
+    // private void acquireWakeLockInternal(IBinder lock, int displayId, int flags, String tag,
+    //            String packageName, WorkSource ws, String historyTag, int uid, int pid)
+
+    // SDK x ~ R
+    // https://cs.android.com/android/platform/superproject/+/android-11.0.0_r48:frameworks/base/services/core/java/com/android/server/power/PowerManagerService.java;drc=4b1a1f130979c751f7690f5ecf75be7438121a83;l=1278
+    // private void acquireWakeLockInternal(IBinder lock, int flags, String tag, String packageName,
+    //            WorkSource ws, String historyTag, int uid, int pid)
+    XC_MethodHook acquireWakeLockInternalHook= new XC_MethodHook() {
+        @SuppressLint("DefaultLocale")
+        public void beforeHookedMethod(MethodHookParam param) {
+            Object[] args = param.args;
+
+            // 测试应用实际是否获得唤醒锁  10XXX为UID
+            // dumpsys power|grep 10xxx
+
+//            String packageName;
+            int uid;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ) {  //android S+ 12+
+//                packageName = (String) param.args[4];
+                uid = (int) args[7];
+            } else { //android x~R  X~11
+//                packageName = (String) param.args[3];
+                uid = (int) args[6];
+            }
+
+            if (uid < 10000 || !config.thirdApp.contains(uid)) {
+//                log("放行系统应用："+packageName);
+                return;
+            }
+
+            if (config.whitelist.contains(uid)) {
+//                log("放行自由后台：" + packageName);
+                return;
+            }
+
+            // 冻结时会被设为 可忽略
+            if (config.playingExcept.contains(uid)) {
+//                log("放行播放中不冻结：" + packageName);
+                return;
+            }
+
+//            log("阻止：" + packageName);
+            param.setResult(null); // 阻止继续执行 被Hook函数
+        }
+    };
 }

@@ -53,7 +53,7 @@ public class Hook implements IXposedHookLoadPackage {
 
     public void hookSelf(LoadPackageParam lpParam) {
         try {
-            XposedHelpers.findAndHookMethod(Enum.Package.self + ".HomeFragment",
+            XposedHelpers.findAndHookMethod(Enum.Package.self + ".fragment.HomeFragment",
                     lpParam.classLoader, "isXposedActive",
                     XC_MethodReplacement.returnConstant(true));
             log("hook self: isXposedActive(): return:true");

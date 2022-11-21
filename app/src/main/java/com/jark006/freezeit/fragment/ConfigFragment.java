@@ -71,7 +71,7 @@ public class ConfigFragment extends Fragment {
     List<ApplicationInfo> applicationInfoListSort;
 
 
-    //配置名单 <package, action> [-2]:杀死 [-1]:kill [0]:freezer [1]:动态 [2]:配置 [3]:内置
+    //配置名单 <package, action> [-2]:杀死 [-1]:SIGSTOP [0]:freezer [1]:动态 [2]:配置 [3]:内置
     HashMap<String, Integer> appCfg = new HashMap<>();
 
     long lastTimestamp = 0;
@@ -201,7 +201,7 @@ public class ConfigFragment extends Fragment {
                     appCfg.put(applicationInfo.packageName, 0);
             }));
 
-            // [-2]:杀死 [-1]:kill [0]:freezer [1]:动态 [2]:自由 [3]:内置
+            // [-2]:杀死 [-1]:SIGSTOP [0]:freezer [1]:动态 [2]:自由 [3]:内置
             applicationInfoListSort = new ArrayList<>();
             for (int i = 2; i >= -2; i--) {
                 for (ApplicationInfo info : applicationInfoList) {

@@ -1,18 +1,92 @@
 package com.jark006.freezeit.hook.android;
 
-import com.jark006.freezeit.hook.Config;
+import android.annotation.SuppressLint;
+import android.os.Build;
+import android.os.IBinder;
+import android.os.WorkSource;
 
+import com.jark006.freezeit.hook.Config;
+import com.jark006.freezeit.hook.Enum;
+
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 public class AlarmHook {
     final static String TAG = "Freezeit[AlarmHook]:";
     Config config;
-    XC_LoadPackage.LoadPackageParam lpParam;
+    LoadPackageParam lpParam;
 
-    // TODO
-    public AlarmHook(Config config, XC_LoadPackage.LoadPackageParam lpParam) {
+    public AlarmHook(Config config, LoadPackageParam lpParam) {
         this.config = config;
         this.lpParam = lpParam;
 
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                XposedHelpers.findAndHookMethod(Enum.Class.AlarmManagerServiceS, lpParam.classLoader,
+                        Enum.Method.triggerAlarmsLocked, ArrayList.class, long.class, triggerAlarmsLockedHook);
+                log("hook success: AlarmManagerServiceS SDK S+ ");
+            } else {
+                XposedHelpers.findAndHookMethod(Enum.Class.AlarmManagerServiceR, lpParam.classLoader,
+                        Enum.Method.triggerAlarmsLocked, ArrayList.class, long.class, triggerAlarmsLockedHook);
+                log("hook success: AlarmManagerServiceS X ~ R ");
+            }
+        } catch (Exception e) {
+            log("hook fail: AlarmManagerServiceS\n" + e);
+        }
     }
+
+    void log(String str) {
+        XposedBridge.log(TAG + str);
+    }
+
+    // SDK S+
+    // https://cs.android.com/android/platform/superproject/+/android-12.0.0_r34:frameworks/base/apex/jobscheduler/service/java/com/android/server/alarm/AlarmManagerService.java;l=3870
+    // int triggerAlarmsLocked(ArrayList<Alarm> triggerList, final long nowELAPSED)
+
+    // SDK x ~ R
+    // https://cs.android.com/android/platform/superproject/+/android-11.0.0_r48:frameworks/base/services/core/java/com/android/server/AlarmManagerService.java;l=3499
+    // https://cs.android.com/android/platform/superproject/+/android-10.0.0_r47:frameworks/base/services/core/java/com/android/server/AlarmManagerService.java;l=3469
+    XC_MethodHook triggerAlarmsLockedHook = new XC_MethodHook() {
+        @SuppressLint("DefaultLocale")
+        public void afterHookedMethod(MethodHookParam param) {
+            Object[] args = param.args;
+
+            // Alarm
+            // SDK31 https://cs.android.com/android/platform/superproject/+/android-12.0.0_r34:frameworks/base/apex/jobscheduler/service/java/com/android/server/alarm/Alarm.java
+            // SDK30 https://cs.android.com/android/platform/superproject/+/android-11.0.0_r48:frameworks/base/services/core/java/com/android/server/AlarmManagerService.java;l=3636
+            ArrayList<?> triggerList = (ArrayList<?>) args[0];
+            Iterator<?> iterator = triggerList.iterator();
+            while (iterator.hasNext()) {
+                Object Alarm = iterator.next();
+//                String packageName = (String) XposedHelpers.getObjectField(Alarm, Enum.Field.packageName);
+                int uid = XposedHelpers.getIntField(Alarm, Enum.Field.uid);
+
+                if (uid < 10000 || !config.thirdApp.contains(uid)) {
+//                    log("放行系统应用：" + packageName);
+                    return;
+                }
+
+                if (config.whitelist.contains(uid)) {
+//                    log("放行自由后台：" + packageName);
+                    return;
+                }
+
+                // TODO  播放中不冻结 也暂时屏蔽
+//                if (config.dynamic.contains(uid)) {
+////                log("播放中不冻结：" + packageName);
+//                    return;
+//                }
+
+//                log("清理Alarm: " + packageName);
+                iterator.remove();
+            }
+        }
+    };
 }

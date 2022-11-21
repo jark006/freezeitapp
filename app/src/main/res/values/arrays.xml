@@ -8,7 +8,7 @@
 
     <string-array name="mode">
         <item>超时则杀死</item>
-        <item>Kill-19冻结</item>
+        <item>SIGSTOP冻结</item>
         <item>Freezer冻结</item>
         <item>播放中不冻结</item>
         <item>后台自由</item>
