@@ -76,21 +76,9 @@ public class WakeLockHook {
                 uid = (int) args[6];
             }
 
-            if (uid < 10000 || !config.thirdApp.contains(uid)) {
-//                log("放行系统应用："+packageName);
-                return;
-            }
-
-            if (config.whitelist.contains(uid)) {
-//                log("放行自由后台：" + packageName);
-                return;
-            }
-
-            // 冻结时会被设为 可忽略
-            if (config.playingExcept.contains(uid)) {
-//                log("放行播放中不冻结：" + packageName);
-                return;
-            }
+            if (!config.thirdApp.contains(uid)) return;
+            if (config.whitelist.contains(uid)) return;
+            if (config.playingExcept.contains(uid)) return;// 冻结时会被设为 可忽略
 
 //            log("阻止：" + packageName);
             param.setResult(null); // 阻止继续执行 被Hook函数

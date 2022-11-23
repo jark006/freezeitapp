@@ -66,7 +66,7 @@ public class BroadCastHook {
             int receiverUid = (int) XposedHelpers.getObjectField(broadcastFilter, Enum.Field.owningUid);
 
             // 跳过系统应用 及 自由后台应用
-            if (receiverUid < 10000 || !config.thirdApp.contains(receiverUid) || config.whitelist.contains(receiverUid))
+            if (!config.thirdApp.contains(receiverUid) || config.whitelist.contains(receiverUid))
                 return;
 
             ArrayList<?> receiverList = (ArrayList<?>) XposedHelpers.getObjectField(broadcastFilter, Enum.Field.receiverList);

@@ -68,15 +68,8 @@ public class AlarmHook {
 //                String packageName = (String) XposedHelpers.getObjectField(Alarm, Enum.Field.packageName);
                 int uid = XposedHelpers.getIntField(Alarm, Enum.Field.uid);
 
-                if (uid < 10000 || !config.thirdApp.contains(uid)) {
-//                    log("放行系统应用：" + packageName);
-                    return;
-                }
-
-                if (config.whitelist.contains(uid)) {
-//                    log("放行自由后台：" + packageName);
-                    return;
-                }
+                if (!config.thirdApp.contains(uid)) continue;
+                if (config.whitelist.contains(uid)) continue;
 
                 // TODO  播放中不冻结 也暂时屏蔽
 //                if (config.dynamic.contains(uid)) {

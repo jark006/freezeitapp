@@ -6,6 +6,7 @@ import com.jark006.freezeit.BuildConfig;
 import com.jark006.freezeit.hook.android.AlarmHook;
 import com.jark006.freezeit.hook.android.AnrHook;
 import com.jark006.freezeit.hook.android.BroadCastHook;
+import com.jark006.freezeit.hook.android.LruProcessesHook;
 import com.jark006.freezeit.hook.android.WakeLockHook;
 
 import java.lang.reflect.Method;
@@ -44,10 +45,25 @@ public class Hook implements IXposedHookLoadPackage {
         log(BuildConfig.VERSION_NAME + " running");
         Config config = new Config();
 
+//        Class<?> clazzAMS = XposedHelpers.findClass(Enum.Class.ActivityManagerService, lpParam.classLoader);
+//        Object mProcessList = XposedHelpers.findField(clazzAMS, Enum.Field.mProcessList);
+//        SparseArray<?> mActiveUids = (SparseArray<?>)XposedHelpers.getObjectField(mProcessList, Enum.Field.mActiveUids);
+
+//        final Object[] ActiveUids = new Object[1];
+//        Class<?> clazzActiveUids = XposedHelpers.findClass(Enum.Class.ActiveUids, lpParam.classLoader);
+//        XposedHelpers.findAndHookConstructor(clazzActiveUids, new XC_MethodHook() {//Hook无参构造函数
+//            @Override
+//            protected void afterHookedMethod(MethodHookParam param) {
+//                ActiveUids[0] = XposedHelpers.getObjectField(param.thisObject, Enum.Field.mActiveUids);
+//            }
+//        });
+//        SparseArray<?> mActiveUids = (SparseArray<?>)ActiveUids[0];
+
         new AnrHook(config, lpParam);        // ANR
         new BroadCastHook(config, lpParam);  // Broadcast
         new WakeLockHook(config, lpParam);   // WakeLock
         new AlarmHook(config, lpParam);      // Alarm
+        new LruProcessesHook(config, lpParam);// ProcessListHook
     }
 
 

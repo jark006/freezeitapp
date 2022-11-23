@@ -21,19 +21,20 @@ public class Enum {
         public final static String AnrRecord = "com.android.server.am.AnrHelper$AnrRecord";
         public final static String AppErrors = "com.android.server.am.AppErrors";
         public final static String ActivityRecord = "com.android.server.am.ActivityRecord";
-
-        public final static String MilletConfig = "com.miui.powerkeeper.millet.MilletConfig";
-        public final static String PowerStateMachine = "com.miui.powerkeeper.statemachine.PowerStateMachine";
-        public final static String SleepModeControllerNew = "com.miui.powerkeeper.statemachine.SleepModeControllerNew";
-
         public final static String ActivityManagerService = "com.android.server.am.ActivityManagerService";
-        public final static String ProcessManager = "miui.process.ProcessManager";
-        public final static String ProcessConfig = "miui.process.ProcessConfig";
+        public final static String ActiveUids = "com.android.server.am.ActiveUids";
 
         public final static String WakeLock = "android.os.PowerManager$WakeLock";
         public final static String PowerManagerService = "com.android.server.power.PowerManagerService";
         public final static String AlarmManagerServiceR = "com.android.server.AlarmManagerService"; //SDK x ~ 30
         public final static String AlarmManagerServiceS = "com.android.server.alarm.AlarmManagerService"; // SDK 31+
+
+        public final static String MilletConfig = "com.miui.powerkeeper.millet.MilletConfig";
+        public final static String PowerStateMachine = "com.miui.powerkeeper.statemachine.PowerStateMachine";
+        public final static String SleepModeControllerNew = "com.miui.powerkeeper.statemachine.SleepModeControllerNew";
+        public final static String ProcessManager = "miui.process.ProcessManager";
+        public final static String ProcessConfig = "miui.process.ProcessConfig";
+        public final static String ProcessList = "com.android.server.am.ProcessList";
     }
 
     public final static class Method {
@@ -52,6 +53,7 @@ public class Enum {
         public final static String acquire = "acquire";
         public final static String acquireWakeLockInternal = "acquireWakeLockInternal";
         public final static String triggerAlarmsLocked = "triggerAlarmsLocked";
+        public final static String dumpLruLocked = "dumpLruLocked";
     }
 
     public final static class Field {
@@ -70,6 +72,8 @@ public class Enum {
         public final static String mActiveUids = "mActiveUids";
         public final static String owningUid = "owningUid";
         public final static String callingUid = "callingUid";
+        public final static String mLruProcesses = "mLruProcesses";
+        public final static String mLruProcessActivityStart = "mLruProcessActivityStart";
     }
 
 }
