@@ -14,7 +14,7 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class LruProcessesHook {
-    final static String TAG = "Freezeit[ProcessListHook]:";
+    final static String TAG = "Freezeit[LruProcessesHook]:";
     Config config;
     XC_LoadPackage.LoadPackageParam lpParam;
 
@@ -34,9 +34,9 @@ public class LruProcessesHook {
                 XposedHelpers.findAndHookMethod(Enum.Class.ActivityManagerService, lpParam.classLoader, Enum.Method.dumpLruLocked,
                         PrintWriter.class, String.class, String.class, dumpLruLockedReplacementR);
             }
-            log("hook ProcessList success");
+            log("hook LruProcesses success");
         } catch (Exception e) {
-            log("hook ProcessList fail:" + e);
+            log("hook LruProcesses fail:" + e);
         }
     }
 

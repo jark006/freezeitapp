@@ -62,21 +62,23 @@ public class AlarmHook {
             // SDK31 https://cs.android.com/android/platform/superproject/+/android-12.0.0_r34:frameworks/base/apex/jobscheduler/service/java/com/android/server/alarm/Alarm.java
             // SDK30 https://cs.android.com/android/platform/superproject/+/android-11.0.0_r48:frameworks/base/services/core/java/com/android/server/AlarmManagerService.java;l=3636
             ArrayList<?> triggerList = (ArrayList<?>) args[0];
+
+            // 注意：JAVA迭代器与C++不同，C++ item.begin() 指向首个元素
+            // JAVA的迭代器初始状：指向首个元素的前一个位置
             Iterator<?> iterator = triggerList.iterator();
             while (iterator.hasNext()) {
-                Object Alarm = iterator.next();
-//                String packageName = (String) XposedHelpers.getObjectField(Alarm, Enum.Field.packageName);
+                Object Alarm = iterator.next(); //迭代器后移，再返回新位置的元素
                 int uid = XposedHelpers.getIntField(Alarm, Enum.Field.uid);
 
                 if (!config.thirdApp.contains(uid)) continue;
                 if (config.whitelist.contains(uid)) continue;
 
                 // TODO  播放中不冻结 也暂时屏蔽
-//                if (config.dynamic.contains(uid)) {
-////                log("播放中不冻结：" + packageName);
+//                String packageName = (String) XposedHelpers.getObjectField(Alarm, Enum.Field.packageName);
+//                if (config.playingExcept.contains(uid)) {
+//                    log("播放中不冻结：" + packageName);
 //                    return;
 //                }
-
 //                log("清理Alarm: " + packageName);
                 iterator.remove();
             }

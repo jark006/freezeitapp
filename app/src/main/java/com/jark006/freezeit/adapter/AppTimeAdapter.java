@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,8 +30,13 @@ public class AppTimeAdapter extends RecyclerView.Adapter<AppTimeAdapter.MyViewHo
         this.context = context;
         this.pm = context.getPackageManager();
 
-        PackageManager pm = context.getPackageManager();
-        List<ApplicationInfo> applicationList = pm.getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES);
+        List<ApplicationInfo> applicationList;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            applicationList = pm.getInstalledApplications(
+                    PackageManager.ApplicationInfoFlags.of(PackageManager.MATCH_UNINSTALLED_PACKAGES));
+        } else {
+            applicationList = pm.getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES);
+        }
 
         for (ApplicationInfo info : applicationList) {
             if (info.uid > 10000) {
@@ -52,7 +58,7 @@ public class AppTimeAdapter extends RecyclerView.Adapter<AppTimeAdapter.MyViewHo
 
         String line = lines[position];
 
-        // lastUserTime, lastSysTime,userTime, sysTime;
+        // lastUserTime, lastSysTime, userTime, sysTime;
         long[] cpuTime = new long[4];
         String[] times = line.split(" ");
         int uid = 0;

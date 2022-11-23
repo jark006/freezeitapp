@@ -65,22 +65,22 @@ public class WakeLockHook {
             // 测试应用实际是否获得唤醒锁  10XXX为UID
             // dumpsys power|grep 10xxx
 
-//            String packageName;
+            //String packageName;
             int uid;
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ) {  //android S+ 12+
-//                packageName = (String) param.args[4];
+                //packageName = (String) param.args[4];
                 uid = (int) args[7];
             } else { //android x~R  X~11
-//                packageName = (String) param.args[3];
+                //packageName = (String) param.args[3];
                 uid = (int) args[6];
             }
 
             if (!config.thirdApp.contains(uid)) return;
             if (config.whitelist.contains(uid)) return;
-            if (config.playingExcept.contains(uid)) return;// 冻结时会被设为 可忽略
+            if (config.playingExcept.contains(uid)) return;// 允许唤醒锁，但冻结时会被设为 可忽略
 
-//            log("阻止：" + packageName);
+            //log("阻止：" + packageName);
             param.setResult(null); // 阻止继续执行 被Hook函数
         }
     };
