@@ -49,7 +49,7 @@ import java.util.Date;
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
     final String TAG = "Settings";
 
-    Chip chipForeground, chipPlay, chipCapture, chipBatteryMonitor,
+    Chip chipForeground, chipBatteryMonitor, //chipPlay, chipCapture,
             chipBatteryFix, chipKillMsf, chipLmk, chipDoze, chipMountV2;
     SeekBar seekbarCPU, seekbarTimeouts, seekbarWakeup, seekbarTerminate, seekbarMode;
     TextView cpuText, timeoutsText, wakeupText, terminateText, modeText, systemInfo;
@@ -102,8 +102,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
 
         chipForeground = findViewById(R.id.chip_foreground);
-        chipPlay = findViewById(R.id.chip_play);
-        chipCapture = findViewById(R.id.chip_capture);
+//        chipPlay = findViewById(R.id.chip_play);
+//        chipCapture = findViewById(R.id.chip_capture);
         chipBatteryMonitor = findViewById(R.id.chip_battery);
         chipBatteryFix = findViewById(R.id.chip_current);
         chipKillMsf = findViewById(R.id.chip_kill_msf);
@@ -112,8 +112,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         chipMountV2 = findViewById(R.id.chip_mount_v2);
 
         chipForeground.setOnClickListener(this);
-        chipPlay.setOnClickListener(this);
-        chipCapture.setOnClickListener(this);
+//        chipPlay.setOnClickListener(this);
+//        chipCapture.setOnClickListener(this);
         chipBatteryMonitor.setOnClickListener(this);
         chipBatteryFix.setOnClickListener(this);
         chipKillMsf.setOnClickListener(this);
@@ -365,8 +365,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         modeText.setText(String.format(getString(R.string.mode_text), freezerModeText[settingsVar[setModeIdx]]));
 
         updateChip(chipForeground, settingsVar[radicalIdx] != 0);
-        updateChip(chipPlay, settingsVar[playIdx] != 0);
-        updateChip(chipCapture, settingsVar[captureIdx] != 0);
+//        updateChip(chipPlay, settingsVar[playIdx] != 0);
+//        updateChip(chipCapture, settingsVar[captureIdx] != 0);
         updateChip(chipBatteryMonitor, settingsVar[batteryMonitorIdx] != 0);
         updateChip(chipBatteryFix, settingsVar[batteryFixIdx] != 0);
         updateChip(chipKillMsf, settingsVar[killMsfIdx] != 0);
@@ -468,12 +468,12 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         if (id == R.id.chip_foreground) {
             chipForHandle = chipForeground;
             varIndexForHandle = radicalIdx;
-        } else if (id == R.id.chip_play) {
-            chipForHandle = chipPlay;
-            varIndexForHandle = playIdx;
-        } else if (id == R.id.chip_capture) {
-            chipForHandle = chipCapture;
-            varIndexForHandle = captureIdx;
+//        } else if (id == R.id.chip_play) {
+//            chipForHandle = chipPlay;
+//            varIndexForHandle = playIdx;
+//        } else if (id == R.id.chip_capture) {
+//            chipForHandle = chipCapture;
+//            varIndexForHandle = captureIdx;
         } else if (id == R.id.chip_battery) {
             chipForHandle = chipBatteryMonitor;
             varIndexForHandle = batteryMonitorIdx;

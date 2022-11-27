@@ -24,10 +24,12 @@ public class Config extends FileObserver {
     public int[] settings = new int[1024];
     public Set<Integer> thirdApp = new HashSet<>();
     public Set<Integer> whitelist = new HashSet<>();
-    public Set<Integer> playingExcept = new HashSet<>();
+//    public Set<Integer> playingExcept = new HashSet<>();
+    public Set<Integer> tolerant = new HashSet<>(); // 宽容前台
 
     //uid ，设为[冻结]和[播放中不冻结]，且[正在运行]的应用，包括在前台或暂未冻结的
-    public Set<Integer> topOrRunning = new HashSet<>();
+    public Set<Integer> top = new HashSet<>();          // From Hook
+    public Set<Integer> topOrRunning = new HashSet<>(); //From UDP Server
     Thread udpServer;
 
     public Config() {
@@ -61,11 +63,11 @@ public class Config extends FileObserver {
     }
 
     /**
-     * 总共4行内容
-     * 第一行：设置数据
+     * 总共4行内容 第四行可能为空
+     * 第一行：冻它设置数据
      * 第二行：第三方应用UID列表
      * 第三行：自由后台(含内置)UID列表
-     * 第四行：播放中不冻结UID列表 (此行可能为空)
+     * 第四行：宽容前台UID列表 (此行可能为空)
      */
     void parseFile(File file) {
         if (!file.exists()) {
@@ -75,43 +77,45 @@ public class Config extends FileObserver {
 
         try {
             log("Start parse: " + file);
-            int idx = 0;
+            int lineCnt = 0;
             String line;
             BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+
+            thirdApp.clear();
+            whitelist.clear();
+            tolerant.clear();
+
             while (null != (line = bufferedReader.readLine())) {
                 // 旧版配置文件每行以 dynamic whitelist...开头，放弃解析
                 if (line.startsWith("dy") || line.startsWith("se") || line.startsWith("wh") || line.startsWith("th"))
                     break;
                 String[] split = line.split(" ");
-                switch (idx) {
+                switch (lineCnt) {
                     case 0:
                         for (int i = 0; i < split.length; i++)
                             settings[i] = Integer.parseInt(split[i]);
                         log("Parse settings " + split.length);
                         break;
                     case 1:
-                        thirdApp.clear();
                         for (String s : split)
-                            if (s.length() == 5)
+                            if (s.length() == 5) // UID 10XXX 长度是5
                                 thirdApp.add(Integer.parseInt(s));
-                        log("Parse thirdApp " + split.length);
+                        log("Parse thirdApp " + thirdApp.size());
                         break;
                     case 2:
-                        whitelist.clear();
                         for (String s : split)
                             if (s.length() == 5)
                                 whitelist.add(Integer.parseInt(s));
-                        log("Parse whitelist " + split.length);
+                        log("Parse whitelist " + whitelist.size());
                         break;
                     case 3:
-                        playingExcept.clear();
                         for (String s : split)
                             if (s.length() == 5)
-                                playingExcept.add(Integer.parseInt(s));
-                        log("Parse playingExcept " + split.length);
+                                tolerant.add(Integer.parseInt(s));
+                        log("Parse tolerant " + tolerant.size());
                         break;
                 }
-                idx++;
+                lineCnt++;
             }
             log("Finish parse: " + file);
         } catch (Exception e) {

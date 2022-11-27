@@ -6,12 +6,16 @@
         <item>com.jark006.freezeit</item>
     </array>
 
-    <string-array name="mode">
-        <item>超时则杀死</item>
+    <string-array name="level">
+        <item>😡严格前台</item>
+        <item>😐宽松前台</item>
+    </string-array>
+
+    <string-array name="cfg">
+        <item>杀死后台</item>
         <item>SIGSTOP冻结</item>
         <item>Freezer冻结</item>
-        <item>播放中不冻结</item>
-        <item>后台自由</item>
+        <item>自由后台</item>
     </string-array>
 
 </resources>

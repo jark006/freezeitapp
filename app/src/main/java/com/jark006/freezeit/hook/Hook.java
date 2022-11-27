@@ -3,6 +3,7 @@ package com.jark006.freezeit.hook;
 import android.content.Context;
 
 import com.jark006.freezeit.BuildConfig;
+import com.jark006.freezeit.hook.android.AMSHook;
 import com.jark006.freezeit.hook.android.AlarmHook;
 import com.jark006.freezeit.hook.android.AnrHook;
 import com.jark006.freezeit.hook.android.BroadCastHook;
@@ -49,7 +50,8 @@ public class Hook implements IXposedHookLoadPackage {
         new BroadCastHook(config, lpParam);     // Broadcast
         new WakeLockHook(config, lpParam);      // WakeLock
         new AlarmHook(config, lpParam);         // Alarm
-//        new LruProcessesHook(config, lpParam);  // LruProcesses 将于 v2.3 启用
+        new LruProcessesHook(config, lpParam);  // LruProcesses 将于 v2.3 启用
+        new AMSHook(config, lpParam);           // AMSHook
     }
 
 
@@ -73,18 +75,22 @@ public class Hook implements IXposedHookLoadPackage {
         // persist.sys.brightmillet.enable=false
 
         try {
-            XposedHelpers.findAndHookMethod(Enum.Class.ProcessManager, lpParam.classLoader, Enum.Method.kill, Enum.Class.ProcessConfig, XC_MethodReplacement.returnConstant(false));
+            XposedHelpers.findAndHookMethod(Enum.Class.ProcessManager, lpParam.classLoader,
+                    Enum.Method.kill, Enum.Class.ProcessConfig,
+                    XC_MethodReplacement.returnConstant(false));
             log("disable success ProcessManager.kill()");
         } catch (Exception e) {
             log("disable fail ProcessManager.kill(): " + e);
         }
 
-        Class<?> clazzSleepModeControllerNew = XposedHelpers.findClassIfExists(Enum.Class.SleepModeControllerNew, lpParam.classLoader);
+        Class<?> clazzSleepModeControllerNew = XposedHelpers.findClassIfExists(
+                Enum.Class.SleepModeControllerNew, lpParam.classLoader);
         Method methodClearApp = (clazzSleepModeControllerNew == null) ? null :
                 XposedHelpers.findMethodExactIfExists(clazzSleepModeControllerNew, Enum.Method.clearApp);
         if (methodClearApp != null) {
             try {
-                XposedHelpers.findAndHookMethod(Enum.Class.SleepModeControllerNew, lpParam.classLoader, Enum.Method.clearApp, XC_MethodReplacement.DO_NOTHING);
+                XposedHelpers.findAndHookMethod(Enum.Class.SleepModeControllerNew, lpParam.classLoader,
+                        Enum.Method.clearApp, XC_MethodReplacement.DO_NOTHING);
                 log("disable success: clearApp()");
             } catch (Exception e) {
                 log("disable fail: clearApp(): " + e);
@@ -96,9 +102,12 @@ public class Hook implements IXposedHookLoadPackage {
         Class<?> clazzPowerStateMachine = XposedHelpers.findClassIfExists(Enum.Class.PowerStateMachine, lpParam.classLoader);
         if (clazzPowerStateMachine != null) {
             try {
-                XposedHelpers.findAndHookMethod(Enum.Class.PowerStateMachine, lpParam.classLoader, Enum.Method.clearAppWhenScreenOffTimeOut, XC_MethodReplacement.DO_NOTHING);
-                XposedHelpers.findAndHookMethod(Enum.Class.PowerStateMachine, lpParam.classLoader, Enum.Method.clearAppWhenScreenOffTimeOutInNight, XC_MethodReplacement.DO_NOTHING);
-                XposedHelpers.findAndHookMethod(Enum.Class.PowerStateMachine, lpParam.classLoader, Enum.Method.clearUnactiveApps, Context.class, XC_MethodReplacement.DO_NOTHING);
+                XposedHelpers.findAndHookMethod(Enum.Class.PowerStateMachine, lpParam.classLoader,
+                        Enum.Method.clearAppWhenScreenOffTimeOut, XC_MethodReplacement.DO_NOTHING);
+                XposedHelpers.findAndHookMethod(Enum.Class.PowerStateMachine, lpParam.classLoader,
+                        Enum.Method.clearAppWhenScreenOffTimeOutInNight, XC_MethodReplacement.DO_NOTHING);
+                XposedHelpers.findAndHookMethod(Enum.Class.PowerStateMachine, lpParam.classLoader,
+                        Enum.Method.clearUnactiveApps, Context.class, XC_MethodReplacement.DO_NOTHING);
                 log("disable success: clearAppWhenScreenOffTimeOut/InNight()");
                 log("disable success: clearUnactiveApps()");
             } catch (Exception e) {

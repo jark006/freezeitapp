@@ -70,15 +70,10 @@ public class AlarmHook {
                 Object Alarm = iterator.next(); //迭代器后移，再返回新位置的元素
                 int uid = XposedHelpers.getIntField(Alarm, Enum.Field.uid);
 
-                if (!config.thirdApp.contains(uid)) continue;
-                if (config.whitelist.contains(uid)) continue;
+                if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid))
+                    continue;
 
-                // TODO  播放中不冻结 也暂时屏蔽
 //                String packageName = (String) XposedHelpers.getObjectField(Alarm, Enum.Field.packageName);
-//                if (config.playingExcept.contains(uid)) {
-//                    log("播放中不冻结：" + packageName);
-//                    return;
-//                }
 //                log("清理Alarm: " + packageName);
                 iterator.remove();
             }

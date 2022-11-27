@@ -22,6 +22,7 @@ public class Enum {
         public final static String AppErrors = "com.android.server.am.AppErrors";
         public final static String ActivityRecord = "com.android.server.am.ActivityRecord";
         public final static String ActivityManagerService = "com.android.server.am.ActivityManagerService";
+        public final static String ActivityTaskManagerService = "com.android.server.wm.ActivityTaskManagerService";
         public final static String ActiveUids = "com.android.server.am.ActiveUids";
 
         public final static String WakeLock = "android.os.PowerManager$WakeLock";

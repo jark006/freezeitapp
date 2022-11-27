@@ -137,7 +137,7 @@ public class LogcatFragment extends Fragment {
                 continue;
 
             String label = pm.getApplicationLabel(appInfo).toString();
-            appName.append(appInfo.packageName).append("####").append(label).append('\n');
+            appName.append(appInfo.uid).append(" ").append(label).append('\n');
         }
         Utils.freezeitTask(Utils.setAppLabel, appName.toString().getBytes(StandardCharsets.UTF_8), appNameHandler);
     };

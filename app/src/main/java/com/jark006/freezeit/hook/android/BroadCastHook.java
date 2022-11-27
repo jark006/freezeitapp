@@ -59,31 +59,23 @@ public class BroadCastHook {
 
             // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/am/BroadcastRecord.java
 //            Object broadcastRecord = args[0];
-//          int callerUid = (int) XposedHelpers.getObjectField(broadcastRecord, Enum.Field.callingUid);
+//            int callerUid = (int) XposedHelpers.getObjectField(broadcastRecord, Enum.Field.callingUid);
 
             // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/am/BroadcastFilter.java
             Object broadcastFilter = args[1];
             int receiverUid = (int) XposedHelpers.getObjectField(broadcastFilter, Enum.Field.owningUid);
 
-            // 跳过系统应用 及 自由后台应用
-            if (!config.thirdApp.contains(receiverUid) || config.whitelist.contains(receiverUid))
+            // 若是 [系统应用] [自由后台] [在顶层前台] [暂未冻结] 则不清理广播
+            if (!config.thirdApp.contains(receiverUid) || config.whitelist.contains(receiverUid) ||
+                    config.top.contains(receiverUid) || config.topOrRunning.contains(receiverUid))
                 return;
 
             ArrayList<?> receiverList = (ArrayList<?>) XposedHelpers.getObjectField(broadcastFilter, Enum.Field.receiverList);
-            Object processRecord = receiverList == null ? null : XposedHelpers.getObjectField(receiverList, Enum.Field.app);
-            if (processRecord == null)
+            if (receiverList == null)
                 return;
-
-            // 跳过 在前台或暂未冻结的应用
-            if (config.topOrRunning.contains(receiverUid)) {
-//                String receiverPackage = (String) XposedHelpers.getObjectField(broadcastFilter, Enum.Field.packageName);
-//                log("跳过前台 " + receiverPackage);
-                return;
-            }
 
             // 清理广播 https://cs.android.com/android/platform/superproject/+/android-12.1.0_r27:frameworks/base/services/core/java/com/android/server/am/BroadcastQueue.java;drc=ac41939818667beefaa7fbbdc16ad7eeb63e65ee;l=680
             XposedHelpers.setObjectField(receiverList, Enum.Field.app, null);
-//            log("Clear broadcast of [" + callerUid + "] to [" + receiverUid + "]");
 
 //            String callerPackage = (String) XposedHelpers.getObjectField(broadcastRecord, Enum.Field.callerPackage);
 //            String receiverPackage = (String) XposedHelpers.getObjectField(broadcastFilter, Enum.Field.packageName);

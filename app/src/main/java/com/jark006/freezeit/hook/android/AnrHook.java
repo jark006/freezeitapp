@@ -41,6 +41,7 @@ public class AnrHook {
                         boolean.class, String.class, XC_MethodReplacement.DO_NOTHING);
                 log("hook ProcessRecord: Android 10/Q success");
             } else {
+                // TODO v2.2.18起 不再兼容 Android 9.0及以下
                 XposedHelpers.findAndHookMethod(Enum.Class.AppErrors, lpParam.classLoader, Enum.Method.appNotResponding,
                         Enum.Class.ProcessRecord, Enum.Class.ActivityRecord, Enum.Class.ActivityRecord,
                         boolean.class, String.class, XC_MethodReplacement.DO_NOTHING);
@@ -61,10 +62,13 @@ public class AnrHook {
             Object[] args = param.args;
             Object processRecord = args[0];
 
-            if (processRecord == null) return null;
+            if (processRecord == null)
+                return null;
 
-            int uid = (int) XposedHelpers.getObjectField(processRecord, Enum.Field.uid);
-            if (!config.thirdApp.contains(uid)) {
+            int uid = XposedHelpers.getIntField(processRecord, Enum.Field.uid);
+
+            // 代替 appNotResponding() 处理 系统应用和自由后台应用的ANR, 其他则不处理
+            if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid)){
                 Class<?> AnrRecord = XposedHelpers.findClass(Enum.Class.AnrRecord, lpParam.classLoader);
                 Object anrRecord = XposedHelpers.newInstance(AnrRecord, args);
                 Object anrRecords = XposedHelpers.getObjectField(param.thisObject, Enum.Field.mAnrRecords);

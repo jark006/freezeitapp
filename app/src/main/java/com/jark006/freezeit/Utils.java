@@ -42,7 +42,7 @@ public class Utils {
 
     // 设置 需附加数据
     public final static byte setAppCfg = 21;      // send "package x\n..."   "包名 配置号\n..."
-    public final static byte setAppLabel = 22;    // send "package####label\npackage####label\npackage####label\n..."
+    public final static byte setAppLabel = 22;    // send "uid label\nuid label\nuid label\n..."
     public final static byte setSettingsVar = 23; // send bytes[2]: [0]index [1]value
 
     // 进程管理 需附加数据

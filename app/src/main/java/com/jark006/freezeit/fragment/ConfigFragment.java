@@ -6,11 +6,13 @@ import static android.content.pm.ApplicationInfo.FLAG_UPDATED_SYSTEM_APP;
 import android.annotation.SuppressLint;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -70,10 +72,6 @@ public class ConfigFragment extends Fragment {
     List<ApplicationInfo> applicationInfoList = new ArrayList<>();
     List<ApplicationInfo> applicationInfoListSort;
 
-
-    //配置名单 <package, action> [-2]:杀死 [-1]:SIGSTOP [0]:freezer [1]:动态 [2]:配置 [3]:内置
-    HashMap<String, Integer> appCfg = new HashMap<>();
-
     long lastTimestamp = 0;
 
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -91,8 +89,14 @@ public class ConfigFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(() -> new Thread(() -> Utils.freezeitTask(Utils.getAppCfg, null, getAppCfgHandler)).start());
 
         PackageManager pm = requireContext().getPackageManager();
-        List<ApplicationInfo> allApplicationInfoList = pm.getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES);
-        for (ApplicationInfo appInfo : allApplicationInfoList) {
+        List<ApplicationInfo> applicationList;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            applicationList = pm.getInstalledApplications(
+                    PackageManager.ApplicationInfoFlags.of(PackageManager.MATCH_UNINSTALLED_PACKAGES));
+        } else {
+            applicationList = pm.getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES);
+        }
+        for (ApplicationInfo appInfo : applicationList) {
             if (appInfo.uid < 10000)
                 continue;
             if ((appInfo.flags & (FLAG_SYSTEM | FLAG_UPDATED_SYSTEM_APP)) != 0)
@@ -101,12 +105,10 @@ public class ConfigFragment extends Fragment {
         }
 
         requireActivity().addMenuProvider(new MenuProvider() {
-
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
                 menu.clear();
                 menuInflater.inflate(R.menu.config_menu, menu);
-
                 MenuItem searchItem = menu.findItem(R.id.search_view);
                 searchView = (SearchView) searchItem.getActionView();
                 if (searchView != null) {
@@ -115,12 +117,10 @@ public class ConfigFragment extends Fragment {
                         public boolean onQueryTextSubmit(String query) {//按下搜索触发
                             return false;
                         }
-
                         @Override
                         public boolean onQueryTextChange(String newText) {
-                            if (recycleAdapter != null) {
+                            if (recycleAdapter != null)
                                 recycleAdapter.filter(newText);
-                            }
                             return false;
                         }
                     });
@@ -128,7 +128,6 @@ public class ConfigFragment extends Fragment {
                     Log.e(TAG, "onCreateMenu: searchView == null");
                 }
             }
-
             @Override
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
                 int id = menuItem.getItemId();
@@ -179,41 +178,63 @@ public class ConfigFragment extends Fragment {
             if (response == null || response.length == 0)
                 return;
 
-            appCfg.clear();
+            // 配置名单 <uid, <cfg, isTolerant>>
+            // cfg: [10]:杀死 [20]:SIGSTOP [30]:Freezer [40]:自由 [50]:内置
+            HashMap<Integer, Pair<Integer, Integer>> appCfg = new HashMap<>();
+
             String[] list = new String(response, StandardCharsets.UTF_8).split("\n");
             for (String item : list) {
                 String[] package_mode = item.split(" ");
 
-                if (package_mode.length != 2) {
+                if (package_mode.length != 3) {
                     Log.e(TAG, "handleMessage: unknownItem:[" + item + "]");
                     continue;
                 }
 
                 try {
-                    appCfg.put(package_mode[0], Integer.parseInt(package_mode[1]));
+                    appCfg.put(Integer.parseInt(package_mode[0]), new Pair<>(
+                            Integer.parseInt(package_mode[1]), Integer.parseInt(package_mode[2])));
                 } catch (Exception e) {
                     Log.e(TAG, "handleMessage: unknownItem:[" + item + "]");
                 }
             }
 
             applicationInfoList.forEach((applicationInfo -> {
-                if (!appCfg.containsKey(applicationInfo.packageName))
-                    appCfg.put(applicationInfo.packageName, 0);
+                if (!appCfg.containsKey(applicationInfo.uid))
+                    appCfg.put(applicationInfo.uid, new Pair<>(30, 0)); //[30]:Freezer
             }));
 
-            // [-2]:杀死 [-1]:SIGSTOP [0]:freezer [1]:动态 [2]:自由 [3]:内置
+            // [10]:杀死 [20]:SIGSTOP [30]:Freezer [40]:自由 [50]:内置
             applicationInfoListSort = new ArrayList<>();
-            for (int i = 2; i >= -2; i--) {
-                for (ApplicationInfo info : applicationInfoList) {
-                    Integer mode = appCfg.get(info.packageName);
-                    if (mode != null && mode.equals(i)) {
-                        applicationInfoListSort.add(info);
-                    }
+
+            // 先排 自由
+            for (ApplicationInfo info : applicationInfoList) {
+                Pair<Integer, Integer> mode = appCfg.get(info.uid);
+                if (mode != null && mode.first.equals(40)) {
+                    applicationInfoListSort.add(info);
                 }
             }
+
+            // 再排 宽松后台
             for (ApplicationInfo info : applicationInfoList) {
-                Integer mode = appCfg.get(info.packageName);
-                if (mode != null && mode.equals(3)) {
+                Pair<Integer, Integer> mode = appCfg.get(info.uid);
+                if (mode != null && mode.second != 0 && (mode.first>=10 && mode.first<=30)) {
+                    applicationInfoListSort.add(info);
+                }
+            }
+
+            // 再排 严格后台
+            for (ApplicationInfo info : applicationInfoList) {
+                Pair<Integer, Integer> mode = appCfg.get(info.uid);
+                if (mode != null && mode.second == 0 && (mode.first>=10 && mode.first<=30)) {
+                    applicationInfoListSort.add(info);
+                }
+            }
+
+            // 最后排 内置
+            for (ApplicationInfo info : applicationInfoList) {
+                Pair<Integer, Integer> mode = appCfg.get(info.uid);
+                if (mode != null && mode.first.equals(50)) {
                     applicationInfoListSort.add(info);
                 }
             }
