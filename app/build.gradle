@@ -9,8 +9,8 @@ android {
         applicationId "com.jark006.freezeit"
         minSdk 29
         targetSdk 33
-        versionCode 203000
-        versionName "2.3.0"
+        versionCode 203000 // v2.3起，版本代号不再更新，开放随意升、降级
+        versionName "2.3.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resValue "string", "appVer", "v${versionName}"

@@ -36,7 +36,7 @@
     <string name="refresh_log">Refresh</string>
     <string name="freezeit_app_name">FreezeitApp</string>
     <string name="freezeit_mod_name">FreezeitModule</string>
-    <string name="xposed_description">Freezeit Xposed</string>
+    <string name="xposed_description">Prohibit ANR, Clean up broadcasts (to prevent dialing stuck, installation stuck, etc.). Disable wake_locks and alarm. Disable powerkeeper to kill the backgroundApp(MIUI Only).</string>
     <string name="magisk_online">Magisk</string>
     <string name="magisk_offline">Magisk  Inactivated</string>
     <string name="xposed_online">LSPosed Activated</string>
@@ -56,11 +56,11 @@
     <string name="realtime_text">CPU:%2d%%  %.1f℃</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
-    <string name="reboot">Reboot to 系统</string>
+    <string name="reboot">Reboot to system</string>
     <string name="reboot2recovery">Reboot to Recovery</string>
     <string name="reboot2bootloader">Reboot to BootLoader(FASTBOOT)</string>
     <string name="reboot2edl">Reboot to EDL(9008) Qualcomm</string>
     <string name="help">Help</string>
-    <string name="check_freezer">查看冻结</string>
+    <string name="check_freezer">check_freezer_status</string>
     <string name="freezeit_tutorial_text">Freezeit tutorial</string>
 </resources>

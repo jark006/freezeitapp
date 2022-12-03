@@ -1,49 +1,40 @@
 package com.jark006.freezeit.hook.android;
 
+import static de.robv.android.xposed.XposedBridge.log;
+
 import android.annotation.SuppressLint;
 import android.os.Build;
-import android.os.IBinder;
-import android.os.WorkSource;
 
 import com.jark006.freezeit.hook.Config;
 import com.jark006.freezeit.hook.Enum;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
-import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 public class AlarmHook {
     final static String TAG = "Freezeit[AlarmHook]:";
     Config config;
-    LoadPackageParam lpParam;
 
-    public AlarmHook(Config config, LoadPackageParam lpParam) {
+    public  AlarmHook(Config config, LoadPackageParam lpParam) {
         this.config = config;
-        this.lpParam = lpParam;
 
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 XposedHelpers.findAndHookMethod(Enum.Class.AlarmManagerServiceS, lpParam.classLoader,
                         Enum.Method.triggerAlarmsLocked, ArrayList.class, long.class, triggerAlarmsLockedHook);
-                log("hook success: AlarmManagerServiceS SDK S+ ");
+                log(TAG + "hook success: AlarmManagerServiceS SDK S+ ");
             } else {
                 XposedHelpers.findAndHookMethod(Enum.Class.AlarmManagerServiceR, lpParam.classLoader,
                         Enum.Method.triggerAlarmsLocked, ArrayList.class, long.class, triggerAlarmsLockedHook);
-                log("hook success: AlarmManagerServiceS X ~ R ");
+                log(TAG + "hook success: AlarmManagerServiceS X ~ R ");
             }
         } catch (Exception e) {
-            log("hook fail: AlarmManagerServiceS\n" + e);
+            log(TAG + "hook fail: AlarmManagerServiceS\n" + e);
         }
-    }
-
-    void log(String str) {
-        XposedBridge.log(TAG + str);
     }
 
     // SDK S+
@@ -74,7 +65,7 @@ public class AlarmHook {
                     continue;
 
 //                String packageName = (String) XposedHelpers.getObjectField(Alarm, Enum.Field.packageName);
-//                log("清理Alarm: " + packageName);
+//                log(TAG+"清理Alarm: " + packageName);
                 iterator.remove();
             }
         }

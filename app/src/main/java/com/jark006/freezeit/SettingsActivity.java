@@ -49,8 +49,7 @@ import java.util.Date;
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
     final String TAG = "Settings";
 
-    Chip chipForeground, chipBatteryMonitor, //chipPlay, chipCapture,
-            chipBatteryFix, chipKillMsf, chipLmk, chipDoze, chipMountV2;
+    Chip chipForeground, chipBatteryMonitor, chipBatteryFix, chipKillMsf, chipLmk, chipDoze;
     SeekBar seekbarCPU, seekbarTimeouts, seekbarWakeup, seekbarTerminate, seekbarMode;
     TextView cpuText, timeoutsText, wakeupText, terminateText, modeText, systemInfo;
 
@@ -64,17 +63,14 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     final int setModeIdx = 5;
 
     final int radicalIdx = 10;
-    final int playIdx = 11;
-    final int captureIdx = 12;
+
     final int batteryMonitorIdx = 13;
     final int batteryFixIdx = 14;
     final int killMsfIdx = 15;
     final int lmkAdjustIdx = 16;
     final int dozeIdx = 17;
-    final int mountV2Idx = 18;
 
     final String[] freezerModeText = {"全局SIGSTOP", "FreezerV1(uid)", "FreezerV1(frozen)", "FreezerV2(uid)", "FreezerV2(frozen)", "自动选择",};
-    final String[] clusterBindText = {"小核[CPU0-3]", "中核[CPU4-6]", "大核[CPU7]"};
 
     byte[] settingsVar = new byte[256];
     long lastTimestamp = System.currentTimeMillis();
@@ -91,7 +87,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
         setContentView(R.layout.activity_settings);
 
-
         coolApkLink = findViewById(R.id.coolapk_link);
         githubLink = findViewById(R.id.github_link);
         lanzouLink = findViewById(R.id.lanzou_link);
@@ -102,24 +97,18 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
 
         chipForeground = findViewById(R.id.chip_foreground);
-//        chipPlay = findViewById(R.id.chip_play);
-//        chipCapture = findViewById(R.id.chip_capture);
         chipBatteryMonitor = findViewById(R.id.chip_battery);
         chipBatteryFix = findViewById(R.id.chip_current);
         chipKillMsf = findViewById(R.id.chip_kill_msf);
         chipLmk = findViewById(R.id.chip_lmk);
         chipDoze = findViewById(R.id.chip_doze);
-        chipMountV2 = findViewById(R.id.chip_mount_v2);
 
         chipForeground.setOnClickListener(this);
-//        chipPlay.setOnClickListener(this);
-//        chipCapture.setOnClickListener(this);
         chipBatteryMonitor.setOnClickListener(this);
         chipBatteryFix.setOnClickListener(this);
         chipKillMsf.setOnClickListener(this);
         chipLmk.setOnClickListener(this);
         chipDoze.setOnClickListener(this);
-        chipMountV2.setOnClickListener(this);
 
         systemInfo = findViewById(R.id.system_info);
 
@@ -140,7 +129,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 int value = seekBar.getProgress();
-                cpuText.setText(String.format(getString(R.string.bind_core_text), clusterBindText[value]));
+                cpuText.setText(String.format(getString(R.string.bind_core_text), getClusterText(value)));
             }
 
             @Override
@@ -158,7 +147,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 if ((System.currentTimeMillis() - lastTimestamp) < 1000) {
                     Toast.makeText(getBaseContext(), getString(R.string.slowly_tips), Toast.LENGTH_LONG).show();
                     seekBarForHandle.setProgress(settingsVar[varIndexForHandle]);
-                    textViewForHandle.setText(String.format(getString(stringIndexForHandle), clusterBindText[settingsVar[varIndexForHandle]]));
+                    textViewForHandle.setText(String.format(getString(stringIndexForHandle), getClusterText(settingsVar[varIndexForHandle])));
                     return;
                 }
                 lastTimestamp = System.currentTimeMillis();
@@ -287,15 +276,28 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         });
     }
 
+    String getClusterText(int idx) {
+        switch (idx) {
+            case 0:
+            default:return "[0][1][2][3][_][_][_][_]"; // default -> 0
+            case 1: return "[0][1][2][_][_][_][_][_]";
+            case 2: return "[_][_][_][3][4][_][_][_]";
+            case 3: return "[_][_][_][_][4][5][6][_]";
+            case 4: return "[_][_][_][_][_][5][6][_]";
+            case 5: return "[_][_][_][_][_][_][_][7]";
+            case 6: return "[_][_][_][_][4][5][6][7]";
+        }
+    }
+
     private final Handler seekbarHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
             byte[] response = msg.getData().getByteArray("response");
 
             if (response == null || response.length == 0) {
-                final String tips = "handleMessage: seekbarHandler回应失败";
-                Toast.makeText(getBaseContext(), tips, Toast.LENGTH_LONG).show();
-                Log.e(TAG, tips);
+                final String errorTips = "handleMessage: seekbarHandler回应失败";
+                Toast.makeText(getBaseContext(), errorTips, Toast.LENGTH_LONG).show();
+                Log.e(TAG, errorTips);
                 return;
             }
             String res = new String(response, StandardCharsets.UTF_8);
@@ -306,7 +308,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 Toast.makeText(getBaseContext(), "设置失败" + res, Toast.LENGTH_LONG).show();
                 seekBarForHandle.setProgress(settingsVar[varIndexForHandle]); //进度条，文字 恢复原值
                 if (stringIndexForHandle == R.string.bind_core_text)
-                    textViewForHandle.setText(String.format(getString(stringIndexForHandle), clusterBindText[settingsVar[varIndexForHandle]]));
+                    textViewForHandle.setText(String.format(getString(stringIndexForHandle), getClusterText(settingsVar[varIndexForHandle])));
                 else if (stringIndexForHandle == R.string.mode_text)
                     textViewForHandle.setText(String.format(getString(stringIndexForHandle), freezerModeText[settingsVar[varIndexForHandle]]));
                 else
@@ -327,22 +329,18 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             byte[] response = msg.getData().getByteArray("response");
 
             if (response == null || response.length != 256) {
-                final String tips = "handleMessage: 设置数据获取失败";
-                Toast.makeText(getBaseContext(), tips, Toast.LENGTH_LONG).show();
-                Log.e(TAG, tips);
+                final String errorTips = "handleMessage: 设置数据获取失败";
+                Toast.makeText(getBaseContext(), errorTips, Toast.LENGTH_LONG).show();
+                Log.e(TAG, errorTips);
                 return;
             }
             settingsVar = Arrays.copyOf(response, response.length);
-
-            byte[] tmp = Arrays.copyOf(response, 20);
-            Log.i(TAG, "handleMessage: 设置 " + Arrays.toString(tmp));
-
             refreshView();
         }
     };
 
     void refreshView() {
-        if (settingsVar[clusterBindIdx] > 2) settingsVar[clusterBindIdx] = 0;
+        if (settingsVar[clusterBindIdx] > 6) settingsVar[clusterBindIdx] = 0;
         if (settingsVar[freezeTimeoutIdx] > 60) settingsVar[freezeTimeoutIdx] = 10;
         if (settingsVar[wakeupTimeoutIdx] > 120) settingsVar[wakeupTimeoutIdx] = 30;
         if (settingsVar[terminateTimeoutIdx] > 120) settingsVar[terminateTimeoutIdx] = 30;
@@ -350,7 +348,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
 
         seekbarCPU.setProgress(settingsVar[clusterBindIdx]);
-        cpuText.setText(String.format(getString(R.string.bind_core_text), clusterBindText[settingsVar[clusterBindIdx]]));
+        cpuText.setText(String.format(getString(R.string.bind_core_text), getClusterText(settingsVar[clusterBindIdx])));
 
         seekbarTimeouts.setProgress(settingsVar[freezeTimeoutIdx]);
         timeoutsText.setText(String.format(getString(R.string.timeout_text), settingsVar[freezeTimeoutIdx]));
@@ -365,14 +363,11 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         modeText.setText(String.format(getString(R.string.mode_text), freezerModeText[settingsVar[setModeIdx]]));
 
         updateChip(chipForeground, settingsVar[radicalIdx] != 0);
-//        updateChip(chipPlay, settingsVar[playIdx] != 0);
-//        updateChip(chipCapture, settingsVar[captureIdx] != 0);
         updateChip(chipBatteryMonitor, settingsVar[batteryMonitorIdx] != 0);
         updateChip(chipBatteryFix, settingsVar[batteryFixIdx] != 0);
         updateChip(chipKillMsf, settingsVar[killMsfIdx] != 0);
         updateChip(chipLmk, settingsVar[lmkAdjustIdx] != 0);
         updateChip(chipDoze, settingsVar[dozeIdx] != 0);
-        updateChip(chipMountV2, settingsVar[mountV2Idx] != 0);
 
 
         StringBuilder infoString = new StringBuilder();
@@ -441,9 +436,9 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             byte[] response = msg.getData().getByteArray("response");
 
             if (response == null || response.length == 0) {
-                final String tips = "handleMessage: chipVarIndex回应失败" + varIndexForHandle;
-                Toast.makeText(getBaseContext(), tips, Toast.LENGTH_LONG).show();
-                Log.e(TAG, tips);
+                final String errorTips = "handleMessage: chipVarIndex回应失败" + varIndexForHandle;
+                Toast.makeText(getBaseContext(), errorTips, Toast.LENGTH_LONG).show();
+                Log.e(TAG, errorTips);
                 return;
             }
             String res = new String(response, StandardCharsets.UTF_8);
@@ -489,9 +484,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         } else if (id == R.id.chip_doze) {
             chipForHandle = chipDoze;
             varIndexForHandle = dozeIdx;
-        } else if (id == R.id.chip_mount_v2) {
-            chipForHandle = chipMountV2;
-            varIndexForHandle = mountV2Idx;
         } else if (id == R.id.coolapk_link) {
             try {
                 Intent intent = new Intent();

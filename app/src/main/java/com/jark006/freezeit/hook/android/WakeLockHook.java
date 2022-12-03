@@ -1,5 +1,7 @@
 package com.jark006.freezeit.hook.android;
 
+import static de.robv.android.xposed.XposedBridge.log;
+
 import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.IBinder;
@@ -9,18 +11,15 @@ import com.jark006.freezeit.hook.Config;
 import com.jark006.freezeit.hook.Enum;
 
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 public class WakeLockHook {
     final static String TAG = "Freezeit[WakeLockHook]:";
     Config config;
-    LoadPackageParam lpParam;
 
     public WakeLockHook(Config config, LoadPackageParam lpParam) {
         this.config = config;
-        this.lpParam = lpParam;
 
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -29,24 +28,19 @@ public class WakeLockHook {
                         IBinder.class, int.class, int.class, String.class,
                         String.class, WorkSource.class, String.class, int.class, int.class,
                         acquireWakeLockInternalHook);
-                log("hook success: acquireWakeLockInternal SDK S+ ");
+                log(TAG + "hook success: acquireWakeLockInternal SDK S+ ");
             } else {
                 XposedHelpers.findAndHookMethod(Enum.Class.PowerManagerService, lpParam.classLoader,
                         Enum.Method.acquireWakeLockInternal,
                         IBinder.class, int.class, String.class,
                         String.class, WorkSource.class, String.class, int.class, int.class,
                         acquireWakeLockInternalHook);
-                log("hook success: acquireWakeLockInternal X ~ R ");
+                log(TAG + "hook success: acquireWakeLockInternal X ~ R ");
             }
         } catch (Exception e) {
-            log("hook fail: acquireWakeLockInternal\n" + e);
+            log(TAG + "hook fail: acquireWakeLockInternal\n" + e);
         }
     }
-
-    void log(String str) {
-        XposedBridge.log(TAG + str);
-    }
-
 
     // SDK S+
     // https://cs.android.com/android/platform/superproject/+/android-12.0.0_r34:frameworks/base/services/core/java/com/android/server/power/PowerManagerService.java;drc=62458f4b73f6f5a1e1b6c0045932192486f93601;l=1358
@@ -72,8 +66,8 @@ public class WakeLockHook {
                 return;
 
 //            String packageName = (String) param.args[Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? 4 : 3];
-//            log("阻止：" + packageName);
-            param.setResult(null); // 阻止继续执行 被Hook函数
+//            log(TAG + "阻止：" + packageName);
+            param.setResult(null);
         }
     };
 }

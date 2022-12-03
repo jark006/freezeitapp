@@ -245,10 +245,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             int offset = (viewWidth / 3) * (viewHeight / 3) * 4;
 
             if (response.length - offset <= 0) {
-                String tmp = "handleMessage: viewWidth" + viewWidth + " viewHeight" +
+                String errorTips = "handleMessage: viewWidth" + viewWidth + " viewHeight" +
                         viewHeight + " response.length" + response.length + " offset" + offset;
-                Log.e(TAG, tmp);
-                memInfo.setText(tmp);
+                Log.e(TAG, errorTips);
+                memInfo.setText(errorTips);
                 return;
             }
 
@@ -256,9 +256,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             System.arraycopy(response, offset, tmpBytes, 0, response.length - offset);
 
             String tmpStr = new String(tmpBytes, StandardCharsets.UTF_8);
-
-            Log.i(TAG, "handleMessage: " + tmpStr);
-
             String[] realTimeInfo = tmpStr.split(" ");
 
             // [0/1/2/3]内存情况 [4/5/6]小中大核频率 [7]CPU总使用率 [8-15]八个核心使用率cpu0-cpu7

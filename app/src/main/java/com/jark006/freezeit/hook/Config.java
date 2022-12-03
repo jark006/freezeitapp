@@ -1,5 +1,7 @@
 package com.jark006.freezeit.hook;
 
+import static de.robv.android.xposed.XposedBridge.log;
+
 import android.os.FileObserver;
 
 import java.io.BufferedReader;
@@ -12,8 +14,6 @@ import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.robv.android.xposed.XposedBridge;
-
 
 public class Config extends FileObserver {
     final static String TAG = "Freezeit[Config]:";
@@ -24,26 +24,41 @@ public class Config extends FileObserver {
     public int[] settings = new int[1024];
     public Set<Integer> thirdApp = new HashSet<>();
     public Set<Integer> whitelist = new HashSet<>();
-//    public Set<Integer> playingExcept = new HashSet<>();
+    //    public Set<Integer> playingExcept = new HashSet<>();
     public Set<Integer> tolerant = new HashSet<>(); // 宽容前台
 
     //uid ，设为[冻结]和[播放中不冻结]，且[正在运行]的应用，包括在前台或暂未冻结的
     public Set<Integer> top = new HashSet<>();          // From Hook
-    public Set<Integer> topOrRunning = new HashSet<>(); //From UDP Server
-    Thread udpServer;
+
+    //    Thread serverThread;
+
+    // 不考虑线程安全
+//    public int[] top = new int[128]; // top[0] 是有效前台应用的个数，后面是uid列表
+
+    // int[] top会快速频繁变化。 一般前台只有1 ~ 3个，线性查找和哈希表查找效率未知，不知哈希表有没有GC性能影响
+//    public boolean inTop(int uid) {
+//        int len = top[0];
+//        for (int i = 1; i <= len; i++) {
+//            if (uid == top[i]) return true;
+//        }
+//        return false;
+//    }
 
     public Config() {
         super(new File(configFilePath), CLOSE_WRITE);   // SDK >= 29
 
+//        for (int i = 0; i < 128; i++)
+//            top[i] = 0;
+
         if (!configFile.exists()) {
-            log("File doesn't exists, try create:" + configFile);
+            log(TAG + "File doesn't exists, try create:" + configFile);
             try {
                 if (configFile.createNewFile())
-                    log("File create success:" + configFile);
+                    log(TAG + "File create success:" + configFile);
                 else
-                    log("File create Fail:" + configFile);
+                    log(TAG + "File create Fail:" + configFile);
             } catch (Exception e) {
-                log("File create Exception:" + e);
+                log(TAG + "File create Exception:" + e);
             }
             return;
         }
@@ -51,13 +66,13 @@ public class Config extends FileObserver {
         parseFile(configFile);
         startWatching();
 
-        udpServer = new Thread(serverRunnable);
-        udpServer.start();
+//        serverThread = new Thread(serverRunnable);
+//        serverThread.start();
     }
 
     @Override
     public void onEvent(int event, String path) {
-//        log("onEvent: 0x" + Integer.toHexString(event) + ", File: " + path);
+//        log(TAG + "onEvent: 0x" + Integer.toHexString(event) + ", File: " + path);
         if ((event & CLOSE_WRITE) != 0)
             parseFile(configFile);
     }
@@ -71,12 +86,12 @@ public class Config extends FileObserver {
      */
     void parseFile(File file) {
         if (!file.exists()) {
-            log("File doesn't exists:" + configFile);
+            log(TAG + "File doesn't exists:" + configFile);
             return;
         }
 
         try {
-            log("Start parse: " + file);
+            log(TAG + "Start parse: " + file);
             int lineCnt = 0;
             String line;
             BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
@@ -94,107 +109,104 @@ public class Config extends FileObserver {
                     case 0:
                         for (int i = 0; i < split.length; i++)
                             settings[i] = Integer.parseInt(split[i]);
-                        log("Parse settings " + split.length);
+                        log(TAG + "Parse settings " + split.length);
                         break;
                     case 1:
                         for (String s : split)
                             if (s.length() == 5) // UID 10XXX 长度是5
                                 thirdApp.add(Integer.parseInt(s));
-                        log("Parse thirdApp " + thirdApp.size());
+                        log(TAG + "Parse thirdApp " + thirdApp.size());
                         break;
                     case 2:
                         for (String s : split)
                             if (s.length() == 5)
                                 whitelist.add(Integer.parseInt(s));
-                        log("Parse whitelist " + whitelist.size());
+                        log(TAG + "Parse whitelist " + whitelist.size());
                         break;
                     case 3:
                         for (String s : split)
                             if (s.length() == 5)
                                 tolerant.add(Integer.parseInt(s));
-                        log("Parse tolerant " + tolerant.size());
+                        log(TAG + "Parse tolerant " + tolerant.size());
                         break;
                 }
                 lineCnt++;
             }
-            log("Finish parse: " + file);
+            log(TAG + "Finish parse: " + file);
         } catch (Exception e) {
-            log("IOException in file: " + file + ": " + e);
-        }
-    }
-
-    void log(String str) {
-        XposedBridge.log(TAG + str);
-    }
-
-    void mySleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (Exception ignored) {
+            log(TAG + "IOException in file: " + file + ": " + e);
         }
     }
 
 
-    // 接收当前运行中的应用，包括当前顶层前台等暂未冻结的应用
-    Runnable serverRunnable = () -> {
-        log("receiveRunning Init...");
-        byte[] receiveBuff = new byte[1024];
-        DatagramPacket packet = new DatagramPacket(receiveBuff, receiveBuff.length);
-        DatagramSocket socket;
-        int failCnt = 0;
-        while (true) {
-            try {
-                socket = new DatagramSocket(61995, InetAddress.getByAddress(new byte[]{127, 0, 0, 1}));
-            } catch (Exception e) {
-                log("UDP Init Fail:" + e);
-                if (++failCnt > 30) {
-                    log("UDP Init异常达最大次数，即将退出");
-                    topOrRunning.clear();
-                    break;
-                }
-                mySleep(1000);
-                continue;
-            }
+//    void sleep1000ms() {
+//        try {
+//            Thread.sleep(1000);
+//        } catch (Exception ignored) {
+//        }
+//    }
 
-            int receiveFailCnt = 0;
-            log("receiveRunning Listening...");
-            while (true) {
-                try {
-                    socket.receive(packet);// 阻塞
-                } catch (IOException e) {
-                    log("socket.receive IOException:" + e);
-                    if (++receiveFailCnt > 10) {
-                        log("socket.receive连续异常达最大次数，重启socketServer");
-                        topOrRunning.clear();
-                        break;
-                    }
-                    continue;
-                }
-                receiveFailCnt = 0;
-
-                // 字节数据格式：[0]数据长度，[1]后续数据的异或校验码，后续每两个字节为一个UID
-                int receiveLen = packet.getLength();
-                if (receiveLen == 0 || receiveLen != Byte.toUnsignedInt(receiveBuff[0])) {
-                    log("长度不正确：" + receiveLen);
-                    continue;
-                }
-                byte XOR = 0x5A; // 0B 0101 1010
-                for (int i = 2; i < receiveLen; i++)
-                    XOR ^= receiveBuff[i];
-                if (XOR != receiveBuff[1]) {
-                    log("校验不通过");
-                    continue;
-                }
-
-                topOrRunning.clear();
-                for (int i = 2; i < receiveLen; i += 2) {
-                    int uid = (Byte.toUnsignedInt(receiveBuff[i]) << 8) | Byte.toUnsignedInt(receiveBuff[i + 1]);
-                    if (uid < 10000 || uid > 12000)
-                        continue;
-                    topOrRunning.add(uid);
-                }
-            }
-        }
-    };
+//
+//    // 接收当前运行中的应用，包括当前顶层前台等暂未冻结的应用
+//    Runnable serverRunnable = () -> {
+//        log(TAG + "receiveRunning Init...");
+//        byte[] receiveBuff = new byte[1024];
+//        DatagramPacket packet = new DatagramPacket(receiveBuff, receiveBuff.length);
+//        DatagramSocket socket;
+//        int failCnt = 0;
+//        while (true) {
+//            try {
+//                socket = new DatagramSocket(61995, InetAddress.getByAddress(new byte[]{127, 0, 0, 1}));
+//            } catch (Exception e) {
+//                log(TAG + "UDP Init Fail:" + e);
+//                if (++failCnt > 30) {
+//                    log(TAG + "UDP Init异常达最大次数，即将退出");
+//                    topOrRunning.clear();
+//                    break;
+//                }
+//                sleep1000ms();
+//                continue;
+//            }
+//
+//            int receiveFailCnt = 0;
+//            log(TAG + "receiveRunning Listening...");
+//            while (true) {
+//                try {
+//                    socket.receive(packet);// 阻塞
+//                } catch (IOException e) {
+//                    log(TAG + "socket.receive IOException:" + e);
+//                    if (++receiveFailCnt > 10) {
+//                        log(TAG + "socket.receive连续异常达最大次数，重启socketServer");
+//                        topOrRunning.clear();
+//                        break;
+//                    }
+//                    continue;
+//                }
+//                receiveFailCnt = 0;
+//
+//                // 字节数据格式：[0]数据长度，[1]后续数据的异或校验码，后续每两个字节为一个UID
+//                int receiveLen = packet.getLength();
+//                if (receiveLen == 0 || receiveLen != Byte.toUnsignedInt(receiveBuff[0])) {
+//                    log(TAG + "长度不正确：" + receiveLen);
+//                    continue;
+//                }
+//                byte XOR = 0x5A; // 0B 0101 1010
+//                for (int i = 2; i < receiveLen; i++)
+//                    XOR ^= receiveBuff[i];
+//                if (XOR != receiveBuff[1]) {
+//                    log(TAG + "校验不通过");
+//                    continue;
+//                }
+//
+//                topOrRunning.clear();
+//                for (int i = 2; i < receiveLen; i += 2) {
+//                    int uid = (Byte.toUnsignedInt(receiveBuff[i]) << 8) | Byte.toUnsignedInt(receiveBuff[i + 1]);
+//                    if (uid < 10000 || uid > 12000)
+//                        continue;
+//                    topOrRunning.add(uid);
+//                }
+//            }
+//        }
+//    };
 
 }

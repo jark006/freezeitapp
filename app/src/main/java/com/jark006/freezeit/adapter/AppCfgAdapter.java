@@ -1,5 +1,11 @@
 package com.jark006.freezeit.adapter;
 
+import static com.jark006.freezeit.Utils.CFG_TERMINATE;
+import static com.jark006.freezeit.Utils.CFG_SIGSTOP;
+import static com.jark006.freezeit.Utils.CFG_FREEZER;
+import static com.jark006.freezeit.Utils.CFG_WHITELIST;
+import static com.jark006.freezeit.Utils.CFG_WHITEFORCE;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -32,8 +38,6 @@ public class AppCfgAdapter extends RecyclerView.Adapter<AppCfgAdapter.MyViewHold
     Context context;
     PackageManager pm;
 
-    final int CFG_TERMINATE = 10, CFG_SIGSTOP = 20, CFG_FREEZER = 30, CFG_WHITELIST = 40, CFG_WHITEFORCE = 50;
-
     public AppCfgAdapter(Context context, List<ApplicationInfo> applicationList,
                          HashMap<Integer, Pair<Integer, Integer>> appCfg) {
         this.applicationList = applicationList;
@@ -50,31 +54,23 @@ public class AppCfgAdapter extends RecyclerView.Adapter<AppCfgAdapter.MyViewHold
         return new MyViewHolder(view);
     }
 
-    int cfgInt2idx(int i) {
+    int cfgValue2idx(int i) {
         switch (i) {
-            case 50:
-                return 4;
-            case 40:
-                return 3;
-            default:
-                return 2; // 30 -> 2
-            case 20:
-                return 1;
-            case 10:
-                return 0;
+            case CFG_TERMINATE:  return 0;
+            case CFG_SIGSTOP:    return 1;
+            case CFG_FREEZER:
+            default:             return 2;
+            case CFG_WHITELIST:  return 3;
         }
     }
 
-    int idx2cfgInt(int i) {
+    int idx2cfgValue(int i) {
         switch (i) {
-            case 3:
-                return 40;
-            default:
-                return 30; // 2 -> 30
-            case 1:
-                return 20;
-            case 0:
-                return 10;
+            case 0:  return CFG_TERMINATE;
+            case 1:  return CFG_SIGSTOP;
+            case 2:
+            default: return CFG_FREEZER;
+            case 3:  return CFG_WHITELIST;
         }
     }
 
@@ -97,24 +93,22 @@ public class AppCfgAdapter extends RecyclerView.Adapter<AppCfgAdapter.MyViewHold
             return;
         }
 
+        holder.spinner_cfg.setVisibility(View.VISIBLE);
         if (cfg.first >= CFG_WHITELIST) holder.spinner_tolerant.setVisibility(View.INVISIBLE);
         else holder.spinner_tolerant.setVisibility(View.VISIBLE);
 
-        holder.spinner_cfg.setVisibility(View.VISIBLE);
-
-        holder.spinner_cfg.setSelection(cfgInt2idx(cfg.first));
+        holder.spinner_cfg.setSelection(cfgValue2idx(cfg.first));
         holder.spinner_tolerant.setSelection(cfg.second == 0 ? 0 : 1);
 
         Pair<Integer, Integer> finalCfg = cfg;
         holder.spinner_cfg.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int spinnerPosition, long id) {
-                //  [10]:杀死 [20]:SIGSTOP [30]:freezer [40]:自由 [50]:内置
-                int cfgInt = idx2cfgInt(spinnerPosition);
+                int cfgValue = idx2cfgValue(spinnerPosition);
                 int isTolerant = finalCfg.second;
-                appCfg.put(appInfo.uid, new Pair<>(cfgInt, isTolerant));
+                appCfg.put(appInfo.uid, new Pair<>(cfgValue, isTolerant));
 
-                if (cfgInt >= CFG_WHITELIST) holder.spinner_tolerant.setVisibility(View.INVISIBLE);
+                if (cfgValue >= CFG_WHITELIST) holder.spinner_tolerant.setVisibility(View.INVISIBLE);
                 else holder.spinner_tolerant.setVisibility(View.VISIBLE);
             }
 
@@ -149,10 +143,14 @@ public class AppCfgAdapter extends RecyclerView.Adapter<AppCfgAdapter.MyViewHold
             keyWord = keyWord.toLowerCase();
             applicationListFilter = new ArrayList<>();
             for (ApplicationInfo appInfo : applicationList) {
-                String label = pm.getApplicationLabel(appInfo).toString().toLowerCase();
 
-                if (appInfo.packageName.toLowerCase().contains(keyWord) ||
-                        label.contains(keyWord)) {
+                if (appInfo.packageName.toLowerCase().contains(keyWord)) {
+                    applicationListFilter.add(appInfo);
+                    continue;
+                }
+
+                String label = pm.getApplicationLabel(appInfo).toString().toLowerCase();
+                if (label.contains(keyWord)) {
                     applicationListFilter.add(appInfo);
                 }
             }
@@ -179,12 +177,23 @@ public class AppCfgAdapter extends RecyclerView.Adapter<AppCfgAdapter.MyViewHold
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void convert() {
+    public void convertCfg() {
         appCfg.forEach((key, value) -> {
             if (value.first == CFG_FREEZER)
                 appCfg.put(key, new Pair<>(CFG_SIGSTOP, value.second));
             else if (value.first == CFG_SIGSTOP)
                 appCfg.put(key, new Pair<>(CFG_FREEZER, value.second));
+        });
+        notifyItemRangeChanged(0, appCfg.size());
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void convertTolerant() {
+        appCfg.forEach((key, value) -> {
+            if (value.second == 0)
+                appCfg.put(key, new Pair<>(value.first, 1));
+            else
+                appCfg.put(key, new Pair<>(value.first, 0));
         });
         notifyItemRangeChanged(0, appCfg.size());
     }

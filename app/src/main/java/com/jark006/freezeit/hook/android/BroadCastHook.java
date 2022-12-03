@@ -1,5 +1,7 @@
 package com.jark006.freezeit.hook.android;
 
+import static de.robv.android.xposed.XposedBridge.log;
+
 import android.annotation.SuppressLint;
 
 import com.jark006.freezeit.hook.Config;
@@ -8,7 +10,6 @@ import com.jark006.freezeit.hook.Enum;
 import java.util.ArrayList;
 
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
@@ -30,25 +31,19 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 public class BroadCastHook {
     final static String TAG = "Freezeit[BroadCastHook]:";
     Config config;
-    LoadPackageParam lpParam;
 
     public BroadCastHook(Config config, LoadPackageParam lpParam) {
         this.config = config;
-        this.lpParam = lpParam;
 
         try {
             XposedHelpers.findAndHookMethod(Enum.Class.BroadcastQueue, lpParam.classLoader,
                     Enum.Method.deliverToRegisteredReceiverLocked,
                     Enum.Class.BroadcastRecord, Enum.Class.BroadcastFilter, boolean.class, int.class,
                     deliverToRegisteredReceiverLockedHook);
-            log("hook success: " + Enum.Class.BroadcastQueue);
+            log(TAG + "hook success: " + Enum.Class.BroadcastQueue);
         } catch (Exception e) {
-            log("hook fail: " + Enum.Class.BroadcastQueue + "\n" + e);
+            log(TAG + "hook fail: " + Enum.Class.BroadcastQueue + "\n" + e);
         }
-    }
-
-    void log(String str) {
-        XposedBridge.log(TAG + str);
     }
 
     XC_MethodHook deliverToRegisteredReceiverLockedHook = new XC_MethodHook() {
@@ -67,7 +62,8 @@ public class BroadCastHook {
 
             // 若是 [系统应用] [自由后台] [在顶层前台] [暂未冻结] 则不清理广播
             if (!config.thirdApp.contains(receiverUid) || config.whitelist.contains(receiverUid) ||
-                    config.top.contains(receiverUid) || config.topOrRunning.contains(receiverUid))
+//                    config.inTop(receiverUid) )
+                config.top.contains(receiverUid))
                 return;
 
             ArrayList<?> receiverList = (ArrayList<?>) XposedHelpers.getObjectField(broadcastFilter, Enum.Field.receiverList);
@@ -79,7 +75,7 @@ public class BroadCastHook {
 
 //            String callerPackage = (String) XposedHelpers.getObjectField(broadcastRecord, Enum.Field.callerPackage);
 //            String receiverPackage = (String) XposedHelpers.getObjectField(broadcastFilter, Enum.Field.packageName);
-//            log("Clear broadcast of [" + callerPackage + "] to [" + receiverPackage + "]");
+//            log(TAG+"Clear broadcast of [" + callerPackage + "] to [" + receiverPackage + "]");
         }
     };
 }

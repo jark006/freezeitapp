@@ -11,6 +11,8 @@
     <string name="supportTitle">支持开发</string>
     <string name="supportDescriptionText">模块完全免费使用，捐赠开发者以获得更多开发动力。</string>
 
+    <string name="xposed_description">禁止应用无响应，清理广播(防止卡拨号、卡安装等等)，禁用唤醒锁及定时器，禁用电量与性能杀后台(仅限MIUI)</string>
+
     <string name="changelogTitle">更新日志</string>
     <string name="changelogText">冻它模块更新日志</string>
 
@@ -31,7 +33,7 @@
     <string name="magisk_online">Magisk 已激活</string>
     <string name="magisk_offline">Magisk 未安装或未运行</string>
     <string name="xposed_online">LSPosed已激活</string>
-    <string name="xposed_offline">LSPosed未激活</string>
+    <string name="xposed_offline">LSPosed未激活\n警告，不激活将导致严重副作用</string>
     <string name="freezeit_offline">1.请检查面具模块列表中是否启用了冻它。\n2.若是刚开机，请等几秒后再打开冻它APP。\n3.如果运行异常, 请检查异常日志[ /sdcard/Android/freezeit_crash_log.txt ]</string>
 
     <string name="freezeit_offline_tips">请检查Magisk冻它模块是否安装并启用，若是刚刚安装，则重启生效</string>
@@ -60,7 +62,6 @@
     <string name="clear_log_tips">已清空日志</string>
     <string name="todo" translatable="false">TODO</string>
     <string name="refresh_log">刷新日志</string>
-    <string name="xposed_description">解决应用无响应、广播堵塞导致的卡通话等等问题</string>
     <string name="title_activity_setting">设置</string>
     <string name="title_activity_task_manager">应用CPU时间</string>
     <string name="developer_link">相关链接</string>

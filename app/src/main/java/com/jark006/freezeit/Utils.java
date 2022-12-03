@@ -27,6 +27,8 @@ import java.net.URL;
 import java.util.Arrays;
 
 public class Utils {
+    public final static int CFG_TERMINATE = 10, CFG_SIGSTOP = 20, CFG_FREEZER = 30, CFG_WHITELIST = 40, CFG_WHITEFORCE = 50;
+
     private static final String TAG = "Utils";
 
     // 获取信息 无附加数据 No additional data required
@@ -88,7 +90,6 @@ public class Utils {
                 }
             }
 
-            Log.i(TAG, "freezeitTask: additionalData bytes: " + sendLen);
             os.write(dataHeader);
 
             if (AdditionalData != null && AdditionalData.length > 0)

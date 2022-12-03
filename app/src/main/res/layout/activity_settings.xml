@@ -109,20 +109,21 @@
                     android:id="@+id/cpu_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:typeface="monospace"
                     android:text="绑定核心"
-                    android:textSize="18sp" />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="绑定冻它进程到核心群,小核心群(0-3)省电,中大核心群(4-7)解冻快,重启生效" />
+                    android:text="绑定冻它进程到某簇核心,小核省电,中大核解冻快,重启生效\n4+4架构：小核[0-3]，大核[4-7]，少数会反过来\n4+3+1架构：小核[0-3]，中核[4-6]，大核[7]\n3+2+2+1架构:小核[0-2]，中核[3-4]， 大核[5-6]，超大核[7]" />
 
                 <SeekBar
                     android:id="@+id/seekBarCPU"
                     style="@style/Widget.AppCompat.SeekBar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:max="2"
+                    android:max="6"
                     android:maxHeight="25dp"
                     android:min="0"
                     android:minHeight="25dp"
@@ -186,7 +187,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="定时解冻被冻结的后台应用，解冻时长为[超时冻结]参数。若应用经常闪弹闪退，建议调短时间，不易冻死。设为最大值120则关闭定时解冻。如果使用FreezerV1存在内存泄漏，请不要关闭，否则无法释放内存。" />
-
                 <SeekBar
                     android:id="@+id/seekBarWakeup"
                     style="@style/Widget.AppCompat.SeekBar"
@@ -194,7 +194,7 @@
                     android:layout_height="wrap_content"
                     android:max="120"
                     android:maxHeight="25dp"
-                    android:min="5"
+                    android:min="3"
                     android:minHeight="25dp"
                     android:padding="5dp"
                     android:progressDrawable="@drawable/seekbar_bg"
@@ -229,7 +229,7 @@
                     android:layout_height="wrap_content"
                     android:max="120"
                     android:maxHeight="25dp"
-                    android:min="5"
+                    android:min="3"
                     android:minHeight="25dp"
                     android:padding="5dp"
                     android:progressDrawable="@drawable/seekbar_bg"
@@ -519,43 +519,12 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="息屏状态超时3分钟后，尝试强制进入深度Doze(低功耗待机模式)，充电状态无法进入。开启会将电池优化白名单的三方应用换成冻它自由后台应用" />
+                        android:text="息屏状态超时3分钟后，尝试强制进入深度Doze(低功耗待机模式)，充电状态除外。部分系统有可能会早于冻它控制而提前进入Doze。" />
 
                 </LinearLayout>
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip_doze"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="10dp">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="5"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="挂载FreezerV2"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="若设备不支持FreezerV2, 将尝试挂载, 仅针对安卓11-13(内核4.14-5.4), 若设备默认已支持V2, 请不要开启, 重启生效" />
-
-                </LinearLayout>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_mount_v2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>
