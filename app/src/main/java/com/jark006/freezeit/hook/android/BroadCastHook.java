@@ -58,12 +58,10 @@ public class BroadCastHook {
 
             // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/am/BroadcastFilter.java
             Object broadcastFilter = args[1];
-            int receiverUid = (int) XposedHelpers.getObjectField(broadcastFilter, Enum.Field.owningUid);
+            int receiverUid = XposedHelpers.getIntField(broadcastFilter, Enum.Field.owningUid);
 
-            // 若是 [系统应用] [自由后台] [在顶层前台] [暂未冻结] 则不清理广播
-            if (!config.thirdApp.contains(receiverUid) || config.whitelist.contains(receiverUid) ||
-//                    config.inTop(receiverUid) )
-                config.top.contains(receiverUid))
+            // 若是 [系统应用] [自由后台] [在顶层前台] 则不清理广播
+            if (!config.thirdApp.contains(receiverUid) || config.whitelist.contains(receiverUid) || config.top.contains(receiverUid))
                 return;
 
             ArrayList<?> receiverList = (ArrayList<?>) XposedHelpers.getObjectField(broadcastFilter, Enum.Field.receiverList);

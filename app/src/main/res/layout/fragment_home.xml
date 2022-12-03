@@ -341,6 +341,11 @@
                             android:id="@+id/updateTips"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
+                        <TextView
+                            android:id="@+id/changelogTips"
+                            android:paddingLeft="20dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
                     </LinearLayout>
 
                     <LinearLayout

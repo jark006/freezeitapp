@@ -73,7 +73,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     ConstraintLayout constraintLayout;
     LinearLayout stateLayout, memLayout;
     TextView moduleStatus, memInfo, zramInfo,
-            updateTips, battery, cpu, cpu0, cpu1, cpu2, cpu3, cpu4, cpu5, cpu6, cpu7,
+            updateTips, changelogTips, battery, cpu, cpu0, cpu1, cpu2, cpu3, cpu4, cpu5, cpu6, cpu7,
             qqGroupLink, qqChannelLink, tgLink, tgChannelLink, tutorialLink;
     ImageView cpuImg, wechatPay, aliPay, qqpay, ecnyPay, ethereumPay, bitcoinPay;
 
@@ -84,8 +84,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     String version = "";
     int versionCode = 0;
-    String zipUrl = "";
-    String changelog = "";
+    String zipUrl = null;
+    String changelogUrl = null;
 
     Timer timer;
 
@@ -109,6 +109,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         memLayout = binding.memLayout;
 
         updateTips = binding.updateTips;
+        changelogTips = binding.changelogTips;
         battery = binding.battery;
         cpu = binding.cpu;
         cpu0 = binding.cpu0;
@@ -142,6 +143,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         memLayout.setOnClickListener(this);
 
         updateTips.setOnClickListener(this);
+        changelogTips.setOnClickListener(this);
 
         wechatPay.setOnClickListener(this);
         aliPay.setOnClickListener(this);
@@ -393,23 +395,21 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 JSONObject json = new JSONObject(new String(response, StandardCharsets.UTF_8));
                 version = json.getString("version");
                 versionCode = json.getInt("versionCode");
-                zipUrl = json.getString("zipUrl");
-                changelog = json.getString("changelog");
+
+                if (versionCode > moduleVersionCode) {
+                    updateTips.setText("\uD83D\uDCCC可更新 " + version);
+                    changelogTips.setText("更新日志");
+                    zipUrl = json.getString("zipUrl");
+                    changelogUrl = json.getString("changelog");
+                } else if (versionCode == moduleVersionCode) {
+                    updateTips.setText("已是最新版");
+                } else {
+                    updateTips.setText("测试版");
+                }
             } catch (JSONException e) {
                 updateTips.setText("");
-                zipUrl = null;
+                changelogTips.setText("");
                 e.printStackTrace();
-                return;
-            }
-
-            if (versionCode > moduleVersionCode)
-                updateTips.setText("\uD83D\uDCCC可更新 " + version);
-            else if (versionCode == moduleVersionCode) {
-                updateTips.setText("已是最新版");
-                zipUrl = null;
-            } else {
-                updateTips.setText("测试版");
-                zipUrl = null;
             }
         }
     };
@@ -471,6 +471,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         } else if (id == R.id.updateTips) {
             if (zipUrl != null && zipUrl.length() > 0)
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(zipUrl)));
+        } else if (id == R.id.changelogTips) {
+            if (changelogUrl != null && changelogUrl.length() > 0)
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(changelogUrl)));
         } else if (id == R.id.qqgroup_link) {
             try {
                 //【冻它模块 freezeit】(781222669) 的 key 为： ntLAwm7WxB0hVcetV7DsxfNTVN16cGUD

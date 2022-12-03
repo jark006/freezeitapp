@@ -7,8 +7,8 @@
     </array>
 
     <string-array name="level">
-        <item>😡严格前台</item>
-        <item>😐宽松前台</item>
+        <item>😡严格</item>
+        <item>😐宽松</item>
     </string-array>
 
     <string-array name="cfg">

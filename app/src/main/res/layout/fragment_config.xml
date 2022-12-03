@@ -33,6 +33,7 @@
         android:layout_marginBottom="@dimen/fab_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/fabConvertCfg"
+        app:backgroundTint="@color/float_button"
         app:srcCompat="@drawable/ic_convert2_24dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -43,6 +44,7 @@
         android:layout_marginBottom="@dimen/fab_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/fabSave"
+        app:backgroundTint="@color/float_button"
         app:srcCompat="@drawable/ic_convert_24dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -53,6 +55,7 @@
         android:layout_marginBottom="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:backgroundTint="@color/float_button"
         app:srcCompat="@drawable/ic_save_24dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

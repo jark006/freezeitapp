@@ -19,6 +19,7 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
+// 已弃用
 public class ProcessStateRecordHook {
     final static String TAG = "Freezeit[ProcessStateRecord]:";
     Config config;
@@ -93,36 +94,34 @@ public class ProcessStateRecordHook {
 
 
     public class LocalSocketServer extends Thread {
-        private static final String CONNECT_NAME = "JARK006TOP";
-        LocalServerSocket mSocketServer = null;
         byte[] topBytes = new byte[32 << 2]; // 32*4 bytes
 
         @Override
         public void run() {
             try {
-                mSocketServer = new LocalServerSocket(CONNECT_NAME);
+                LocalServerSocket mSocketServer = new LocalServerSocket("JARK006TOP");
                 while (true) {
                     LocalSocket client = mSocketServer.accept();//堵塞,等待连接
                     if (client == null) continue;
 
                     // 开头的4字节放置UID的个数，往后每4个字节放一个UID  [小端]
-                    int byteCnt = 4;
+                    int byteLen = 4;
                     for (int uid : config.top) {
-                        topBytes[byteCnt++] = (byte) uid;
-                        topBytes[byteCnt++] = (byte) (uid >> 8);
-                        topBytes[byteCnt++] = (byte) (uid >> 16);
-                        topBytes[byteCnt++] = (byte) (uid >> 24);
+                        topBytes[byteLen++] = (byte) uid;
+                        topBytes[byteLen++] = (byte) (uid >> 8);
+                        topBytes[byteLen++] = (byte) (uid >> 16);
+                        topBytes[byteLen++] = (byte) (uid >> 24);
                     }
 
                     // 头部放置长度
-                    int UID_len = (byteCnt / 4) - 1;
-                    topBytes[0] = (byte) UID_len;
-                    topBytes[1] = (byte) (UID_len >> 8);
-                    topBytes[2] = (byte) (UID_len >> 16);
-                    topBytes[3] = (byte) (UID_len >> 24);
+                    int UidLen = (byteLen / 4) - 1;
+                    topBytes[0] = (byte) UidLen;
+                    topBytes[1] = (byte) (UidLen >> 8);
+                    topBytes[2] = (byte) (UidLen >> 16);
+                    topBytes[3] = (byte) (UidLen >> 24);
 
                     OutputStream os = client.getOutputStream();
-                    os.write(topBytes, 0, byteCnt);
+                    os.write(topBytes, 0, byteLen);
                     client.close();
                 }
             } catch (Exception e) {

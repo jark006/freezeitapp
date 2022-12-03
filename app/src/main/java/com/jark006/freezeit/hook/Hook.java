@@ -6,10 +6,11 @@ import com.jark006.freezeit.hook.android.AMSHook;
 import com.jark006.freezeit.hook.android.AlarmHook;
 import com.jark006.freezeit.hook.android.AnrHook;
 import com.jark006.freezeit.hook.android.BroadCastHook;
-import com.jark006.freezeit.hook.android.LruProcessesHook;
-import com.jark006.freezeit.hook.android.ProcessStateRecordHook;
 import com.jark006.freezeit.hook.android.WakeLockHook;
 import com.jark006.freezeit.hook.app.powerkeeper;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodReplacement;
@@ -21,8 +22,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 public class Hook implements IXposedHookLoadPackage {
 
     @Override
-    public void handleLoadPackage(LoadPackageParam lpParam)
-    {
+    public void handleLoadPackage(LoadPackageParam lpParam) {
         switch (lpParam.packageName) {
             case Enum.Package.self:
                 XposedHelpers.findAndHookMethod(Enum.Package.self + ".fragment.HomeFragment",
@@ -39,16 +39,17 @@ public class Hook implements IXposedHookLoadPackage {
     }
 
     public void hookAndroid(LoadPackageParam lpParam) {
-        XposedBridge.log("Freezeit: "+BuildConfig.VERSION_NAME + " running");
+        XposedBridge.log("Freezeit: " + BuildConfig.VERSION_NAME + " running");
 
         Config config = new Config();
 
-        new AlarmHook(config, lpParam);         // Alarm
-//        new AMSHook(config, lpParam);           // AMSHook
-        new AnrHook(config, lpParam);           // ANR
-        new BroadCastHook(config, lpParam);     // Broadcast
-//        new LruProcessesHook(config, lpParam);  // LruProcesses
-        new ProcessStateRecordHook(config, lpParam);  // LruProcesses
-        new WakeLockHook(config, lpParam);      // WakeLock
+        new AMSHook(config, lpParam);
+//        new ProcessStateRecordHook(config, lpParam);//BUG
+
+
+        new AlarmHook(config, lpParam);
+        new AnrHook(config, lpParam);
+        new BroadCastHook(config, lpParam);
+        new WakeLockHook(config, lpParam);
     }
 }

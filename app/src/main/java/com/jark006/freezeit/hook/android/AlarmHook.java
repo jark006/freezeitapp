@@ -19,7 +19,7 @@ public class AlarmHook {
     final static String TAG = "Freezeit[AlarmHook]:";
     Config config;
 
-    public  AlarmHook(Config config, LoadPackageParam lpParam) {
+    public AlarmHook(Config config, LoadPackageParam lpParam) {
         this.config = config;
 
         try {

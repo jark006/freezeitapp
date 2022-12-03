@@ -216,52 +216,44 @@ public class ConfigFragment extends Fragment {
             // 补全
             applicationInfoList.forEach(info -> {
                 if (!appCfg.containsKey(info.uid))
-                    appCfg.put(info.uid, new Pair<>(30, 0)); //[30]:Freezer
+                    appCfg.put(info.uid, new Pair<>(Utils.CFG_FREEZER, 1)); // 默认Freezer 宽松
             });
             // 检查非法配置
-            appCfg.forEach((uid, cfg)->{
-                if(cfg.first < 10 || cfg.first > 50)appCfg.put(uid, new Pair<>(30, 0));
+            appCfg.forEach((uid, cfg) -> {
+                if (cfg.first < Utils.CFG_TERMINATE || cfg.first > Utils.CFG_WHITEFORCE)
+                    appCfg.put(uid, new Pair<>(Utils.CFG_FREEZER, cfg.second));
             });
 
-            // [10]:杀死 [20]:SIGSTOP [30]:Freezer [40]:自由 [50]:内置
+            // [10]:杀死后台 [20]:SIGSTOP [30]:Freezer [40]:自由 [50]:内置
             List<ApplicationInfo> applicationInfoListSort = new ArrayList<>();
 
-            // 先排 自由
+            // 先排 自由 FREEZER SIGSTOP 杀死后台
             for (ApplicationInfo info : applicationInfoList) {
                 Pair<Integer, Integer> mode = appCfg.get(info.uid);
-                if (mode != null && mode.first == 40) {
+                if (mode != null && mode.first == Utils.CFG_WHITELIST) {
                     applicationInfoListSort.add(info);
                 }
             }
-
-            // 再排 宽松后台
             for (ApplicationInfo info : applicationInfoList) {
                 Pair<Integer, Integer> mode = appCfg.get(info.uid);
-                if (mode != null && mode.second != 0 && mode.first >= 10 && mode.first <= 30)
-                    applicationInfoListSort.add(info);
-            }
-
-            // 再排 其他
-            for (ApplicationInfo info : applicationInfoList) {
-                Pair<Integer, Integer> mode = appCfg.get(info.uid);
-                if (mode != null && mode.second == 0 && mode.first == 30)
+                if (mode != null && mode.first == Utils.CFG_FREEZER)
                     applicationInfoListSort.add(info);
             }
             for (ApplicationInfo info : applicationInfoList) {
                 Pair<Integer, Integer> mode = appCfg.get(info.uid);
-                if (mode != null && mode.second == 0 && mode.first == 20)
+                if (mode != null && mode.first == Utils.CFG_SIGSTOP)
                     applicationInfoListSort.add(info);
             }
             for (ApplicationInfo info : applicationInfoList) {
                 Pair<Integer, Integer> mode = appCfg.get(info.uid);
-                if (mode != null && mode.second == 0 && mode.first == 10)
+                if (mode != null && mode.first == Utils.CFG_TERMINATE)
                     applicationInfoListSort.add(info);
             }
 
             // 最后排 内置
             for (ApplicationInfo info : applicationInfoList) {
                 Pair<Integer, Integer> mode = appCfg.get(info.uid);
-                if (mode != null && mode.first == 50)
+                if (mode != null && mode.first == Utils.CFG_WHITEFORCE)
                     applicationInfoListSort.add(info);
             }
 

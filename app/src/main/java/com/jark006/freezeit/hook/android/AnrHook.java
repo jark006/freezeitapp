@@ -40,7 +40,7 @@ public class AnrHook {
                         boolean.class, String.class, XC_MethodReplacement.DO_NOTHING);
                 log(TAG + "hook ProcessRecord: Android 10/Q success");
             } else {
-                // TODO v2.2.18起 不再兼容 Android 9.0及以下
+                // v2.2.18起 不再兼容 Android 9.0及以下
                 XposedHelpers.findAndHookMethod(Enum.Class.AppErrors, lpParam.classLoader, Enum.Method.appNotResponding,
                         Enum.Class.ProcessRecord, Enum.Class.ActivityRecord, Enum.Class.ActivityRecord,
                         boolean.class, String.class, XC_MethodReplacement.DO_NOTHING);
