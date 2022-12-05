@@ -13,9 +13,13 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.ImageView;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -25,6 +29,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashSet;
 
 public class Utils {
     public final static int CFG_TERMINATE = 10, CFG_SIGSTOP = 20, CFG_FREEZER = 30, CFG_WHITELIST = 40, CFG_WHITEFORCE = 50;
@@ -175,7 +180,7 @@ public class Utils {
             conn.setConnectTimeout(5 * 1000);
             int resCode = conn.getResponseCode();
             if (resCode != 200) {
-                Log.i(ContentValues.TAG, "异常HTTP返回码["+resCode+"]");
+                Log.i(ContentValues.TAG, "异常HTTP返回码[" + resCode + "]");
                 return;
             }
 
@@ -208,5 +213,19 @@ public class Utils {
         dialog.setContentView(R.layout.img_dialog);
         ((ImageView) dialog.findViewById(R.id.img)).setImageResource(drawableID);
         dialog.show();
+    }
+
+    public static int getCpuCluster() {
+        HashSet<String> partID = new HashSet<>();
+        String line;
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("/proc/cpuinfo"));
+            while ((line = br.readLine()) != null) {
+                if (line.startsWith("CPU part")) partID.add(line);
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return partID.size();
     }
 }

@@ -23,7 +23,12 @@
     <color name="black_77">#77000000</color>
     <color name="black_99">#99000000</color>
 
-    <color name="float_button">#008EFF</color>
+    <color name="float_button">#2288EE</color>
+
+    <color name="cpu_small">#22BB22</color>
+    <color name="cpu_mid">#2288DD</color>
+    <color name="cpu_mid_plus">#BB6622</color>
+    <color name="cpu_big">#BB2222</color>
 
     <color name="warn_red">#66FF0000</color>
     <color name="warn_orange">#66FF8800</color>

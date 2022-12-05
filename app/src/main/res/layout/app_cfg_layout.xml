@@ -20,7 +20,7 @@
         android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:orientation="vertical"
-        android:paddingHorizontal="10dp">
+        android:padding="5dp">
 
         <TextView
             android:id="@+id/app_label"

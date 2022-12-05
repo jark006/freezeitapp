@@ -38,7 +38,6 @@ public class AMSHook {
                     Context.class, Enum.Class.ActivityTaskManagerService, new XC_MethodHook() {
                         @Override
                         protected void afterHookedMethod(MethodHookParam param) {
-                            log(TAG + "Hook Constructor");
 
                             mProcessList = XposedHelpers.getObjectField(param.thisObject, Enum.Field.mProcessList);
                             mLruProcesses = (ArrayList<?>) XposedHelpers.getObjectField(mProcessList, Enum.Field.mLruProcesses);
@@ -61,7 +60,7 @@ public class AMSHook {
         @Override
         public void run() {
             try {
-                LocalServerSocket mSocketServer = new LocalServerSocket("JARK006TOP");
+                LocalServerSocket mSocketServer = new LocalServerSocket("FreezeitTop");
                 while (true) {
                     LocalSocket client = mSocketServer.accept();//堵塞,等待客户端
                     if (client == null) continue;

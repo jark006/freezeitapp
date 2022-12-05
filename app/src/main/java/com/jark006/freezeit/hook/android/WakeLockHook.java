@@ -28,14 +28,14 @@ public class WakeLockHook {
                         IBinder.class, int.class, int.class, String.class,
                         String.class, WorkSource.class, String.class, int.class, int.class,
                         acquireWakeLockInternalHook);
-                log(TAG + "hook success: acquireWakeLockInternal SDK S+ ");
+                log(TAG + "hook success: acquireWakeLockInternal Android 12+/S+");
             } else {
                 XposedHelpers.findAndHookMethod(Enum.Class.PowerManagerService, lpParam.classLoader,
                         Enum.Method.acquireWakeLockInternal,
                         IBinder.class, int.class, String.class,
                         String.class, WorkSource.class, String.class, int.class, int.class,
                         acquireWakeLockInternalHook);
-                log(TAG + "hook success: acquireWakeLockInternal X ~ R ");
+                log(TAG + "hook success: acquireWakeLockInternal Android 10 ~ 11/Q ~ R");
             }
         } catch (Exception e) {
             log(TAG + "hook fail: acquireWakeLockInternal\n" + e);

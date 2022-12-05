@@ -2,10 +2,13 @@ package com.jark006.freezeit.fragment;
 
 import static android.content.Context.ACTIVITY_SERVICE;
 
+import static androidx.core.content.ContextCompat.getColor;
+
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -120,6 +123,21 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         cpu5 = binding.cpu5;
         cpu6 = binding.cpu6;
         cpu7 = binding.cpu7;
+
+        int clusterNum = Utils.getCpuCluster();
+        switch (clusterNum) {
+            case 3: // 4+3+1
+                cpu4.setTextColor(getColor(requireContext(), R.color.cpu_mid));
+                cpu5.setTextColor(getColor(requireContext(), R.color.cpu_mid));
+                cpu6.setTextColor(getColor(requireContext(), R.color.cpu_mid));
+                break;
+            case 4: // 3+2+2+1
+                cpu3.setTextColor(getColor(requireContext(), R.color.cpu_mid));
+                cpu4.setTextColor(getColor(requireContext(), R.color.cpu_mid));
+                cpu5.setTextColor(getColor(requireContext(), R.color.cpu_mid_plus));
+                cpu6.setTextColor(getColor(requireContext(), R.color.cpu_mid_plus));
+                break;
+        }
 
         cpuImg = binding.cpuImg;
         memInfo = binding.memInfo;
@@ -260,9 +278,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             String tmpStr = new String(tmpBytes, StandardCharsets.UTF_8);
             String[] realTimeInfo = tmpStr.split(" ");
 
-            // [0/1/2/3]内存情况 [4/5/6]小中大核频率 [7]CPU总使用率 [8-15]八个核心使用率cpu0-cpu7
-            // [16]CPU温度(需除以1000) [17]电流(mA)
-            if (realTimeInfo.length < 18) {
+            // [0/1/2/3]内存情况 [4-11]八个核心频率 [12-19]八个核心使用率
+            // [20]CPU总使用率 [21]CPU温度(需除以1000) [22]电流(mA)
+            if (realTimeInfo.length < 23) {
                 StringBuilder tmp = new StringBuilder("handleMessage: memSplit.length" + realTimeInfo.length);
                 for (int i = 0; i < realTimeInfo.length; i++)
                     tmp.append(" [").append(i).append("]").append(realTimeInfo[i]);
@@ -297,32 +315,31 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 zramInfo.setText(tmp);
             }
 
-            // [4/5/6]小中大核频率 [7]CPU总使用率 [8-15]八个核心使用率cpu0-cpu7
-            // [16]CPU温度(需除以1000) [17]电流(uA)
+            // [4-11]八个核心频率 [12-19]八个核心使用率
+            // [20]CPU总使用率 [21]CPU温度(需除以1000) [22]电流(mA)
             int percent = 0, temperature = 0, mA = 0;
 
             try {
-                percent = Integer.parseInt(realTimeInfo[7]);
-                temperature = Integer.parseInt(realTimeInfo[16]);
+                percent = Integer.parseInt(realTimeInfo[20]);
+                temperature = Integer.parseInt(realTimeInfo[21]);
 
-                mA = Integer.parseInt(realTimeInfo[17].trim());
+                mA = Integer.parseInt(realTimeInfo[22]);
                 mA = (mA == 0) ? 0 : (mA / -1000);
 
             } catch (Exception e) {
-                Log.e(TAG, "fail temperature_mA:[" + realTimeInfo[7] + "] [" + realTimeInfo[16] + "] [" + realTimeInfo[17] + "]");
+                Log.e(TAG, "fail percent:[" + realTimeInfo[20] + "] temperature[" + realTimeInfo[21] + "] mA[" + realTimeInfo[22] + "]");
             }
             cpu.setText(String.format(getString(R.string.realtime_text), percent, temperature / 1000.0));
-            battery.setText(Math.abs(mA) > 1000 ? String.format("%.1f A", mA / 1e3) : (mA + " mA"));
+            battery.setText(Math.abs(mA) > 2000 ? String.format("%.2f A", mA / 1e3) : (mA + " mA"));
 
-            cpu0.setText("cpu0\n" + realTimeInfo[4] + "MHz\n" + realTimeInfo[8] + "%");
-            cpu1.setText("cpu1\n" + realTimeInfo[4] + "MHz\n" + realTimeInfo[9] + "%");
-            cpu2.setText("cpu2\n" + realTimeInfo[4] + "MHz\n" + realTimeInfo[10] + "%");
-            cpu3.setText("cpu3\n" + realTimeInfo[4] + "MHz\n" + realTimeInfo[11] + "%");
-            cpu4.setText("cpu4\n" + realTimeInfo[5] + "MHz\n" + realTimeInfo[12] + "%");
-            cpu5.setText("cpu5\n" + realTimeInfo[5] + "MHz\n" + realTimeInfo[13] + "%");
-            cpu6.setText("cpu6\n" + realTimeInfo[5] + "MHz\n" + realTimeInfo[14] + "%");
-            cpu7.setText("cpu7\n" + realTimeInfo[6] + "MHz\n" + realTimeInfo[15] + "%");
-
+            cpu0.setText("cpu0\n" + realTimeInfo[4] + "MHz\n" + realTimeInfo[12] + "%");
+            cpu1.setText("cpu1\n" + realTimeInfo[5] + "MHz\n" + realTimeInfo[13] + "%");
+            cpu2.setText("cpu2\n" + realTimeInfo[6] + "MHz\n" + realTimeInfo[14] + "%");
+            cpu3.setText("cpu3\n" + realTimeInfo[7] + "MHz\n" + realTimeInfo[15] + "%");
+            cpu4.setText("cpu4\n" + realTimeInfo[8] + "MHz\n" + realTimeInfo[16] + "%");
+            cpu5.setText("cpu5\n" + realTimeInfo[9] + "MHz\n" + realTimeInfo[17] + "%");
+            cpu6.setText("cpu6\n" + realTimeInfo[10] + "MHz\n" + realTimeInfo[18] + "%");
+            cpu7.setText("cpu7\n" + realTimeInfo[11] + "MHz\n" + realTimeInfo[19] + "%");
         }
     };
 

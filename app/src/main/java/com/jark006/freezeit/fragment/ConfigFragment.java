@@ -227,30 +227,38 @@ public class ConfigFragment extends Fragment {
             // [10]:杀死后台 [20]:SIGSTOP [30]:Freezer [40]:自由 [50]:内置
             List<ApplicationInfo> applicationInfoListSort = new ArrayList<>();
 
-            // 先排 自由 FREEZER SIGSTOP 杀死后台
+            // 先排 自由
             for (ApplicationInfo info : applicationInfoList) {
                 Pair<Integer, Integer> mode = appCfg.get(info.uid);
-                if (mode != null && mode.first == Utils.CFG_WHITELIST) {
-                    applicationInfoListSort.add(info);
-                }
-            }
-            for (ApplicationInfo info : applicationInfoList) {
-                Pair<Integer, Integer> mode = appCfg.get(info.uid);
-                if (mode != null && mode.first == Utils.CFG_FREEZER)
-                    applicationInfoListSort.add(info);
-            }
-            for (ApplicationInfo info : applicationInfoList) {
-                Pair<Integer, Integer> mode = appCfg.get(info.uid);
-                if (mode != null && mode.first == Utils.CFG_SIGSTOP)
-                    applicationInfoListSort.add(info);
-            }
-            for (ApplicationInfo info : applicationInfoList) {
-                Pair<Integer, Integer> mode = appCfg.get(info.uid);
-                if (mode != null && mode.first == Utils.CFG_TERMINATE)
+                if (mode != null && mode.first == Utils.CFG_WHITELIST)
                     applicationInfoListSort.add(info);
             }
 
-            // 最后排 内置
+            // 再排序 宽松前台 的 FREEZER SIGSTOP 杀死后台
+            for (ApplicationInfo info : applicationInfoList) {
+                Pair<Integer, Integer> mode = appCfg.get(info.uid);
+                if (mode != null && mode.first <= Utils.CFG_FREEZER && mode.second != 0)
+                    applicationInfoListSort.add(info);
+            }
+
+            // 再排序 严格前台 的 FREEZER SIGSTOP 杀死后台
+            for (ApplicationInfo info : applicationInfoList) {
+                Pair<Integer, Integer> mode = appCfg.get(info.uid);
+                if (mode != null && mode.first == Utils.CFG_FREEZER && mode.second == 0)
+                    applicationInfoListSort.add(info);
+            }
+            for (ApplicationInfo info : applicationInfoList) {
+                Pair<Integer, Integer> mode = appCfg.get(info.uid);
+                if (mode != null && mode.first == Utils.CFG_SIGSTOP && mode.second == 0)
+                    applicationInfoListSort.add(info);
+            }
+            for (ApplicationInfo info : applicationInfoList) {
+                Pair<Integer, Integer> mode = appCfg.get(info.uid);
+                if (mode != null && mode.first == Utils.CFG_TERMINATE && mode.second == 0)
+                    applicationInfoListSort.add(info);
+            }
+
+            // 最后排 内置自由
             for (ApplicationInfo info : applicationInfoList) {
                 Pair<Integer, Integer> mode = appCfg.get(info.uid);
                 if (mode != null && mode.first == Utils.CFG_WHITEFORCE)

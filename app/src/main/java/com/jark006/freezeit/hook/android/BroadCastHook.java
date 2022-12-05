@@ -40,9 +40,9 @@ public class BroadCastHook {
                     Enum.Method.deliverToRegisteredReceiverLocked,
                     Enum.Class.BroadcastRecord, Enum.Class.BroadcastFilter, boolean.class, int.class,
                     deliverToRegisteredReceiverLockedHook);
-            log(TAG + "hook success: " + Enum.Class.BroadcastQueue);
+            log(TAG + "hook success: BroadcastQueue");
         } catch (Exception e) {
-            log(TAG + "hook fail: " + Enum.Class.BroadcastQueue + "\n" + e);
+            log(TAG + "hook fail: BroadcastQueue\n" + e);
         }
     }
 

@@ -26,11 +26,11 @@ public class AlarmHook {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 XposedHelpers.findAndHookMethod(Enum.Class.AlarmManagerServiceS, lpParam.classLoader,
                         Enum.Method.triggerAlarmsLocked, ArrayList.class, long.class, triggerAlarmsLockedHook);
-                log(TAG + "hook success: AlarmManagerServiceS SDK S+ ");
+                log(TAG + "hook success: AlarmManagerServiceS Android 12+/S+");
             } else {
                 XposedHelpers.findAndHookMethod(Enum.Class.AlarmManagerServiceR, lpParam.classLoader,
                         Enum.Method.triggerAlarmsLocked, ArrayList.class, long.class, triggerAlarmsLockedHook);
-                log(TAG + "hook success: AlarmManagerServiceS X ~ R ");
+                log(TAG + "hook success: AlarmManagerServiceS Android 10 ~ 11/Q ~ R");
             }
         } catch (Exception e) {
             log(TAG + "hook fail: AlarmManagerServiceS\n" + e);
