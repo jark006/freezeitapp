@@ -5,6 +5,7 @@ import static de.robv.android.xposed.XposedBridge.log;
 import android.content.Context;
 import android.net.LocalServerSocket;
 import android.net.LocalSocket;
+import android.os.Build;
 
 import com.jark006.freezeit.hook.Config;
 import com.jark006.freezeit.hook.Enum;
@@ -20,7 +21,7 @@ public class AMSHook {
     Config config;
 
     Object mProcessList = null;
-    ArrayList<?> mLruProcesses = null; //TODO 线程安全
+    ArrayList<?> mLruProcesses = null; //TODO 线程不安全
 
     LocalSocketServer serverThread = new LocalSocketServer();
 
@@ -52,7 +53,7 @@ public class AMSHook {
         }
     }
 
-    // 采用问询制
+    // 问询制
     public class LocalSocketServer extends Thread {
         byte[] topBytes = new byte[32 << 2]; // 32*4 bytes
 
@@ -68,20 +69,32 @@ public class AMSHook {
                     config.top.clear();
                     int mLruProcessActivityStart = XposedHelpers.getIntField(mProcessList, Enum.Field.mLruProcessActivityStart);
 
-                    // TODO: mLruProcesses 线程安全?
-                    for (int i = mLruProcesses.size() - 1; i >= mLruProcessActivityStart; i--) {
-                        Object processRecord = mLruProcesses.get(i);
-                        int uid = XposedHelpers.getIntField(processRecord, "uid");
-                        if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid))
-                            continue;
+                    try {
+                        // TODO: mLruProcesses 线程不安全
+                        for (int i = mLruProcesses.size() - 1; i >= mLruProcessActivityStart; i--) {
+                            Object processRecord = mLruProcesses.get(i);
+                            if (processRecord == null) continue;
 
-                        Object mState = XposedHelpers.getObjectField(processRecord, "mState");
-                        int mCurProcState = XposedHelpers.getIntField(mState, "mCurProcState");
+                            int uid = XposedHelpers.getIntField(processRecord, "uid");
+                            if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid))
+                                continue;
 
-                        // 在顶层 或 绑定了顶层应用 或 有前台服务的宽松前台
-                        // ProcessStateEnum: https://cs.android.com/android/platform/superproject/+/master:out/soong/.intermediates/frameworks/base/framework-minus-apex/android_common/xref35/srcjars.xref/android/app/ProcessStateEnum.java;l=10
-                        if (mCurProcState <= 3 || (mCurProcState <= 6 && config.tolerant.contains(uid)))
-                            config.top.add(uid);
+                            int mCurProcState;
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                Object mState = XposedHelpers.getObjectField(processRecord, "mState");
+                                if (mState == null) continue;
+                                mCurProcState = XposedHelpers.getIntField(mState, "mCurProcState");
+                            }else{
+                                mCurProcState = XposedHelpers.getIntField(processRecord, "mCurProcState");
+                            }
+
+                            // 在顶层 或 绑定了顶层应用 或 有前台服务的宽松前台
+                            // ProcessStateEnum: https://cs.android.com/android/platform/superproject/+/master:out/soong/.intermediates/frameworks/base/framework-minus-apex/android_common/xref35/srcjars.xref/android/app/ProcessStateEnum.java;l=10
+                            if (mCurProcState <= 3 || (mCurProcState <= 6 && config.tolerant.contains(uid)))
+                                config.top.add(uid);
+                        }
+                    } catch (Exception e) {
+                        log(TAG + "前台服务错误:" + e);
                     }
 
                     // 开头的4字节放置UID的个数，往后每4个字节放一个UID  [小端]
@@ -101,7 +114,6 @@ public class AMSHook {
                     topBytes[3] = (byte) (UidLen >> 24);
 
                     client.getOutputStream().write(topBytes, 0, byteLen);
-//                    client.shutdownOutput(); // 不需要
                     client.close(); // 不考虑长连接，用完就关
                 }
             } catch (Exception e) {
@@ -109,6 +121,4 @@ public class AMSHook {
             }
         }
     }
-
-
 }
