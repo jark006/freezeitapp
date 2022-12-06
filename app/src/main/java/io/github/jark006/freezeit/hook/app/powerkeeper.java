@@ -1,10 +1,10 @@
-package com.jark006.freezeit.hook.app;
+package io.github.jark006.freezeit.hook.app;
 
 import static de.robv.android.xposed.XposedBridge.log;
 
 import android.content.Context;
 
-import com.jark006.freezeit.hook.Enum;
+import io.github.jark006.freezeit.hook.Enum;
 
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedHelpers;

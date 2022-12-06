@@ -3,7 +3,7 @@
     <array name="recommend_package">
         <item>android</item>
         <item>com.miui.powerkeeper</item>
-        <item>com.jark006.freezeit</item>
+        <item>io.github.jark006.freezeit</item>
     </array>
 
     <string-array name="level">

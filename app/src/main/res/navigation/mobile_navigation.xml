@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.jark006.freezeit.fragment.HomeFragment"
+        android:name="io.github.jark006.freezeit.fragment.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/navigation_config"
-        android:name="com.jark006.freezeit.fragment.ConfigFragment"
+        android:name="io.github.jark006.freezeit.fragment.ConfigFragment"
         android:label="@string/title_config"
         tools:layout="@layout/fragment_config" />
 
     <fragment
         android:id="@+id/navigation_logcat"
-        android:name="com.jark006.freezeit.fragment.LogcatFragment"
+        android:name="io.github.jark006.freezeit.fragment.LogcatFragment"
         android:label="@string/title_logcat"
         tools:layout="@layout/fragment_logcat" />
 </navigation>

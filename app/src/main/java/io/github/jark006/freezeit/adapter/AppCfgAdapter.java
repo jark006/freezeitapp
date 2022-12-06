@@ -1,10 +1,10 @@
-package com.jark006.freezeit.adapter;
+package io.github.jark006.freezeit.adapter;
 
-import static com.jark006.freezeit.Utils.CFG_TERMINATE;
-import static com.jark006.freezeit.Utils.CFG_SIGSTOP;
-import static com.jark006.freezeit.Utils.CFG_FREEZER;
-import static com.jark006.freezeit.Utils.CFG_WHITELIST;
-import static com.jark006.freezeit.Utils.CFG_WHITEFORCE;
+import static io.github.jark006.freezeit.Utils.CFG_TERMINATE;
+import static io.github.jark006.freezeit.Utils.CFG_SIGSTOP;
+import static io.github.jark006.freezeit.Utils.CFG_FREEZER;
+import static io.github.jark006.freezeit.Utils.CFG_WHITELIST;
+import static io.github.jark006.freezeit.Utils.CFG_WHITEFORCE;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -23,7 +23,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.jark006.freezeit.R;
+import io.github.jark006.freezeit.R;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;

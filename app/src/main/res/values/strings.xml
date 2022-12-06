@@ -57,7 +57,7 @@
     <string name="update_fail">更新失败</string>
     <string name="update_start">开始更新 应用名称</string>
     <string name="app_label">应用名称</string>
-    <string name="package_name" translatable="false">com.jark006.freezeit</string>
+    <string name="package_name" translatable="false">io.github.jark006.freezeit</string>
     <string name="clear_log_text">清空日志</string>
     <string name="clear_log_tips">已清空日志</string>
     <string name="todo" translatable="false">TODO</string>

@@ -1,31 +1,12 @@
-package com.jark006.freezeit.hook;
+package io.github.jark006.freezeit.hook;
 
 import static de.robv.android.xposed.XposedBridge.log;
 
 import android.net.LocalServerSocket;
 import android.net.LocalSocket;
-import android.os.Build;
-import android.os.FileObserver;
 
-import com.jark006.freezeit.hook.android.AMSHook;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-import de.robv.android.xposed.XposedHelpers;
 
 
 public class Config {

@@ -1,4 +1,4 @@
-package com.jark006.freezeit.fragment;
+package io.github.jark006.freezeit.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.pm.ApplicationInfo;
@@ -24,35 +24,14 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.jark006.freezeit.R;
-import com.jark006.freezeit.Utils;
-import com.jark006.freezeit.databinding.FragmentLogcatBinding;
+import io.github.jark006.freezeit.R;
+import io.github.jark006.freezeit.Utils;
+import io.github.jark006.freezeit.databinding.FragmentLogcatBinding;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
-//                            _ooOoo_
-//                           o8888888o
-//                           88" . "88
-//                           (| -_- |)
-//                           O\  =  /O
-//                        ____/`---'\____
-//                      .'  \\|     |//  `.
-//                     /  \\|||  :  |||//  \
-//                    /  _||||| -:- |||||-  \
-//                    |   | \\\  -  /// |   |
-//                    | \_|  ''\---/''  |   |
-//                    \  .-\__  `-`  ___/-. /
-//                  ___`. .'  /--.--\  `. . __
-//               ."" '<  `.___\_<|>_/___.'  >'"".
-//              | | :  `- \`.;`\ _ /`;.`/ - ` : | |
-//              \  \ `-.   \_ __\ /__ _/   .-` /  /
-//         ======`-.____`-.___\_____/___.-`____.-'======
-//                            `=---='
-//        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//                     佛祖保佑，代码永无BUG，阿弥陀佛
 
 public class LogcatFragment extends Fragment {
     private final static String TAG = "LogcatFragment";

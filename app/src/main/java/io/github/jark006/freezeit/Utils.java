@@ -1,4 +1,4 @@
-package com.jark006.freezeit;
+package io.github.jark006.freezeit;
 
 
 import android.app.Dialog;

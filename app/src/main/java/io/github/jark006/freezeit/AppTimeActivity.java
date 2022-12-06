@@ -1,4 +1,4 @@
-package com.jark006.freezeit;
+package io.github.jark006.freezeit;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.jark006.freezeit.adapter.AppTimeAdapter;
+import io.github.jark006.freezeit.adapter.AppTimeAdapter;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Timer;

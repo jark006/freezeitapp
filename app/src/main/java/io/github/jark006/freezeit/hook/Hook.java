@@ -1,22 +1,18 @@
-package com.jark006.freezeit.hook;
+package io.github.jark006.freezeit.hook;
 
-
-import com.jark006.freezeit.BuildConfig;
-import com.jark006.freezeit.hook.android.AMSHook;
-import com.jark006.freezeit.hook.android.AlarmHook;
-import com.jark006.freezeit.hook.android.AnrHook;
-import com.jark006.freezeit.hook.android.BroadCastHook;
-import com.jark006.freezeit.hook.android.WakeLockHook;
-import com.jark006.freezeit.hook.app.powerkeeper;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
+import io.github.jark006.freezeit.BuildConfig;
+import io.github.jark006.freezeit.hook.android.AMSHook;
+import io.github.jark006.freezeit.hook.android.AlarmHook;
+import io.github.jark006.freezeit.hook.android.AnrHook;
+import io.github.jark006.freezeit.hook.android.BroadCastHook;
+import io.github.jark006.freezeit.hook.android.WakeLockHook;
+import io.github.jark006.freezeit.hook.app.powerkeeper;
 
 
 public class Hook implements IXposedHookLoadPackage {

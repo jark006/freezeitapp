@@ -1,4 +1,4 @@
-package com.jark006.freezeit.hook.android;
+package io.github.jark006.freezeit.hook.android;
 
 import static de.robv.android.xposed.XposedBridge.log;
 
@@ -7,8 +7,8 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.WorkSource;
 
-import com.jark006.freezeit.hook.Config;
-import com.jark006.freezeit.hook.Enum;
+import io.github.jark006.freezeit.hook.Config;
+import io.github.jark006.freezeit.hook.Enum;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedHelpers;

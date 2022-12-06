@@ -1,6 +1,6 @@
-package com.jark006.freezeit.hook;
+package io.github.jark006.freezeit.hook;
 
-import com.jark006.freezeit.BuildConfig;
+import io.github.jark006.freezeit.BuildConfig;
 
 public class Enum {
 

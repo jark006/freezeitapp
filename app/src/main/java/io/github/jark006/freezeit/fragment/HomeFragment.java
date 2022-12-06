@@ -1,4 +1,4 @@
-package com.jark006.freezeit.fragment;
+package io.github.jark006.freezeit.fragment;
 
 import static android.content.Context.ACTIVITY_SERVICE;
 
@@ -33,12 +33,12 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.jark006.freezeit.AppTimeActivity;
-import com.jark006.freezeit.BuildConfig;
-import com.jark006.freezeit.R;
-import com.jark006.freezeit.SettingsActivity;
-import com.jark006.freezeit.Utils;
-import com.jark006.freezeit.databinding.FragmentHomeBinding;
+import io.github.jark006.freezeit.AppTimeActivity;
+import io.github.jark006.freezeit.BuildConfig;
+import io.github.jark006.freezeit.R;
+import io.github.jark006.freezeit.SettingsActivity;
+import io.github.jark006.freezeit.Utils;
+import io.github.jark006.freezeit.databinding.FragmentHomeBinding;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,27 +47,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Timer;
 import java.util.TimerTask;
-
-//                            _ooOoo_
-//                           o8888888o
-//                           88" . "88
-//                           (| -_- |)
-//                           O\  =  /O
-//                        ____/`---'\____
-//                      .'  \\|     |//  `.
-//                     /  \\|||  :  |||//  \
-//                    /  _||||| -:- |||||-  \
-//                    |   | \\\  -  /// |   |
-//                    | \_|  ''\---/''  |   |
-//                    \  .-\__  `-`  ___/-. /
-//                  ___`. .'  /--.--\  `. . __
-//               ."" '<  `.___\_<|>_/___.'  >'"".
-//              | | :  `- \`.;`\ _ /`;.`/ - ` : | |
-//              \  \ `-.   \_ __\ /__ _/   .-` /  /
-//         ======`-.____`-.___\_____/___.-`____.-'======
-//                            `=---='
-//        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//                     佛祖保佑，代码永无BUG，阿弥陀佛
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
     private final static String TAG = "HomeFragment";

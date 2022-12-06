@@ -6,7 +6,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.jark006.freezeit"
+        applicationId "io.github.jark006.freezeit"
         minSdk 29
         targetSdk 33
         versionCode 203000 // v2.3.0起，版本代号不再更新，开放随意升、降级
@@ -36,7 +36,7 @@ android {
     buildFeatures {
         viewBinding true
     }
-    namespace 'com.jark006.freezeit'
+    namespace 'io.github.jark006.freezeit'
 }
 
 dependencies {

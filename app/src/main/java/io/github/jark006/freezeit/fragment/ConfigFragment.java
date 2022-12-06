@@ -1,4 +1,4 @@
-package com.jark006.freezeit.fragment;
+package io.github.jark006.freezeit.fragment;
 
 import static android.content.pm.ApplicationInfo.FLAG_SYSTEM;
 import static android.content.pm.ApplicationInfo.FLAG_UPDATED_SYSTEM_APP;
@@ -30,36 +30,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.jark006.freezeit.R;
-import com.jark006.freezeit.Utils;
-import com.jark006.freezeit.adapter.AppCfgAdapter;
-import com.jark006.freezeit.databinding.FragmentConfigBinding;
+import io.github.jark006.freezeit.R;
+import io.github.jark006.freezeit.Utils;
+import io.github.jark006.freezeit.adapter.AppCfgAdapter;
+import io.github.jark006.freezeit.databinding.FragmentConfigBinding;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-//                            _ooOoo_
-//                           o8888888o
-//                           88" . "88
-//                           (| -_- |)
-//                           O\  =  /O
-//                        ____/`---'\____
-//                      .'  \\|     |//  `.
-//                     /  \\|||  :  |||//  \
-//                    /  _||||| -:- |||||-  \
-//                    |   | \\\  -  /// |   |
-//                    | \_|  ''\---/''  |   |
-//                    \  .-\__  `-`  ___/-. /
-//                  ___`. .'  /--.--\  `. . __
-//               ."" '<  `.___\_<|>_/___.'  >'"".
-//              | | :  `- \`.;`\ _ /`;.`/ - ` : | |
-//              \  \ `-.   \_ __\ /__ _/   .-` /  /
-//         ======`-.____`-.___\_____/___.-`____.-'======
-//                            `=---='
-//        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//                     佛祖保佑，代码永无BUG，阿弥陀佛
 
 public class ConfigFragment extends Fragment {
     private final static String TAG = "ConfigFragment";

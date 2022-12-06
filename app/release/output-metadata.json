@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.jark006.freezeit",
+  "applicationId": "io.github.jark006.freezeit",
   "variantName": "release",
   "elements": [
     {

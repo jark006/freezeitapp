@@ -1,4 +1,4 @@
-package com.jark006.freezeit.adapter;
+package io.github.jark006.freezeit.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -14,7 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.jark006.freezeit.R;
+import io.github.jark006.freezeit.R;
 
 import java.util.HashMap;
 import java.util.List;
