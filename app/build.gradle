@@ -10,7 +10,7 @@ android {
         minSdk 29
         targetSdk 33
         versionCode 203000 // v2.3.0起，版本代号不再更新，开放随意升、降级
-        versionName "2.3.6Alpha"
+        versionName "2.3.7Beta"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resValue "string", "appVer", "v${versionName}"

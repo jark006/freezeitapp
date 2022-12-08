@@ -1,15 +1,12 @@
 package io.github.jark006.freezeit.adapter;
 
-import static io.github.jark006.freezeit.Utils.CFG_TERMINATE;
-import static io.github.jark006.freezeit.Utils.CFG_SIGSTOP;
 import static io.github.jark006.freezeit.Utils.CFG_FREEZER;
-import static io.github.jark006.freezeit.Utils.CFG_WHITELIST;
+import static io.github.jark006.freezeit.Utils.CFG_SIGSTOP;
+import static io.github.jark006.freezeit.Utils.CFG_TERMINATE;
 import static io.github.jark006.freezeit.Utils.CFG_WHITEFORCE;
+import static io.github.jark006.freezeit.Utils.CFG_WHITELIST;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,28 +20,22 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import io.github.jark006.freezeit.R;
-
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+
+import io.github.jark006.freezeit.AppInfoCache;
+import io.github.jark006.freezeit.R;
 
 public class AppCfgAdapter extends RecyclerView.Adapter<AppCfgAdapter.MyViewHolder> {
-    private final List<ApplicationInfo> applicationList;
-    private List<ApplicationInfo> applicationListFilter;
+    private final ArrayList<Integer> uidList;
+    private ArrayList<Integer> uidListFilter;
     private final HashMap<Integer, Pair<Integer, Integer>> appCfg;
 
-    Context context;
-    PackageManager pm;
-
-    public AppCfgAdapter(Context context, List<ApplicationInfo> applicationList,
-                         HashMap<Integer, Pair<Integer, Integer>> appCfg) {
-        this.applicationList = applicationList;
-        this.applicationListFilter = applicationList;
+    public AppCfgAdapter(ArrayList<Integer> uidList, HashMap<Integer, Pair<Integer, Integer>> appCfg) {
+        this.uidList = uidList;
+        this.uidListFilter = uidList;
         this.appCfg = appCfg;
-        this.context = context;
-        this.pm = context.getPackageManager();
     }
 
     @NonNull
@@ -56,35 +47,48 @@ public class AppCfgAdapter extends RecyclerView.Adapter<AppCfgAdapter.MyViewHold
 
     int cfgValue2idx(int i) {
         switch (i) {
-            case CFG_TERMINATE:  return 0;
-            case CFG_SIGSTOP:    return 1;
+            case CFG_TERMINATE:
+                return 0;
+            case CFG_SIGSTOP:
+                return 1;
             case CFG_FREEZER:
-            default:             return 2;
-            case CFG_WHITELIST:  return 3;
+            default:
+                return 2;
+            case CFG_WHITELIST:
+                return 3;
         }
     }
 
     int idx2cfgValue(int i) {
         switch (i) {
-            case 0:  return CFG_TERMINATE;
-            case 1:  return CFG_SIGSTOP;
+            case 0:
+                return CFG_TERMINATE;
+            case 1:
+                return CFG_SIGSTOP;
             case 2:
-            default: return CFG_FREEZER;
-            case 3:  return CFG_WHITELIST;
+            default:
+                return CFG_FREEZER;
+            case 3:
+                return CFG_WHITELIST;
         }
     }
 
     @SuppressLint({"UseCompatLoadingForDrawables", "SetTextI18n"})
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        ApplicationInfo appInfo = applicationListFilter.get(position);
+        int uid = uidListFilter.get(position);
 
-        String label = pm.getApplicationLabel(appInfo).toString();
-        holder.package_name.setText(appInfo.packageName);
-        holder.app_label.setText(label);
-        holder.app_icon.setImageDrawable(appInfo.loadIcon(pm));
+        AppInfoCache.Info info = AppInfoCache.get(uid);
+        if (info != null) {
+            holder.app_icon.setImageDrawable(info.icon);
+            holder.app_label.setText(info.label);
+            holder.package_name.setText(info.packName);
+        } else {
+            holder.package_name.setText("未知");
+            holder.app_label.setText("UID:" + uid);
+        }
 
-        Pair<Integer, Integer> cfg = appCfg.get(appInfo.uid);
+        Pair<Integer, Integer> cfg = appCfg.get(uid);
         if (cfg == null) cfg = new Pair<>(CFG_FREEZER, 0);
 
         if (cfg.first.equals(CFG_WHITEFORCE)) {
@@ -106,9 +110,10 @@ public class AppCfgAdapter extends RecyclerView.Adapter<AppCfgAdapter.MyViewHold
             public void onItemSelected(AdapterView<?> parent, View view, int spinnerPosition, long id) {
                 int cfgValue = idx2cfgValue(spinnerPosition);
                 int isTolerant = finalCfg.second;
-                appCfg.put(appInfo.uid, new Pair<>(cfgValue, isTolerant));
+                appCfg.put(uid, new Pair<>(cfgValue, isTolerant));
 
-                if (cfgValue >= CFG_WHITELIST) holder.spinner_tolerant.setVisibility(View.INVISIBLE);
+                if (cfgValue >= CFG_WHITELIST)
+                    holder.spinner_tolerant.setVisibility(View.INVISIBLE);
                 else holder.spinner_tolerant.setVisibility(View.VISIBLE);
             }
 
@@ -121,7 +126,7 @@ public class AppCfgAdapter extends RecyclerView.Adapter<AppCfgAdapter.MyViewHold
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int spinnerPosition, long id) {
                 int cfgInt = finalCfg.first;
-                appCfg.put(appInfo.uid, new Pair<>(cfgInt, spinnerPosition));
+                appCfg.put(uid, new Pair<>(cfgInt, spinnerPosition));
             }
 
             @Override
@@ -132,27 +137,20 @@ public class AppCfgAdapter extends RecyclerView.Adapter<AppCfgAdapter.MyViewHold
 
     @Override
     public int getItemCount() {
-        return applicationListFilter.size();
+        return uidListFilter.size();
     }
 
     @SuppressLint("NotifyDataSetChanged")
     public void filter(String keyWord) {
         if (keyWord == null || keyWord.length() == 0) {
-            applicationListFilter = applicationList;
+            uidListFilter = uidList;
         } else {
             keyWord = keyWord.toLowerCase();
-            applicationListFilter = new ArrayList<>();
-            for (ApplicationInfo appInfo : applicationList) {
-
-                if (appInfo.packageName.toLowerCase().contains(keyWord)) {
-                    applicationListFilter.add(appInfo);
-                    continue;
-                }
-
-                String label = pm.getApplicationLabel(appInfo).toString().toLowerCase();
-                if (label.contains(keyWord)) {
-                    applicationListFilter.add(appInfo);
-                }
+            uidListFilter = new ArrayList<>();
+            for (int uid : uidList) {
+                AppInfoCache.Info appInfo = AppInfoCache.get(uid);
+                if (appInfo.packName.toLowerCase().contains(keyWord) || appInfo.label.contains(keyWord))
+                    uidListFilter.add(uid);
             }
         }
         notifyDataSetChanged();

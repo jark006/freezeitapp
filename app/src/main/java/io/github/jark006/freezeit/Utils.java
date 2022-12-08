@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.util.Pair;
 import android.widget.ImageView;
 
 import java.io.BufferedReader;
@@ -29,12 +30,13 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class Utils {
     public final static int CFG_TERMINATE = 10, CFG_SIGSTOP = 20, CFG_FREEZER = 30, CFG_WHITELIST = 40, CFG_WHITEFORCE = 50;
 
-    private static final String TAG = "Utils";
+    private static final String TAG = "Freezeit[Utils]";
 
     // 获取信息 无附加数据 No additional data required
     public final static byte getStatus = 1;       // return string: "Freezeit is running"

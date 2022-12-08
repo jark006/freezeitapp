@@ -1,14 +1,12 @@
 package io.github.jark006.freezeit.fragment;
 
 import static android.content.Context.ACTIVITY_SERVICE;
-
 import static androidx.core.content.ContextCompat.getColor;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,12 +31,6 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
-import io.github.jark006.freezeit.AppTimeActivity;
-import io.github.jark006.freezeit.BuildConfig;
-import io.github.jark006.freezeit.R;
-import io.github.jark006.freezeit.SettingsActivity;
-import io.github.jark006.freezeit.Utils;
-import io.github.jark006.freezeit.databinding.FragmentHomeBinding;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,6 +39,13 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import io.github.jark006.freezeit.AppTimeActivity;
+import io.github.jark006.freezeit.BuildConfig;
+import io.github.jark006.freezeit.R;
+import io.github.jark006.freezeit.SettingsActivity;
+import io.github.jark006.freezeit.Utils;
+import io.github.jark006.freezeit.databinding.FragmentHomeBinding;
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
     private final static String TAG = "HomeFragment";
@@ -368,7 +367,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             if (xposedState)
                 statusStr.append(getString(R.string.xposed_online)).append(" v").append(BuildConfig.VERSION_NAME);
             else
-                statusStr.append(getString(R.string.xposed_offline));
+                statusStr.append(getString(R.string.xposed_offline)).append(" v").append(BuildConfig.VERSION_NAME)
+                        .append('\n').append(getString(R.string.xposed_warm));
 
             moduleStatus.setText(statusStr);
 
@@ -403,9 +403,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     updateTips.setText("测试版");
                 }
             } catch (JSONException e) {
-                updateTips.setText("");
-                changelogTips.setText("");
-                e.printStackTrace();
+                Log.e(TAG, e.toString());
             }
         }
     };

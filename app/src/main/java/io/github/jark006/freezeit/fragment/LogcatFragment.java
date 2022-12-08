@@ -110,9 +110,9 @@ public class LogcatFragment extends Fragment {
         PackageManager pm = requireContext().getPackageManager();
         List<ApplicationInfo> applicationsInfo = pm.getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES);
         for (ApplicationInfo appInfo : applicationsInfo) {
-            if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) > 0)
-                continue;
             if (appInfo.uid < 10000)
+                continue;
+            if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) > 0)
                 continue;
 
             String label = pm.getApplicationLabel(appInfo).toString();

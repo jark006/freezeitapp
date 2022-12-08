@@ -35,7 +35,7 @@ public class AppTimeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_app_time);
 
         RecyclerView recyclerView = findViewById(R.id.recyclerviewApp);
-        recycleAdapter = new AppTimeAdapter(getBaseContext(), lines);
+        recycleAdapter = new AppTimeAdapter(lines);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getBaseContext());
         recyclerView.setLayoutManager(layoutManager);
         layoutManager.setOrientation(RecyclerView.VERTICAL);

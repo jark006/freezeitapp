@@ -40,9 +40,6 @@ public class Hook implements IXposedHookLoadPackage {
         Config config = new Config();
 
         new AMSHook(config, lpParam);
-//        new ProcessStateRecordHook(config, lpParam);//BUG
-
-
         new AlarmHook(config, lpParam);
         new AnrHook(config, lpParam);
         new BroadCastHook(config, lpParam);

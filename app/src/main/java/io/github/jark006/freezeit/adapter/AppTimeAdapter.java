@@ -1,10 +1,6 @@
 package io.github.jark006.freezeit.adapter;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,35 +10,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import io.github.jark006.freezeit.AppInfoCache;
 import io.github.jark006.freezeit.R;
 
-import java.util.HashMap;
-import java.util.List;
-
 public class AppTimeAdapter extends RecyclerView.Adapter<AppTimeAdapter.MyViewHolder> {
-    private final HashMap<Integer, ApplicationInfo> applicationMap = new HashMap<>();
     private String[] lines;
-    Context context;
-    PackageManager pm;
 
-    public AppTimeAdapter(Context context, String[] lines) {
+    public AppTimeAdapter(String[] lines) {
         this.lines = lines;
-        this.context = context;
-        this.pm = context.getPackageManager();
-
-        List<ApplicationInfo> applicationList;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            applicationList = pm.getInstalledApplications(
-                    PackageManager.ApplicationInfoFlags.of(PackageManager.MATCH_UNINSTALLED_PACKAGES));
-        } else {
-            applicationList = pm.getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES);
-        }
-
-        for (ApplicationInfo info : applicationList) {
-            if (info.uid > 10000) {
-                applicationMap.put(info.uid, info);
-            }
-        }
     }
 
     @NonNull
@@ -69,18 +44,15 @@ public class AppTimeAdapter extends RecyclerView.Adapter<AppTimeAdapter.MyViewHo
         } catch (Exception ignored) {
         }
 
-        if (uid == 0) {
+        AppInfoCache.Info info = AppInfoCache.get(uid);
+        if (info != null) {
+            holder.app_icon.setImageDrawable(info.icon);
+            holder.app_label.setText(info.label);
+            holder.package_name.setText(info.packName);
+        } else {
+            holder.package_name.setText("未知");
             holder.app_label.setText("UID:" + uid);
-            holder.package_name.setText("null");
-            return;
         }
-        ApplicationInfo appInfo = applicationMap.get(uid);
-        if (appInfo != null) {
-            holder.app_icon.setImageDrawable(appInfo.loadIcon(pm));
-            holder.package_name.setText(appInfo.packageName);
-            holder.app_label.setText(pm.getApplicationLabel(appInfo).toString());
-        }
-
 
         StringBuilder userTime = getTimeStr(cpuTime[2], false);
         StringBuilder sysTime = getTimeStr(cpuTime[3], false);

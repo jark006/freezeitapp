@@ -33,7 +33,8 @@
     <string name="magisk_online">Magisk 已激活</string>
     <string name="magisk_offline">Magisk 未安装或未运行</string>
     <string name="xposed_online">LSPosed已激活</string>
-    <string name="xposed_offline">LSPosed未激活\n警告，不激活将导致严重副作用</string>
+    <string name="xposed_offline">LSPosed未激活</string>
+    <string name="xposed_warm">警告：会有严重副作用</string>
     <string name="freezeit_offline">1.请检查面具模块列表中是否启用了冻它。\n2.若是刚开机，请等几秒后再打开冻它APP。\n3.如果运行异常, 请检查异常日志[ /sdcard/Android/freezeit_crash_log.txt ]</string>
 
     <string name="freezeit_offline_tips">请检查Magisk冻它模块是否安装并启用，若是刚刚安装，则重启生效</string>

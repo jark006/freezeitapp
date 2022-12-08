@@ -6,6 +6,7 @@ import static android.content.pm.ApplicationInfo.FLAG_UPDATED_SYSTEM_APP;
 import android.annotation.SuppressLint;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -30,6 +31,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import io.github.jark006.freezeit.AppInfoCache;
 import io.github.jark006.freezeit.R;
 import io.github.jark006.freezeit.Utils;
 import io.github.jark006.freezeit.adapter.AppCfgAdapter;
@@ -47,7 +49,7 @@ public class ConfigFragment extends Fragment {
     SearchView searchView;
     ConstraintLayout constraintLayout;
     AppCfgAdapter recycleAdapter;
-    List<ApplicationInfo> applicationInfoList = new ArrayList<>();
+    ArrayList<Integer> uidList = new ArrayList<>();
 
     long lastTimestamp = 0;
 
@@ -66,21 +68,20 @@ public class ConfigFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(() -> new Thread(() -> Utils.freezeitTask(Utils.getAppCfg, null, getAppCfgHandler)).start());
 
         PackageManager pm = requireContext().getPackageManager();
-//        List<ApplicationInfo> applicationList;
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//            applicationList = pm.getInstalledApplications(
-//                    PackageManager.ApplicationInfoFlags.of(PackageManager.MATCH_UNINSTALLED_PACKAGES));
-//        } else {
-//            applicationList = pm.getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES);
-//        }
-        List<ApplicationInfo> applicationList = pm.getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES);
+        List<ApplicationInfo> applicationList;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            applicationList = pm.getInstalledApplications(
+                    PackageManager.ApplicationInfoFlags.of(PackageManager.MATCH_UNINSTALLED_PACKAGES));
+        } else {
+            applicationList = pm.getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES);
+        }
 
         for (ApplicationInfo appInfo : applicationList) {
             if (appInfo.uid < 10000)
                 continue;
             if ((appInfo.flags & (FLAG_SYSTEM | FLAG_UPDATED_SYSTEM_APP)) != 0)
                 continue;
-            applicationInfoList.add(appInfo);
+            uidList.add(appInfo.uid);
         }
 
         requireActivity().addMenuProvider(new MenuProvider() {
@@ -155,7 +156,7 @@ public class ConfigFragment extends Fragment {
             }
         });
 
-
+        new Thread(() -> AppInfoCache.refreshCache(requireContext())).start();
         new Thread(() -> Utils.freezeitTask(Utils.getAppCfg, null, getAppCfgHandler)).start();
 
         return binding.getRoot();
@@ -193,9 +194,9 @@ public class ConfigFragment extends Fragment {
             }
 
             // 补全
-            applicationInfoList.forEach(info -> {
-                if (!appCfg.containsKey(info.uid))
-                    appCfg.put(info.uid, new Pair<>(Utils.CFG_FREEZER, 1)); // 默认Freezer 宽松
+            uidList.forEach(uid -> {
+                if (!appCfg.containsKey(uid))
+                    appCfg.put(uid, new Pair<>(Utils.CFG_FREEZER, 1)); // 默认Freezer 宽松
             });
             // 检查非法配置
             appCfg.forEach((uid, cfg) -> {
@@ -204,47 +205,47 @@ public class ConfigFragment extends Fragment {
             });
 
             // [10]:杀死后台 [20]:SIGSTOP [30]:Freezer [40]:自由 [50]:内置
-            List<ApplicationInfo> applicationInfoListSort = new ArrayList<>();
+            ArrayList<Integer> uidListSort = new ArrayList<>();
 
             // 先排 自由
-            for (ApplicationInfo info : applicationInfoList) {
-                Pair<Integer, Integer> mode = appCfg.get(info.uid);
+            for (int uid : uidList) {
+                Pair<Integer, Integer> mode = appCfg.get(uid);
                 if (mode != null && mode.first == Utils.CFG_WHITELIST)
-                    applicationInfoListSort.add(info);
+                    uidListSort.add(uid);
             }
 
             // 再排序 宽松前台 的 FREEZER SIGSTOP 杀死后台
-            for (ApplicationInfo info : applicationInfoList) {
-                Pair<Integer, Integer> mode = appCfg.get(info.uid);
+            for (int uid : uidList) {
+                Pair<Integer, Integer> mode = appCfg.get(uid);
                 if (mode != null && mode.first <= Utils.CFG_FREEZER && mode.second != 0)
-                    applicationInfoListSort.add(info);
+                    uidListSort.add(uid);
             }
 
             // 再排序 严格前台 的 FREEZER SIGSTOP 杀死后台
-            for (ApplicationInfo info : applicationInfoList) {
-                Pair<Integer, Integer> mode = appCfg.get(info.uid);
+            for (int uid : uidList) {
+                Pair<Integer, Integer> mode = appCfg.get(uid);
                 if (mode != null && mode.first == Utils.CFG_FREEZER && mode.second == 0)
-                    applicationInfoListSort.add(info);
+                    uidListSort.add(uid);
             }
-            for (ApplicationInfo info : applicationInfoList) {
-                Pair<Integer, Integer> mode = appCfg.get(info.uid);
+            for (int uid : uidList) {
+                Pair<Integer, Integer> mode = appCfg.get(uid);
                 if (mode != null && mode.first == Utils.CFG_SIGSTOP && mode.second == 0)
-                    applicationInfoListSort.add(info);
+                    uidListSort.add(uid);
             }
-            for (ApplicationInfo info : applicationInfoList) {
-                Pair<Integer, Integer> mode = appCfg.get(info.uid);
+            for (int uid : uidList) {
+                Pair<Integer, Integer> mode = appCfg.get(uid);
                 if (mode != null && mode.first == Utils.CFG_TERMINATE && mode.second == 0)
-                    applicationInfoListSort.add(info);
+                    uidListSort.add(uid);
             }
 
             // 最后排 内置自由
-            for (ApplicationInfo info : applicationInfoList) {
-                Pair<Integer, Integer> mode = appCfg.get(info.uid);
+            for (int uid : uidList) {
+                Pair<Integer, Integer> mode = appCfg.get(uid);
                 if (mode != null && mode.first == Utils.CFG_WHITEFORCE)
-                    applicationInfoListSort.add(info);
+                    uidListSort.add(uid);
             }
 
-            recycleAdapter = new AppCfgAdapter(requireContext(), applicationInfoListSort, appCfg);
+            recycleAdapter = new AppCfgAdapter(uidListSort, appCfg);
             LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
             layoutManager.setOrientation(RecyclerView.VERTICAL);
             recyclerView.setLayoutManager(layoutManager);

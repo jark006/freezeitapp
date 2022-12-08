@@ -21,15 +21,11 @@ public class AMSHook {
     Config config;
 
     Object mProcessList = null;
-    ArrayList<?> mLruProcesses = null; //TODO 线程不安全
+    ArrayList<?> mLruProcesses = null;
 
     LocalSocketServer serverThread = new LocalSocketServer();
 
-    // SDK30 A11_R48 https://cs.android.com/android/platform/superproject/+/android-11.0.0_r48:frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java;l=11240
-    // ActivityManagerService: boolean dumpLruLocked(PrintWriter pw, String dumpPackage, String prefix)
-
-    // SDK29 A10_R47 https://cs.android.com/android/platform/superproject/+/android-10.0.0_r47:frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java;l=10477
-    // ActivityManagerService: void dumpLruLocked(PrintWriter pw, String dumpPackage)
+    // mainline https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java
     public AMSHook(Config config, XC_LoadPackage.LoadPackageParam lpParam) {
         this.config = config;
 
@@ -54,7 +50,7 @@ public class AMSHook {
 
     // 问询制
     public class LocalSocketServer extends Thread {
-        byte[] topBytes = new byte[32 << 2]; // 32*4 bytes
+        byte[] topBytes = new byte[64 * 4]; // 64*4 bytes
 
         @SuppressWarnings("InfiniteLoopStatement")
         @Override
@@ -66,31 +62,30 @@ public class AMSHook {
                     if (client == null) continue;
 
                     config.top.clear();
-                    int mLruProcessActivityStart = XposedHelpers.getIntField(mProcessList, Enum.Field.mLruProcessActivityStart);
 
                     try {
-                        // TODO: mLruProcesses 线程不安全
-                        for (int i = mLruProcesses.size() - 1; i >= mLruProcessActivityStart; i--) {
-                            Object processRecord = mLruProcesses.get(i);
-                            if (processRecord == null) continue;
+                        synchronized (mLruProcesses) { // TODO
+                            for (Object processRecord : mLruProcesses) {
+                                if (processRecord == null) continue;
 
-                            int uid = XposedHelpers.getIntField(processRecord, "uid");
-                            if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid))
-                                continue;
+                                int uid = XposedHelpers.getIntField(processRecord, "uid");
+                                if (uid < 10000 || !config.thirdApp.contains(uid) || config.whitelist.contains(uid))
+                                    continue;
 
-                            int mCurProcState;
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                Object mState = XposedHelpers.getObjectField(processRecord, "mState");
-                                if (mState == null) continue;
-                                mCurProcState = XposedHelpers.getIntField(mState, "mCurProcState");
-                            }else{
-                                mCurProcState = XposedHelpers.getIntField(processRecord, "mCurProcState");
+                                int mCurProcState;
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                    Object mState = XposedHelpers.getObjectField(processRecord, "mState");
+                                    if (mState == null) continue;
+                                    mCurProcState = XposedHelpers.getIntField(mState, "mCurProcState");
+                                } else {
+                                    mCurProcState = XposedHelpers.getIntField(processRecord, "mCurProcState");
+                                }
+
+                                // 在顶层 或 绑定了顶层应用 或 有前台服务的宽松前台
+                                // ProcessStateEnum: https://cs.android.com/android/platform/superproject/+/master:out/soong/.intermediates/frameworks/base/framework-minus-apex/android_common/xref35/srcjars.xref/android/app/ProcessStateEnum.java;l=10
+                                if (mCurProcState <= 3 || (mCurProcState <= 6 && config.tolerant.contains(uid)))
+                                    config.top.add(uid);
                             }
-
-                            // 在顶层 或 绑定了顶层应用 或 有前台服务的宽松前台
-                            // ProcessStateEnum: https://cs.android.com/android/platform/superproject/+/master:out/soong/.intermediates/frameworks/base/framework-minus-apex/android_common/xref35/srcjars.xref/android/app/ProcessStateEnum.java;l=10
-                            if (mCurProcState <= 3 || (mCurProcState <= 6 && config.tolerant.contains(uid)))
-                                config.top.add(uid);
                         }
                     } catch (Exception e) {
                         log(TAG + "前台服务错误:" + e);

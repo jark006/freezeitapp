@@ -63,4 +63,5 @@
     <string name="help">Help</string>
     <string name="check_freezer">check_freezer_status</string>
     <string name="freezeit_tutorial_text">Freezeit tutorial</string>
+    <string name="xposed_warm">Warning: There will be severe side effects</string>
 </resources>
