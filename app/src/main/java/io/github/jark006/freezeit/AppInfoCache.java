@@ -15,20 +15,24 @@ import java.util.List;
 
 public class AppInfoCache {
     private static final String TAG = "Freezeit[AppInfoCache]";
+
     public static class Info {
         public Drawable icon;
         public String packName;
         public String label;
-        public Info(Drawable icon, String packName, String label){
+        public String forSearch;
+
+        public Info(Drawable icon, String packName, String label) {
             this.icon = icon;
             this.packName = packName;
             this.label = label;
+            this.forSearch = label.toLowerCase() + packName.toLowerCase();
         }
     }
 
     static HashMap<Integer, Info> cacheInfo = new HashMap<>();
 
-    public static void refreshCache(Context context){
+    public static void refreshCache(Context context) {
         PackageManager pm = context.getPackageManager();
         List<ApplicationInfo> applicationList;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -43,12 +47,16 @@ public class AppInfoCache {
                 continue;
             if ((appInfo.flags & (FLAG_SYSTEM | FLAG_UPDATED_SYSTEM_APP)) != 0)
                 continue;
-            String label = pm.getApplicationLabel(appInfo).toString();
-            cacheInfo.put(appInfo.uid, new Info(appInfo.loadIcon(pm), appInfo.packageName, label));
+
+            if (!cacheInfo.containsKey(appInfo.uid)) {
+                String label = pm.getApplicationLabel(appInfo).toString();
+                cacheInfo.put(appInfo.uid, new Info(appInfo.loadIcon(pm), appInfo.packageName, label));
+            }
         }
-        Log.d(TAG, "更新缓存"+ cacheInfo.size());
+        Log.d(TAG, "更新缓存" + cacheInfo.size());
     }
-    public static Info get(int uid){
+
+    public static Info get(int uid) {
         return cacheInfo.get(uid);
     }
 }

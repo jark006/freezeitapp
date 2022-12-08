@@ -148,8 +148,7 @@ public class AppCfgAdapter extends RecyclerView.Adapter<AppCfgAdapter.MyViewHold
             keyWord = keyWord.toLowerCase();
             uidListFilter = new ArrayList<>();
             for (int uid : uidList) {
-                AppInfoCache.Info appInfo = AppInfoCache.get(uid);
-                if (appInfo.packName.toLowerCase().contains(keyWord) || appInfo.label.contains(keyWord))
+                if (AppInfoCache.get(uid).forSearch.contains(keyWord))
                     uidListFilter.add(uid);
             }
         }
