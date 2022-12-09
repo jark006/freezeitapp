@@ -53,7 +53,7 @@
     <string name="main_oom_text">Main proc OOM:%5d</string>
     <string name="sub_oom_text">Sub proc OOM:%5d</string>
     <string name="slowly_tips">Don\'t operate too quickly</string>
-    <string name="realtime_text">CPU:%2d%%  %.1f℃</string>
+    <string name="cpu_format">CPU:%2d%%  %.1f℃</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
     <string name="reboot">Reboot to system</string>

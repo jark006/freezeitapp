@@ -67,7 +67,7 @@
     <string name="title_activity_task_manager">应用CPU时间</string>
     <string name="developer_link">相关链接</string>
     <string name="unsupported">暂不支持</string>
-    <string name="realtime_text">CPU:%2d%%  %.1f℃</string>
+    <string name="cpu_format">CPU:%2d%%  %.1f℃</string>
     <string name="bind_core_text">绑定核心: %s</string>
     <string name="timeout_text">超时冻结: %2d 秒</string>
     <string name="refreeze_text">定时解冻: %2d 分</string>

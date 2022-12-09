@@ -26,6 +26,9 @@ public class Enum {
         public final static String ActiveUids = "com.android.server.am.ActiveUids";
         public final static String ProcessStateRecord = "com.android.server.am.ProcessStateRecord";
 
+        public final static String PowerManager = "android.os.PowerManager";
+        public final static String IPowerManager = "android.os.IPowerManager";
+        public final static String IThermalService = "android.os.IThermalService";
         public final static String WakeLock = "android.os.PowerManager$WakeLock";
         public final static String PowerManagerService = "com.android.server.power.PowerManagerService";
         public final static String AlarmManagerServiceR = "com.android.server.AlarmManagerService"; //SDK x ~ 30
@@ -66,6 +69,7 @@ public class Enum {
         public final static String removeLruProcessLocked = "removeLruProcessLocked";
         public final static String setCurProcState = "setCurProcState";
         public final static String onCleanupApplicationRecordLSP = "onCleanupApplicationRecordLSP";
+        public final static String isInteractive = "isInteractive";
     }
 
     public final static class Field {

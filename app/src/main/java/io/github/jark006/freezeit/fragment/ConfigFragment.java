@@ -46,7 +46,6 @@ public class ConfigFragment extends Fragment {
     private final static String TAG = "ConfigFragment";
 
     private FragmentConfigBinding binding;
-    SearchView searchView;
     ConstraintLayout constraintLayout;
     AppCfgAdapter recycleAdapter;
     ArrayList<Integer> uidList = new ArrayList<>();
@@ -89,8 +88,7 @@ public class ConfigFragment extends Fragment {
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
                 menu.clear();
                 menuInflater.inflate(R.menu.config_menu, menu);
-                MenuItem searchItem = menu.findItem(R.id.search_view);
-                searchView = (SearchView) searchItem.getActionView();
+                SearchView searchView = (SearchView) menu.findItem(R.id.search_view).getActionView();
                 if (searchView != null) {
                     searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                         @Override
@@ -155,11 +153,15 @@ public class ConfigFragment extends Fragment {
                 recycleAdapter.convertTolerant();
             }
         });
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
 
         new Thread(() -> AppInfoCache.refreshCache(requireContext())).start();
         new Thread(() -> Utils.freezeitTask(Utils.getAppCfg, null, getAppCfgHandler)).start();
-
-        return binding.getRoot();
     }
 
     private final Handler getAppCfgHandler = new Handler(Looper.getMainLooper()) {

@@ -7,7 +7,7 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 import io.github.jark006.freezeit.BuildConfig;
-import io.github.jark006.freezeit.hook.android.AMSHook;
+import io.github.jark006.freezeit.hook.android.AndroidService;
 import io.github.jark006.freezeit.hook.android.AlarmHook;
 import io.github.jark006.freezeit.hook.android.AnrHook;
 import io.github.jark006.freezeit.hook.android.BroadCastHook;
@@ -39,7 +39,7 @@ public class Hook implements IXposedHookLoadPackage {
 
         Config config = new Config();
 
-        new AMSHook(config, lpParam);
+        new AndroidService(config, lpParam);
         new AlarmHook(config, lpParam);
         new AnrHook(config, lpParam);
         new BroadCastHook(config, lpParam);

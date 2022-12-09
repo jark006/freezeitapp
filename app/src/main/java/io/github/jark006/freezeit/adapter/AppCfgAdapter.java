@@ -30,7 +30,7 @@ import io.github.jark006.freezeit.R;
 public class AppCfgAdapter extends RecyclerView.Adapter<AppCfgAdapter.MyViewHolder> {
     private final ArrayList<Integer> uidList;
     private ArrayList<Integer> uidListFilter;
-    private final HashMap<Integer, Pair<Integer, Integer>> appCfg;
+    private final HashMap<Integer, Pair<Integer, Integer>> appCfg; //<uid, <cfg, tolerant>>
 
     public AppCfgAdapter(ArrayList<Integer> uidList, HashMap<Integer, Pair<Integer, Integer>> appCfg) {
         this.uidList = uidList;
@@ -199,9 +199,9 @@ public class AppCfgAdapter extends RecyclerView.Adapter<AppCfgAdapter.MyViewHold
     public byte[] getCfgBytes() {
         StringBuilder tmp = new StringBuilder();
 
-        appCfg.forEach((key, value) -> {
-            if (value.first < CFG_WHITEFORCE)
-                tmp.append(key).append(' ').append(value.first).append(' ').append(value.second).append('\n');
+        appCfg.forEach((uid, cfg) -> {
+            if (cfg.first < CFG_WHITEFORCE)
+                tmp.append(uid).append(' ').append(cfg.first).append(' ').append(cfg.second).append('\n');
         });
 
         return tmp.toString().getBytes(StandardCharsets.UTF_8);

@@ -230,4 +230,46 @@ public class Utils {
         }
         return partID.size();
     }
+
+    // 小端
+    public static int Byte2Int(byte[] bytes, int offset) {
+        return Byte.toUnsignedInt(bytes[offset]) |
+                (Byte.toUnsignedInt(bytes[offset + 1]) << 8) |
+                (Byte.toUnsignedInt(bytes[offset + 2]) << 16) |
+                (Byte.toUnsignedInt(bytes[offset + 3]) << 24);
+    }
+
+    public static void Int2Byte(int value, byte[] bytes, int offset) {
+        bytes[offset++] = (byte) value;
+        bytes[offset++] = (byte) (value >> 8);
+        bytes[offset++] = (byte) (value >> 16);
+        bytes[offset] = (byte) (value >> 24);
+    }
+
+    public static void Bytes2Int(byte[] bytes, int offset, int length, int[] ints) {
+        for (int intIdx = 0; offset < length; offset += 4) {
+            ints[intIdx++] = Byte.toUnsignedInt(bytes[offset]) |
+                    (Byte.toUnsignedInt(bytes[offset + 1]) << 8) |
+                    (Byte.toUnsignedInt(bytes[offset + 2]) << 16) |
+                    (Byte.toUnsignedInt(bytes[offset + 3]) << 24);
+        }
+    }
+
+    public static void Int2Bytes(int[] ints, int intOffset, int length, byte[] bytes, int byteOffset) {
+        for (int intIdx = intOffset; intIdx < intOffset + length; intIdx++) {
+            bytes[byteOffset++] = (byte) ints[intIdx];
+            bytes[byteOffset++] = (byte) (ints[intIdx] >> 8);
+            bytes[byteOffset++] = (byte) (ints[intIdx] >> 16);
+            bytes[byteOffset++] = (byte) (ints[intIdx] >> 24);
+        }
+    }
+
+    public static void Hashset2Bytes(HashSet<Integer> set, byte[] bytes, int byteOffset){
+        for (int value : set) {
+            bytes[byteOffset++] = (byte) value;
+            bytes[byteOffset++] = (byte) (value >> 8);
+            bytes[byteOffset++] = (byte) (value >> 16);
+            bytes[byteOffset++] = (byte) (value >> 24);
+        }
+    }
 }
