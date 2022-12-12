@@ -1,12 +1,7 @@
 package io.github.jark006.freezeit.hook.android;
 
-import static de.robv.android.xposed.XposedBridge.log;
-
 import android.annotation.SuppressLint;
 import android.os.Build;
-
-import io.github.jark006.freezeit.hook.Config;
-import io.github.jark006.freezeit.hook.Enum;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,6 +9,9 @@ import java.util.Iterator;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
+import io.github.jark006.freezeit.hook.Config;
+import io.github.jark006.freezeit.hook.Enum;
+import io.github.jark006.freezeit.hook.XpUtils;
 
 public class AlarmHook {
     final static String TAG = "Freezeit[AlarmHook]:";
@@ -22,22 +20,12 @@ public class AlarmHook {
     public AlarmHook(Config config, LoadPackageParam lpParam) {
         this.config = config;
 
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                XposedHelpers.findAndHookMethod(Enum.Class.AlarmManagerServiceS, lpParam.classLoader,
-                        Enum.Method.triggerAlarmsLocked, ArrayList.class, long.class, triggerAlarmsLockedHook);
-                log(TAG + "hook success: AlarmManagerServiceS Android 12+/S+");
-            } else {
-                XposedHelpers.findAndHookMethod(Enum.Class.AlarmManagerServiceR, lpParam.classLoader,
-                        Enum.Method.triggerAlarmsLocked, ArrayList.class, long.class, triggerAlarmsLockedHook);
-                log(TAG + "hook success: AlarmManagerServiceS Android 10 ~ 11/Q ~ R");
-            }
-        } catch (Exception e) {
-            log(TAG + "hook fail: AlarmManagerServiceS\n" + e);
-        }
+        XpUtils.hookMethod(TAG, lpParam.classLoader, triggerAlarmsLockedHook,
+                Build.VERSION.SDK_INT >= 31 ? Enum.Class.AlarmManagerServiceS : Enum.Class.AlarmManagerServiceR,
+                Enum.Method.triggerAlarmsLocked, ArrayList.class, long.class);
     }
 
-    // SDK S+
+    // SDK S-T A12-13
     // https://cs.android.com/android/platform/superproject/+/android-12.0.0_r34:frameworks/base/apex/jobscheduler/service/java/com/android/server/alarm/AlarmManagerService.java;l=3870
     // int triggerAlarmsLocked(ArrayList<Alarm> triggerList, final long nowELAPSED)
 

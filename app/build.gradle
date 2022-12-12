@@ -3,6 +3,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('D:\\Project-github\\freezeitapp\\freezeitapp_key.jks')
+            storePassword 'freezeit'
+            keyAlias 'freezeit'
+            keyPassword 'freezeit'
+        }
+    }
     compileSdk 33
 
     defaultConfig {
@@ -10,16 +18,20 @@ android {
         minSdk 29
         targetSdk 33
         versionCode 203000 // v2.3.0起，版本代号不再更新，开放随意升、降级
-        versionName "2.3.7Beta"
-
+        versionName "2.3.9Alpha"
+0
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resValue "string", "appVer", "v${versionName}"
+        signingConfig signingConfigs.release
+        multiDexEnabled false
     }
 
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+            multiDexEnabled false
         }
     }
     android.applicationVariants.all {
@@ -30,13 +42,19 @@ android {
             }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     buildFeatures {
         viewBinding true
     }
     namespace 'io.github.jark006.freezeit'
+    ndkVersion '25.1.8937393'
+    buildToolsVersion '33.0.0'
+    dependenciesInfo {
+        includeInApk false
+        includeInBundle false
+    }
 }
 
 dependencies {
@@ -49,7 +67,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
     implementation 'androidx.navigation:navigation-fragment:2.5.3'
     implementation 'androidx.navigation:navigation-ui:2.5.3'
-    implementation 'androidx.recyclerview:recyclerview'
+    implementation 'androidx.recyclerview:recyclerview:1.3.0-rc01'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'com.google.android.material:material:1.7.0'
 }

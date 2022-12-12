@@ -30,7 +30,7 @@ public class AppInfoCache {
         }
     }
 
-    static HashMap<Integer, Info> cacheInfo = new HashMap<>();
+    public static HashMap<Integer, Info> cacheInfo = new HashMap<>();
 
     public static void refreshCache(Context context) {
         PackageManager pm = context.getPackageManager();
@@ -42,18 +42,18 @@ public class AppInfoCache {
             applicationList = pm.getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES);
         }
 
+        HashMap<Integer, Info> newCacheInfo = new HashMap<>();
         for (ApplicationInfo appInfo : applicationList) {
             if (appInfo.uid < 10000)
                 continue;
             if ((appInfo.flags & (FLAG_SYSTEM | FLAG_UPDATED_SYSTEM_APP)) != 0)
                 continue;
 
-            if (!cacheInfo.containsKey(appInfo.uid)) {
-                String label = pm.getApplicationLabel(appInfo).toString();
-                cacheInfo.put(appInfo.uid, new Info(appInfo.loadIcon(pm), appInfo.packageName, label));
-            }
+            String label = pm.getApplicationLabel(appInfo).toString();
+            newCacheInfo.put(appInfo.uid, new Info(appInfo.loadIcon(pm), appInfo.packageName, label));
         }
-        Log.d(TAG, "更新缓存" + cacheInfo.size());
+        Log.d(TAG, "更新缓存" + newCacheInfo.size());
+        cacheInfo = newCacheInfo;
     }
 
     public static Info get(int uid) {

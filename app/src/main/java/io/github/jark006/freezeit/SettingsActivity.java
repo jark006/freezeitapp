@@ -11,7 +11,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,7 +21,6 @@ import com.google.android.material.chip.Chip;
 
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 
 
@@ -33,7 +31,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     SeekBar seekbarCPU, seekbarTimeouts, seekbarWakeup, seekbarTerminate, seekbarMode;
     TextView cpuText, timeoutsText, wakeupText, terminateText, modeText, systemInfo;
 
-    ImageView coolApkLink, lanzouLink, githubLink;
 
     //    final int verIdx = 0;
     final int clusterBindIdx = 1;
@@ -67,13 +64,10 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
         setContentView(R.layout.activity_settings);
 
-        coolApkLink = findViewById(R.id.coolapk_link);
-        githubLink = findViewById(R.id.github_link);
-        lanzouLink = findViewById(R.id.lanzou_link);
+        findViewById(R.id.coolapk_link).setOnClickListener(this);
+        findViewById(R.id.github_link).setOnClickListener(this);
+        findViewById(R.id.lanzou_link).setOnClickListener(this);
 
-        coolApkLink.setOnClickListener(this);
-        githubLink.setOnClickListener(this);
-        lanzouLink.setOnClickListener(this);
 
 
         chipForeground = findViewById(R.id.chip_foreground);
@@ -314,7 +308,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 Log.e(TAG, errorTips);
                 return;
             }
-            settingsVar = Arrays.copyOf(response, response.length);
+            settingsVar = response;
             refreshView();
         }
     };
@@ -443,12 +437,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         if (id == R.id.chip_foreground) {
             chipForHandle = chipForeground;
             varIndexForHandle = radicalIdx;
-//        } else if (id == R.id.chip_play) {
-//            chipForHandle = chipPlay;
-//            varIndexForHandle = playIdx;
-//        } else if (id == R.id.chip_capture) {
-//            chipForHandle = chipCapture;
-//            varIndexForHandle = captureIdx;
         } else if (id == R.id.chip_battery) {
             chipForHandle = chipBatteryMonitor;
             varIndexForHandle = batteryMonitorIdx;

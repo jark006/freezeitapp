@@ -20,13 +20,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
-
-import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,20 +47,22 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private final static String TAG = "HomeFragment";
     private FragmentHomeBinding binding;
 
+    TextView updateTips;
+    TextView changelogTips;
+
     boolean moduleIsRunning = false;
     String moduleName;
     String moduleVersion;
     int moduleVersionCode = 0;
 
-    String version = "";
-    int versionCode = 0;
     String zipUrl = null;
     String changelogUrl = null;
 
     Timer timer;
 
-    int viewWidth = 0;
-    int viewHeight = 0;
+    final int imgScale = 2;
+    int imgWidth = 0; //图像宽高 缩小为控件的 1/imgScale, 减少绘图花销，显示到imageView控件时再放大 imgScale 倍
+    int imgHeight = 0;
     long availMem = 0;
 
     ActivityManager am;
@@ -73,13 +75,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         am = (ActivityManager) requireActivity().getSystemService(ACTIVITY_SERVICE);
         memoryInfo = new ActivityManager.MemoryInfo();
 
+        updateTips = binding.updateTips;
+        changelogTips = binding.changelogTips;
+
+        updateTips.setOnClickListener(this);
+        changelogTips.setOnClickListener(this);
 
         binding.stateLayout.setOnClickListener(this);
         binding.realtimeLayout.setOnClickListener(this);
-
-        binding.updateTips.setOnClickListener(this);
-        binding.changelogTips.setOnClickListener(this);
-
 
         binding.wechatpay.setOnClickListener(this);
         binding.alipay.setOnClickListener(this);
@@ -110,7 +113,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     if (moduleIsRunning)
                         startActivity(new Intent(requireContext(), SettingsActivity.class));
                     else
-                        Snackbar.make(binding.constraintLayoutHome, getString(R.string.freezeit_offline), Snackbar.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), getString(R.string.freezeit_offline), Toast.LENGTH_LONG).show();
                 }
                 return false;
             }
@@ -119,8 +122,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         binding.cpuImg.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                viewWidth = binding.cpuImg.getWidth();
-                viewHeight = binding.cpuImg.getHeight();
+                imgWidth = binding.cpuImg.getWidth() / imgScale;
+                imgHeight = binding.cpuImg.getHeight() / imgScale;
                 binding.cpuImg.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 new Thread(realTimeTask).start();
             }
@@ -145,7 +148,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                if (viewHeight == 0 || viewWidth == 0)
+                if (imgHeight == 0 || imgWidth == 0)
                     return;
                 new Thread(realTimeTask).start();
             }
@@ -164,37 +167,38 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            byte[] response = msg.getData().getByteArray("response");
+            var response = msg.getData().getByteArray("response");
 
             if (response == null || response.length == 0) {
                 binding.realtimeLayout.setVisibility(View.GONE);
                 return;
             }
 
-            if (viewHeight == 0 || viewWidth == 0)
+            if (imgHeight == 0 || imgWidth == 0)
                 return;
 
-            // response[0-offset] 为 CPU曲线图像数据 后面是其他实时数据
-            int offset = (viewWidth / 3) * (viewHeight / 3) * 4;
-            if (response.length <= offset) {
-                String errorTips = "handleMessage: viewWidth" + viewWidth + " viewHeight" +
-                        viewHeight + " response.length" + response.length + " offset" + offset;
+            // response[0 ~ imgBuffBytes-1]CPU曲线图像数据, [imgBuffBytes ~ end]是其他实时数据
+            int imgBuffBytes = imgWidth * imgHeight * 4; // ARGB 每像素4字节
+            if (response.length <= imgBuffBytes) {
+                String errorTips = "handleMessage: imgWidth" + imgWidth + " imgHeight" +
+                        imgHeight + " response.length" + response.length + " imgBuffBytes" + imgBuffBytes;
                 Log.e(TAG, errorTips);
                 binding.memInfo.setText(errorTips);
                 return;
             }
 
-            Bitmap bitmap = Bitmap.createBitmap(viewWidth / 3, viewHeight / 3, Bitmap.Config.ARGB_8888);
-            bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(response, 0, offset));
+            var bitmap = Bitmap.createBitmap(imgWidth, imgHeight, Bitmap.Config.ARGB_8888);
+            bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(response, 0, imgBuffBytes));
+            bitmap = Utils.resize(bitmap, imgScale, imgScale);
             binding.cpuImg.setImageBitmap(bitmap);
 
-            String[] realTimeInfo = new String(response, offset, response.length - offset).split(" ");
+            var realTimeInfo = new String(response, imgBuffBytes, response.length - imgBuffBytes).split(" ");
 
             // [0]全部物理内存 [1]可用物理内存 [2]全部虚拟内存 [3]可用虚拟内存  bytes
             // [4-11]八个核心频率 [12-19]八个核心使用率
             // [20]CPU总使用率 [21]CPU温度(需除以1000) [22]电流(mA)
             if (realTimeInfo.length < 23) {
-                StringBuilder tmp = new StringBuilder("handleMessage: memSplit.length" + realTimeInfo.length);
+                var tmp = new StringBuilder("handleMessage: memSplit.length" + realTimeInfo.length);
                 for (int i = 0; i < realTimeInfo.length; i++)
                     tmp.append(" [").append(i).append("]").append(realTimeInfo[i]);
 
@@ -339,18 +343,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
             try {
                 JSONObject json = new JSONObject(new String(response, StandardCharsets.UTF_8));
-                version = json.getString("version");
-                versionCode = json.getInt("versionCode");
+                String version = json.getString("version");
+                int versionCode = json.getInt("versionCode");
 
                 if (versionCode > moduleVersionCode) {
-                    binding.updateTips.setText("\uD83D\uDCCC可更新 " + version);
-                    binding.changelogTips.setText("更新日志");
+                    updateTips.setText("\uD83D\uDCCC可更新 " + version);
+                    changelogTips.setText("更新日志");
                     zipUrl = json.getString("zipUrl");
                     changelogUrl = json.getString("changelog");
                 } else if (versionCode == moduleVersionCode) {
-                    binding.updateTips.setText("已是最新版");
+                    updateTips.setText("已是最新版");
                 } else {
-                    binding.updateTips.setText("测试版");
+                    updateTips.setText("测试版");
                 }
             } catch (JSONException e) {
                 Log.e(TAG, e.toString());
@@ -362,7 +366,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         am.getMemoryInfo(memoryInfo);
         availMem = memoryInfo.availMem;
 
-        Utils.freezeitTask(Utils.getRealTimeInfo, ("" + (viewHeight / 3) + " " + (viewWidth / 3) + " " + availMem).getBytes(), realTimeHandler);
+        Utils.freezeitTask(Utils.getRealTimeInfo, ("" + imgHeight + " " + imgWidth + " " + availMem).getBytes(), realTimeHandler);
     };
 
 
@@ -374,7 +378,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             byte[] response = msg.getData().getByteArray("response");
 
             if (response == null || response.length == 0) {
-                Snackbar.make(binding.constraintLayoutHome, getString(R.string.freezeit_offline), Snackbar.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), getString(R.string.freezeit_offline), Toast.LENGTH_LONG).show();
                 return;
             }
 
@@ -397,7 +401,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             if (moduleIsRunning)
                 new Thread(() -> Utils.freezeitTask(Utils.getChangelog, null, changelogHandler)).start();
             else
-                Snackbar.make(binding.constraintLayoutHome, getString(R.string.freezeit_offline), Snackbar.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), getString(R.string.freezeit_offline), Toast.LENGTH_LONG).show();
         } else if (id == R.id.realtimeLayout) {
             startActivity(new Intent(requireContext(), AppTimeActivity.class));
         } else if (id == R.id.wechatpay) {

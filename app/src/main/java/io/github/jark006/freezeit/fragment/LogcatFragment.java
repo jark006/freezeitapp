@@ -1,8 +1,6 @@
 package io.github.jark006.freezeit.fragment;
 
 import android.annotation.SuppressLint;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -15,30 +13,24 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.snackbar.Snackbar;
+import java.nio.charset.StandardCharsets;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import io.github.jark006.freezeit.AppInfoCache;
 import io.github.jark006.freezeit.R;
 import io.github.jark006.freezeit.Utils;
 import io.github.jark006.freezeit.databinding.FragmentLogcatBinding;
 
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
 public class LogcatFragment extends Fragment {
     private final static String TAG = "LogcatFragment";
     private FragmentLogcatBinding binding;
-    ConstraintLayout constraintLayout;
-    TextView logView;
-    LinearLayout forBottom;
 
     Timer timer;
 
@@ -47,10 +39,6 @@ public class LogcatFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentLogcatBinding.inflate(inflater, container, false);
-
-        constraintLayout = binding.constraintLayoutLogcat;
-        logView = binding.logView;
-        forBottom = binding.forBottom;
 
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
@@ -69,7 +57,7 @@ public class LogcatFragment extends Fragment {
                 } else if (id == R.id.help_log) {
                     Utils.imgDialog(requireContext(), R.drawable.help_logcat);
                 } else if (id == R.id.update_label) {
-                    Snackbar.make(constraintLayout, getString(R.string.update_start), Snackbar.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), R.string.update_start, Toast.LENGTH_SHORT).show();
                     new Thread(updateAppLabelTask).start();
                 }
                 return true;
@@ -87,18 +75,17 @@ public class LogcatFragment extends Fragment {
             byte[] response = msg.getData().getByteArray("response");
 
             if (response == null || response.length == 0) {
-                String errorTips = getString(R.string.freezeit_offline);
-                Snackbar.make(constraintLayout, errorTips, Snackbar.LENGTH_SHORT).show();
-                Log.e(TAG, errorTips);
+                Toast.makeText(requireContext(), R.string.freezeit_offline, Toast.LENGTH_LONG).show();
+                Log.e(TAG, getString(R.string.freezeit_offline));
                 return;
             }
 
             String res = new String(response, StandardCharsets.UTF_8);
             if (res.equals("success")) {
-                Snackbar.make(constraintLayout, R.string.update_success, Snackbar.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), R.string.update_success, Toast.LENGTH_SHORT).show();
             } else {
                 String errorTips = getString(R.string.update_fail) + " Receive:[" + res + "]";
-                Snackbar.make(constraintLayout, errorTips, Snackbar.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), errorTips, Toast.LENGTH_LONG).show();
                 Log.e(TAG, errorTips);
             }
         }
@@ -107,17 +94,9 @@ public class LogcatFragment extends Fragment {
     Runnable updateAppLabelTask = () -> {
         StringBuilder appName = new StringBuilder();
 
-        PackageManager pm = requireContext().getPackageManager();
-        List<ApplicationInfo> applicationsInfo = pm.getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES);
-        for (ApplicationInfo appInfo : applicationsInfo) {
-            if (appInfo.uid < 10000)
-                continue;
-            if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) > 0)
-                continue;
+        AppInfoCache.refreshCache(requireContext());
+        AppInfoCache.cacheInfo.forEach((uid, info)-> appName.append(uid).append(" ").append(info.label).append('\n'));
 
-            String label = pm.getApplicationLabel(appInfo).toString();
-            appName.append(appInfo.uid).append(" ").append(label).append('\n');
-        }
         Utils.freezeitTask(Utils.setAppLabel, appName.toString().getBytes(StandardCharsets.UTF_8), appNameHandler);
     };
 
@@ -154,7 +133,7 @@ public class LogcatFragment extends Fragment {
             byte[] response = msg.getData().getByteArray("response");
 
             if (response == null || response.length == 0) {
-                logView.setText("null");
+                binding.logView.setText("null");
                 return;
             }
 
@@ -163,10 +142,10 @@ public class LogcatFragment extends Fragment {
 
             lastLogLen = response.length;
 
-            logView.setMovementMethod(ScrollingMovementMethod.getInstance());//流畅滑动
-            logView.setText(new String(response, StandardCharsets.UTF_8));
-            forBottom.requestFocus();//请求焦点，直接到日志底部
-            forBottom.clearFocus();
+            binding.logView.setMovementMethod(ScrollingMovementMethod.getInstance());//流畅滑动
+            binding.logView.setText(new String(response, StandardCharsets.UTF_8));
+            binding.forBottom.requestFocus();//请求焦点，直接到日志底部
+            binding.forBottom.clearFocus();
         }
     };
 }

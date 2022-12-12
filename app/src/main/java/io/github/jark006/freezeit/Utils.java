@@ -4,23 +4,20 @@ package io.github.jark006.freezeit;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.util.Pair;
 import android.widget.ImageView;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -30,7 +27,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 
 public class Utils {
@@ -217,46 +213,48 @@ public class Utils {
         dialog.show();
     }
 
-    public static int getCpuCluster() {
-        HashSet<String> partID = new HashSet<>();
-        String line;
-        try {
-            BufferedReader br = new BufferedReader(new FileReader("/proc/cpuinfo"));
-            while ((line = br.readLine()) != null) {
-                if (line.startsWith("CPU part")) partID.add(line);
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
+    public static Bitmap resize(Bitmap bitmap, float scaleX, float scaleY) {
+        Matrix matrix = new Matrix();
+        matrix.postScale(scaleX, scaleY);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, false);
+    }
+
+    // 小端 只是避免内存越界，不处理转换失败的情况
+    public static int Byte2Int(byte[] bytes, int byteOffset) {
+        if (bytes == null || (byteOffset + 4) > bytes.length)
+            return 0;
+
+        return Byte.toUnsignedInt(bytes[byteOffset]) |
+                (Byte.toUnsignedInt(bytes[byteOffset + 1]) << 8) |
+                (Byte.toUnsignedInt(bytes[byteOffset + 2]) << 16) |
+                (Byte.toUnsignedInt(bytes[byteOffset + 3]) << 24);
+    }
+
+    public static void Int2Byte(int value, byte[] bytes, int byteOffset) {
+        if (bytes == null) return;
+        if ((byteOffset + 4) > bytes.length) {
+            while (byteOffset < bytes.length)
+                bytes[byteOffset++] = 0;
+            return;
         }
-        return partID.size();
+
+        bytes[byteOffset++] = (byte) value;
+        bytes[byteOffset++] = (byte) (value >> 8);
+        bytes[byteOffset++] = (byte) (value >> 16);
+        bytes[byteOffset] = (byte) (value >> 24);
     }
 
-    // 小端
-    public static int Byte2Int(byte[] bytes, int offset) {
-        return Byte.toUnsignedInt(bytes[offset]) |
-                (Byte.toUnsignedInt(bytes[offset + 1]) << 8) |
-                (Byte.toUnsignedInt(bytes[offset + 2]) << 16) |
-                (Byte.toUnsignedInt(bytes[offset + 3]) << 24);
-    }
-
-    public static void Int2Byte(int value, byte[] bytes, int offset) {
-        bytes[offset++] = (byte) value;
-        bytes[offset++] = (byte) (value >> 8);
-        bytes[offset++] = (byte) (value >> 16);
-        bytes[offset] = (byte) (value >> 24);
-    }
-
-    public static void Bytes2Int(byte[] bytes, int offset, int length, int[] ints) {
-        for (int intIdx = 0; offset < length; offset += 4) {
-            ints[intIdx++] = Byte.toUnsignedInt(bytes[offset]) |
-                    (Byte.toUnsignedInt(bytes[offset + 1]) << 8) |
-                    (Byte.toUnsignedInt(bytes[offset + 2]) << 16) |
-                    (Byte.toUnsignedInt(bytes[offset + 3]) << 24);
+    public static void Byte2Int(byte[] bytes, int byteOffset, int[] ints, int intOffset, int intLength) {
+        for (int intIdx = intOffset; intIdx < intOffset + intLength; intIdx++, byteOffset += 4) {
+            ints[intIdx] = Byte.toUnsignedInt(bytes[byteOffset]) |
+                    (Byte.toUnsignedInt(bytes[byteOffset + 1]) << 8) |
+                    (Byte.toUnsignedInt(bytes[byteOffset + 2]) << 16) |
+                    (Byte.toUnsignedInt(bytes[byteOffset + 3]) << 24);
         }
     }
 
-    public static void Int2Bytes(int[] ints, int intOffset, int length, byte[] bytes, int byteOffset) {
-        for (int intIdx = intOffset; intIdx < intOffset + length; intIdx++) {
+    public static void Int2Byte(int[] ints, int intOffset, int intLength, byte[] bytes, int byteOffset) {
+        for (int intIdx = intOffset; intIdx < intOffset + intLength; intIdx++) {
             bytes[byteOffset++] = (byte) ints[intIdx];
             bytes[byteOffset++] = (byte) (ints[intIdx] >> 8);
             bytes[byteOffset++] = (byte) (ints[intIdx] >> 16);
@@ -264,7 +262,14 @@ public class Utils {
         }
     }
 
-    public static void Hashset2Bytes(HashSet<Integer> set, byte[] bytes, int byteOffset){
+    public static void HashSet2Byte(HashSet<Integer> set, byte[] bytes, int byteOffset) {
+        if (bytes == null) return;
+        if ((byteOffset + 4 * set.size()) > bytes.length) {
+            while (byteOffset < bytes.length)
+                bytes[byteOffset++] = 0;
+            return;
+        }
+
         for (int value : set) {
             bytes[byteOffset++] = (byte) value;
             bytes[byteOffset++] = (byte) (value >> 8);

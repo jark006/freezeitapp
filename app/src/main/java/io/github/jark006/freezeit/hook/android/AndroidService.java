@@ -1,190 +1,288 @@
 package io.github.jark006.freezeit.hook.android;
 
-import static de.robv.android.xposed.XposedBridge.log;
+//import static de.robv.android.xposed.XposedBridge.log;
+
+import static io.github.jark006.freezeit.hook.XpUtils.log;
 
 import android.content.Context;
 import android.net.LocalServerSocket;
-import android.net.LocalSocket;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 
-import io.github.jark006.freezeit.Utils;
-import io.github.jark006.freezeit.hook.Config;
-import io.github.jark006.freezeit.hook.Enum;
-
-import java.io.InputStream;
+import java.io.File;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Set;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import io.github.jark006.freezeit.Utils;
+import io.github.jark006.freezeit.hook.Config;
+import io.github.jark006.freezeit.hook.Enum;
+import io.github.jark006.freezeit.hook.XpUtils;
 
 public class AndroidService {
     final static String TAG = "Freezeit[AndroidService]:";
-    final int REPLY_POSITIVE = 2;
-    final int REPLY_NEGATIVE = 1;
-    final int REPLY_FAILURE = 0;
+    final static String AMS_TAG = "Freezeit[AMS]:";
+    final static String NMS_TAG = "Freezeit[NMS]:";
+    final static String OPS_TAG = "Freezeit[OPS]:";
+    final static String BSS_TAG = "Freezeit[BSS]:";
+    final int REPLY_SUCCESS_POSITIVE = 2; // 执行成功，结果积极
+    final int REPLY_SUCCESS_NEGATIVE = 1; // 执行成功，结果消极
+    final int REPLY_FAILURE = 0;          // 执行失败
 
     Config config;
+    ClassLoader classLoader;
 
-    Object mProcessList = null;
-    ArrayList<?> mLruProcesses = null;
+    Object mProcessList;
+    ArrayList<?> mLruProcesses;
+
+    Object screen_mStats;
+
+    Object appOps;
+    Method setUidModeMethod;
+
+    Object networkManagementService;
+    Object mNetdService;
+    Class<?> UidRangeParcel;
+    Method socketDestroyMethod;
+
 
     LocalSocketServer serverThread = new LocalSocketServer();
-    Object powerManager;
 
-    // mainline https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java
     public AndroidService(Config config, XC_LoadPackage.LoadPackageParam lpParam) {
         this.config = config;
+        this.classLoader = lpParam.classLoader;
 
-        try {
-            XposedHelpers.findAndHookConstructor(Enum.Class.ActivityManagerService, lpParam.classLoader,
-                    Context.class, Enum.Class.ActivityTaskManagerService, new XC_MethodHook() {
-                        @Override
-                        protected void afterHookedMethod(MethodHookParam param) {
-                            mProcessList = XposedHelpers.getObjectField(param.thisObject, Enum.Field.mProcessList);
-                            mLruProcesses = (ArrayList<?>) XposedHelpers.getObjectField(mProcessList, Enum.Field.mLruProcesses);
-                            log(TAG + "Init mProcessList mLruProcesses");
+        // A10-13
+        // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java
+        XpUtils.hookConstructor(AMS_TAG, classLoader, AMSHook, Enum.Class.ActivityManagerService,
+                Context.class, Enum.Class.ActivityTaskManagerService);
 
-                            serverThread.start();
-                        }
-                    });
-            log(TAG + "hook AMSHook success");
-        } catch (Exception e) {
-            log(TAG + "hook AMSHook fail:" + e);
+        XpUtils.hookConstructor(NMS_TAG, classLoader, NMSHook, Enum.Class.NetworkManagementService,
+                Context.class, Enum.Class.Dependencies);
+
+        // A11-13
+        // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/appop/AppOpsService.java;l=1776
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            XpUtils.hookConstructor(OPS_TAG, classLoader, AppOpsHook, Enum.Class.AppOpsService,
+                    File.class, Handler.class, Context.class);
+
+            //public void setUidMode(int code, int uid, int mode)
+//            XpUtils.hookMethod(OPS_TAG, classLoader, testHook, Enum.Class.AppOpsService,
+//                    Enum.Method.setUidMode, int.class, int.class, int.class);
+        } else { // A10
+            XpUtils.hookConstructor(OPS_TAG, classLoader, AppOpsHook, Enum.Class.AppOpsService,
+                    File.class, Handler.class);
         }
 
-        // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/os/PowerManager.java;l=1730
-        try {
-            XposedHelpers.findAndHookConstructor(Enum.Class.PowerManager, lpParam.classLoader,
-                    Context.class, Enum.Class.IPowerManager, Enum.Class.IThermalService, Handler.class,
-                    new XC_MethodHook() {
-                        @Override
-                        protected void afterHookedMethod(MethodHookParam param) {
-                            powerManager = param.thisObject;
-                            log(TAG + "Init powerManager");
-                            // TODO 有多次日志记录，不止一个实例， 4个？
-                            // TODO Android 10-13 兼容性 待测
-                        }
-                    });
-            log(TAG + "hook PowerManager success");
-        } catch (Exception e) {
-            log(TAG + "hook PowerManager fail:" + e);
-        }
+        // A10-13
+        // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/view/Display.java;drc=fc06fc5cb18df9fa16b7a34bb0a8e6749d2e0bca;l=387
+        // https://cs.android.com/android/platform/superproject/+/master:out/soong/.intermediates/frameworks/base/framework-minus-apex-intdefs/android_common/xref35/srcjars.xref/android/view/ViewProtoEnums.java;l=10
+        XpUtils.hookConstructor(BSS_TAG, classLoader, BSSHook, Enum.Class.BatteryStatsService,
+                Context.class, File.class, Handler.class);
+
+        serverThread.start();
     }
 
+//    XC_MethodHook testHook = new XC_MethodHook() {
+//        @Override
+//        protected void afterHookedMethod(MethodHookParam param) {
+//            int code = (int) param.args[0];
+//            int uid = (int) param.args[1];
+//            int mode = (int) param.args[2];
+//            log(TAG, "APP_OPS监控 code:" + code + " uid:" + uid + " mode:" + mode);
+//        }
+//    };
+
+    XC_MethodHook AMSHook = new XC_MethodHook() {
+        @Override
+        protected void afterHookedMethod(MethodHookParam param) {
+            mProcessList = XposedHelpers.getObjectField(param.thisObject, Enum.Field.mProcessList);
+            mLruProcesses = (ArrayList<?>) XposedHelpers.getObjectField(mProcessList, Enum.Field.mLruProcesses);
+            log(TAG, "Init mProcessList mLruProcesses");
+        }
+    };
+
+    XC_MethodHook NMSHook = new XC_MethodHook() {
+        @Override
+        protected void afterHookedMethod(MethodHookParam param) {
+            networkManagementService = param.thisObject;
+            mNetdService = XposedHelpers.getObjectField(networkManagementService, Enum.Field.mNetdService);
+            UidRangeParcel = XposedHelpers.findClassIfExists(Enum.Class.UidRangeParcel, classLoader);
+
+            socketDestroyMethod = XposedHelpers.findMethodExactIfExists(
+                    mNetdService.getClass(), Enum.Method.socketDestroy,
+                    UidRangeParcel, int[].class);
+
+            log(TAG, "Init networkManagementService mNetdService");
+        }
+    };
+
+    XC_MethodHook AppOpsHook = new XC_MethodHook() {
+        @Override
+        protected void afterHookedMethod(MethodHookParam param) {
+            appOps = param.thisObject;
+            setUidModeMethod = XposedHelpers.findMethodExactIfExists(
+                    appOps.getClass(), Enum.Method.setUidMode,
+                    int.class, int.class, int.class);
+            log(TAG, "Init appOps");
+        }
+    };
+
+    XC_MethodHook BSSHook = new XC_MethodHook() {
+        @Override
+        protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) {
+            screen_mStats = XposedHelpers.getObjectField(param.thisObject, Enum.Field.mStats);
+            log(TAG, "Init BatteryStatsService mStats");
+        }
+    };
+
+
     public class LocalSocketServer extends Thread {
-        // 1359322925 是 "Freezeit" 的10进制CRC32值
-        // 冻它命令识别码
-        final int GET_TOP = 1359322925 + 1;
-        final int GET_SCREEN = 1359322925 + 2;
+        // 冻它命令识别码, 1359322925 是字符串"Freezeit"的10进制CRC32值
+        final int GET_FOREGROUND = 1359322925 + 1;
+        final int GET_SCREEN_STATE = 1359322925 + 2;
 
         final int SET_CONFIG = 1359322925 + 20;
-        final int SET_WAKEUP_LOCK = 1359322925 + 21;
+        final int SET_WAKEUP_LOCK = 1359322925 + 21; // 设置唤醒锁权限，针对[宽松]应用，[严格]应用已禁止申请唤醒锁
 
-        byte[] recvBuff = new byte[4096];
-        byte[] replyBuff = new byte[4096];
+        final int BREAK_NETWORK = 1359322925 + 41; //TODO 给某应用断网，针对已接入推送的QQ/TIM:msf
+
+        // 有效命令集
+        final Set<Integer> requestCodeSet = Set.of(
+                GET_FOREGROUND,
+                GET_SCREEN_STATE,
+                SET_CONFIG,
+                SET_WAKEUP_LOCK,
+                BREAK_NETWORK
+        );
+
+        final int buffSize = 16 * 1024; // 16Kib
+        byte[] recvBuff = new byte[buffSize];
+        byte[] replyBuff = new byte[buffSize];
 
         @SuppressWarnings("InfiniteLoopStatement")
         @Override
         public void run() {
             try {
-                LocalServerSocket mSocketServer = new LocalServerSocket("FreezeitServer");
+                var mSocketServer = new LocalServerSocket("FreezeitServer");
                 while (true) {
-                    LocalSocket client = mSocketServer.accept();//堵塞,单线程处理
+                    var client = mSocketServer.accept();//堵塞,单线程处理
                     if (client == null) continue;
 
                     client.setSoTimeout(100);
-                    InputStream is = client.getInputStream();
+                    var is = client.getInputStream();
 
                     int recvLen = is.read(recvBuff, 0, 8);
                     if (recvLen != 8) {
-                        log(TAG + "非法连接 接收长度 " + recvLen);
+                        log(TAG, "非法连接 接收长度 " + recvLen);
                         is.close();
                         client.close();
                         continue;
                     }
 
+                    // 前4字节是请求码，后4字节是附加数据长度
                     int requestCode = Utils.Byte2Int(recvBuff, 0);
+                    if (!requestCodeSet.contains(requestCode)) {
+                        log(TAG, "非法请求码 " + requestCode);
+                        is.close();
+                        client.close();
+                        continue;
+                    }
+
                     int payloadLen = Utils.Byte2Int(recvBuff, 4);
-                    if(payloadLen>0){
+                    if (buffSize <= payloadLen) {
+                        log(TAG, "数据量超过承载范围 " + payloadLen);
+                        is.close();
+                        client.close();
+                        continue;
+                    }
+                    if (payloadLen > 0) {
                         int readCnt = 0;
                         while (readCnt < payloadLen) { //欲求不满
                             int cnt = is.read(recvBuff, readCnt, payloadLen - readCnt);
                             if (cnt < 0) {
-                                Log.e(TAG, "接收错误 cnt < 0");
+                                Log.e(TAG, "接收完毕或错误 " + cnt);
                                 break;
                             }
                             readCnt += cnt;
                         }
                         if (payloadLen != readCnt) {
-                            log(TAG + "接收错误 payloadLen"+payloadLen+" readCnt" + readCnt);
+                            log(TAG, "接收错误 payloadLen" + payloadLen + " readCnt" + readCnt);
                             is.close();
                             client.close();
                             continue;
                         }
                     }
 
-                    OutputStream os = client.getOutputStream();
+                    var os = client.getOutputStream();
                     switch (requestCode) {
-                        case GET_TOP:
-                            handleTop(os, replyBuff);
+                        case GET_FOREGROUND:
+                            handleForeground(os, replyBuff);
                             break;
-                        case GET_SCREEN:
+                        case GET_SCREEN_STATE:
                             handleScreen(os, replyBuff);
                             break;
                         case SET_CONFIG:
                             handleConfig(os, recvBuff, payloadLen, replyBuff);
                             break;
+                        case SET_WAKEUP_LOCK:
+                            handleWakeupLock(os, recvBuff, payloadLen, replyBuff);
+                            break;
+                        case BREAK_NETWORK:
+                            handleBreakNetwork(os, recvBuff, payloadLen, replyBuff);
+                            break;
                         default:
-                            log(TAG + "非法请求码 " + requestCode);
+                            log(TAG, "请求码功能暂未实现TODO: " + requestCode);
                             break;
                     }
                     client.close();
                 }
             } catch (Exception e) {
-                log(TAG + e);
+                log(TAG, e.toString());
             }
         }
     }
 
 
-    void handleTop(OutputStream os, byte[] replyBuff) throws Exception {
+    void handleForeground(OutputStream os, byte[] replyBuff) throws Exception {
         config.top.clear();
         try {
-            synchronized (mLruProcesses) { // TODO 不确定这种上锁能否有效
-                for (Object processRecord : mLruProcesses) {
-                    if (processRecord == null) continue;
+            for (int i = mLruProcesses.size() - 1; i > 0; i--) { //逆序, 最近活跃应用在最后
+                var processRecord = mLruProcesses.get(i);
+                if (processRecord == null) continue;
 
-                    int uid = XposedHelpers.getIntField(processRecord, "uid");
-                    if (uid < 10000 || !config.thirdApp.contains(uid) || config.whitelist.contains(uid))
-                        continue;
+                int uid = XposedHelpers.getIntField(processRecord, "uid");
+                if (uid < 10000 || !config.thirdApp.contains(uid) || config.whitelist.contains(uid))
+                    continue;
 
-                    int mCurProcState;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        Object mState = XposedHelpers.getObjectField(processRecord, "mState");
-                        if (mState == null) continue;
-                        mCurProcState = XposedHelpers.getIntField(mState, "mCurProcState");
-                    } else {
-                        mCurProcState = XposedHelpers.getIntField(processRecord, "mCurProcState");
-                    }
-
-                    // 在顶层 或 绑定了顶层应用 或 有前台服务的宽松前台
-                    // ProcessStateEnum: https://cs.android.com/android/platform/superproject/+/master:out/soong/.intermediates/frameworks/base/framework-minus-apex/android_common/xref35/srcjars.xref/android/app/ProcessStateEnum.java;l=10
-                    if (mCurProcState <= 3 || (mCurProcState <= 6 && config.tolerant.contains(uid)))
-                        config.top.add(uid);
+                int mCurProcState;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    var mState = XposedHelpers.getObjectField(processRecord, "mState");
+                    if (mState == null) continue;
+                    mCurProcState = XposedHelpers.getIntField(mState, "mCurProcState");
+                } else {
+                    mCurProcState = XposedHelpers.getIntField(processRecord, "mCurProcState");
                 }
+
+                // 在顶层 或 绑定了顶层应用 或 有前台服务的宽松前台
+                // ProcessStateEnum: https://cs.android.com/android/platform/superproject/+/master:out/soong/.intermediates/frameworks/base/framework-minus-apex/android_common/xref35/srcjars.xref/android/app/ProcessStateEnum.java;l=10
+                if (mCurProcState <= 3 || (mCurProcState <= 6 && config.tolerant.contains(uid)))
+                    config.top.add(uid);
             }
         } catch (Exception e) {
-            log(TAG + "前台服务错误:" + e);
+            log(TAG, "前台服务错误:" + e);
         }
 
         // 开头的4字节放置UID的个数，往后每4个字节放一个UID  [小端]
         Utils.Int2Byte(config.top.size(), replyBuff, 0);
-        Utils.Hashset2Bytes(config.top, replyBuff, 4);
+        Utils.HashSet2Byte(config.top, replyBuff, 4);
 
         os.write(replyBuff, 0, (config.top.size() + 1) * 4);
         os.close();
@@ -192,14 +290,29 @@ public class AndroidService {
 
     // 0获取失败 1息屏 2亮屏
     void handleScreen(OutputStream os, byte[] replyBuff) throws Exception {
-        if (powerManager == null) {
-            log(TAG + "powerManager 未初始化");
+        if (screen_mStats == null) {
+            log(TAG, "mStats 未初始化");
             Utils.Int2Byte(REPLY_FAILURE, replyBuff, 0);
         } else {
-            boolean isInteractive = (boolean) XposedHelpers.callMethod(powerManager, Enum.Method.isInteractive);
-            Utils.Int2Byte(isInteractive ? REPLY_POSITIVE : REPLY_NEGATIVE, replyBuff, 0);
-            log(TAG + (isInteractive ? "交互中" : "息屏中"));
+/*
+            https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/view/Display.java;drc=fc06fc5cb18df9fa16b7a34bb0a8e6749d2e0bca;l=387
+            enum DisplayStateEnum
+            public static final int DISPLAY_STATE_UNKNOWN = 0;
+            public static final int DISPLAY_STATE_OFF = 1;
+            public static final int DISPLAY_STATE_ON = 2;
+            public static final int DISPLAY_STATE_DOZE = 3; //亮屏但处于Doze的非交互状态状态
+            public static final int DISPLAY_STATE_DOZE_SUSPEND = 4; // 同上，但CPU不控制显示，由协处理器或其他控制
+            public static final int DISPLAY_STATE_VR = 5;
+            public static final int DISPLAY_STATE_ON_SUSPEND = 6; //非Doze, 类似4
+ */
+            int mScreenState = XposedHelpers.getIntField(screen_mStats, Enum.Field.mScreenState);
+            boolean isScreenOn = (mScreenState == 2) || (mScreenState == 5) || (mScreenState == 6) || (mScreenState == 0);
+            Utils.Int2Byte(isScreenOn ? REPLY_SUCCESS_POSITIVE : REPLY_SUCCESS_NEGATIVE, replyBuff, 0);
+
+            if (mScreenState != 1 && mScreenState != 2) // 其他状态打一下日志
+                log(TAG, "mScreenState:" + mScreenState);
         }
+
         os.write(replyBuff, 0, 4);
         os.close();
     }
@@ -213,11 +326,11 @@ public class AndroidService {
      */
     void handleConfig(OutputStream os, byte[] recvBuff, int recvLen, byte[] replyBuff) throws Exception {
 
-        String[] splitLine = new String(recvBuff,0, recvLen).split("\n");
+        var splitLine = new String(recvBuff, 0, recvLen).split("\n");
         if (splitLine.length < 3 || splitLine.length > 4) {
-            log(TAG + "Fail splitLine.length:" + splitLine.length);
+            log(TAG, "Fail splitLine.length:" + splitLine.length);
             for (String line : splitLine)
-                log(TAG + "START:" + line);
+                log(TAG, "START:" + line);
 
             Utils.Int2Byte(REPLY_FAILURE, replyBuff, 0);
             os.write(replyBuff, 0, 4);
@@ -229,45 +342,104 @@ public class AndroidService {
         config.whitelist.clear();
         config.tolerant.clear();
 
-        log(TAG + "Start parse, line:"+splitLine.length);
+        log(TAG, "Start parse, line:" + splitLine.length);
         try {
             for (int lineIdx = 0; lineIdx < splitLine.length; lineIdx++) {
-                String[] split = splitLine[lineIdx].split(" ");
+                var split = splitLine[lineIdx].split(" ");
                 switch (lineIdx) {
                     case 0:
                         for (int i = 0; i < split.length; i++)
                             config.settings[i] = Integer.parseInt(split[i]);
-                        log(TAG + "Parse settings  " + split.length);
+                        log(TAG, "Parse settings  " + split.length);
                         break;
                     case 1:
                         for (String s : split)
                             if (s.length() == 5) // UID 10XXX 长度是5
                                 config.thirdApp.add(Integer.parseInt(s));
-                        log(TAG + "Parse thirdApp  " + config.thirdApp.size());
+                        log(TAG, "Parse thirdApp  " + config.thirdApp.size());
                         break;
                     case 2:
                         for (String s : split)
                             if (s.length() == 5)
                                 config.whitelist.add(Integer.parseInt(s));
-                        log(TAG + "Parse whitelist " + config.whitelist.size());
+                        log(TAG, "Parse whitelist " + config.whitelist.size());
                         break;
                     case 3:
                         for (String s : split)
                             if (s.length() == 5)
                                 config.tolerant.add(Integer.parseInt(s));
-                        log(TAG + "Parse tolerant  " + config.tolerant.size());
+                        log(TAG, "Parse tolerant  " + config.tolerant.size());
                         break;
                 }
             }
-            log(TAG + "Finish parse");
-            Utils.Int2Byte(REPLY_POSITIVE, replyBuff, 0);
+            log(TAG, "Finish parse");
+            Utils.Int2Byte(REPLY_SUCCESS_POSITIVE, replyBuff, 0);
         } catch (Exception e) {
-            log(TAG + "IOException: [" + Arrays.toString(splitLine) + "]: \n" + e);
-            Utils.Int2Byte(REPLY_NEGATIVE, replyBuff, 0);
+            log(TAG, "IOException: [" + Arrays.toString(splitLine) + "]: \n" + e);
+            Utils.Int2Byte(REPLY_SUCCESS_NEGATIVE, replyBuff, 0);
         }
 
         os.write(replyBuff, 0, 4);
         os.close();
     }
 
+
+    void handleWakeupLock(OutputStream os, byte[] recvBuff, int recvLen, byte[] replyBuff) throws Exception {
+        // https://cs.android.com/android/platform/superproject/+/android-mainline-10.0.0_r9:out/soong/.intermediates/frameworks/base/framework-minus-apex/android_common/xref35/srcjars.xref/android/app/AppProtoEnums.java;l=84
+        // WAKEUP_LOCK CODE is [40] A10-A13
+        // public static final String[] MODE_NAMES = new String[] {
+        //            "allow",        // MODE_ALLOWED
+        //            "ignore",       // MODE_IGNORED
+        //            "deny",         // MODE_ERRORED
+        //            "default",      // MODE_DEFAULT
+        //            "foreground",   // MODE_FOREGROUND
+        //    };
+
+        final int WAKEUP_LOCK_CODE = 40;
+        int uid = Utils.Byte2Int(recvBuff, 0);
+        int mode = Utils.Byte2Int(recvBuff, 4); // 1:ignore  3:default
+
+        if (recvLen != 8 || (mode != 1 && mode != 3) || !config.thirdApp.contains(uid) || setUidModeMethod == null) {
+            Utils.Int2Byte(REPLY_FAILURE, replyBuff, 0);
+        } else {
+            setUidModeMethod.invoke(appOps, WAKEUP_LOCK_CODE, uid, mode);
+//            XposedHelpers.callMethod(appOps, Enum.Method.setUidMode, WAKEUP_LOCK_CODE, uid, mode);
+            Utils.Int2Byte(REPLY_SUCCESS_POSITIVE, replyBuff, 0);
+        }
+
+        os.write(replyBuff, 0, 4);
+        os.close();
+    }
+
+    private Object makeUidRangeParcel(int start, int stop) {
+        Object uidRangeParcel;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            uidRangeParcel = XposedHelpers.newInstance(UidRangeParcel, start, stop);
+        } else {
+            uidRangeParcel = XposedHelpers.newInstance(UidRangeParcel);
+            XposedHelpers.setObjectField(uidRangeParcel, "start", start);
+            XposedHelpers.setObjectField(uidRangeParcel, "stop", stop);
+        }
+        return uidRangeParcel;
+    }
+
+    // TODO
+    void handleBreakNetwork(OutputStream os, byte[] recvBuff, int recvLen, byte[] replyBuff) throws Exception {
+        int uid = Utils.Byte2Int(recvBuff, 0);
+        if (config.thirdApp.contains(uid) && socketDestroyMethod != null) {
+            Object uidRangeParcel = makeUidRangeParcel(uid, uid);
+            Object uidRangeParcels = Array.newInstance(UidRangeParcel, 1);
+            Array.set(uidRangeParcels, 0, uidRangeParcel);
+//            XposedHelpers.callMethod(mNetdService, Enum.Method.socketDestroy, uidRangeParcels, new int[0]);
+            socketDestroyMethod.invoke(mNetdService, uidRangeParcels, new int[0]);
+            Utils.Int2Byte(REPLY_SUCCESS_POSITIVE, replyBuff, 0);
+            log(TAG, "断网成功 UID" + uid);
+        } else {
+            Utils.Int2Byte(REPLY_FAILURE, replyBuff, 0);
+            log(TAG, "断网失败 UID" + uid);
+        }
+
+        os.write(replyBuff, 0, 4);
+        os.close();
+    }
 }

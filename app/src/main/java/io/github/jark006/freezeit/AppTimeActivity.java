@@ -25,7 +25,7 @@ import java.util.TimerTask;
 
 public class AppTimeActivity extends AppCompatActivity {
     AppTimeAdapter recycleAdapter;
-    String[] lines=new String[]{};
+    String[] lines = new String[]{};
     Timer timer;
 
     @SuppressLint("MissingInflatedId")
@@ -60,6 +60,7 @@ public class AppTimeActivity extends AppCompatActivity {
             }
         });
     }
+
     @Override
     public void onPause() {
         super.onPause();

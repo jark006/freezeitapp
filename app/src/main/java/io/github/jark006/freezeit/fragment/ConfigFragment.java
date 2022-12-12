@@ -1,12 +1,6 @@
 package io.github.jark006.freezeit.fragment;
 
-import static android.content.pm.ApplicationInfo.FLAG_SYSTEM;
-import static android.content.pm.ApplicationInfo.FLAG_UPDATED_SYSTEM_APP;
-
 import android.annotation.SuppressLint;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -23,13 +17,15 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import io.github.jark006.freezeit.AppInfoCache;
 import io.github.jark006.freezeit.R;
@@ -37,51 +33,29 @@ import io.github.jark006.freezeit.Utils;
 import io.github.jark006.freezeit.adapter.AppCfgAdapter;
 import io.github.jark006.freezeit.databinding.FragmentConfigBinding;
 
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 public class ConfigFragment extends Fragment {
     private final static String TAG = "ConfigFragment";
 
     private FragmentConfigBinding binding;
-    ConstraintLayout constraintLayout;
     AppCfgAdapter recycleAdapter;
     ArrayList<Integer> uidList = new ArrayList<>();
-
     long lastTimestamp = 0;
-
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private RecyclerView recyclerView;
-
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         binding = FragmentConfigBinding.inflate(inflater, container, false);
 
-        constraintLayout = binding.constraintLayoutConfig;
-        recyclerView = binding.recyclerviewApp;
-        swipeRefreshLayout = binding.swipeRefreshLayout;
-        swipeRefreshLayout.setOnRefreshListener(() -> new Thread(() -> Utils.freezeitTask(Utils.getAppCfg, null, getAppCfgHandler)).start());
+        // 下拉刷新时，先更新应用缓存
+        binding.swipeRefreshLayout.setOnRefreshListener(() -> new Thread(() -> {
+            AppInfoCache.refreshCache(requireContext());
+            uidList.clear();
+            AppInfoCache.cacheInfo.forEach((uid, info) -> uidList.add(uid));
 
-        PackageManager pm = requireContext().getPackageManager();
-        List<ApplicationInfo> applicationList;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            applicationList = pm.getInstalledApplications(
-                    PackageManager.ApplicationInfoFlags.of(PackageManager.MATCH_UNINSTALLED_PACKAGES));
-        } else {
-            applicationList = pm.getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES);
-        }
+            Utils.freezeitTask(Utils.getAppCfg, null, getAppCfgHandler);
+        }).start());
 
-        for (ApplicationInfo appInfo : applicationList) {
-            if (appInfo.uid < 10000)
-                continue;
-            if ((appInfo.flags & (FLAG_SYSTEM | FLAG_UPDATED_SYSTEM_APP)) != 0)
-                continue;
-            uidList.add(appInfo.uid);
-        }
+        AppInfoCache.cacheInfo.forEach((uid, info) -> uidList.add(uid));
 
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
@@ -160,7 +134,6 @@ public class ConfigFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        new Thread(() -> AppInfoCache.refreshCache(requireContext())).start();
         new Thread(() -> Utils.freezeitTask(Utils.getAppCfg, null, getAppCfgHandler)).start();
     }
 
@@ -250,11 +223,12 @@ public class ConfigFragment extends Fragment {
             recycleAdapter = new AppCfgAdapter(uidListSort, appCfg);
             LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
             layoutManager.setOrientation(RecyclerView.VERTICAL);
-            recyclerView.setLayoutManager(layoutManager);
-            recyclerView.setAdapter(recycleAdapter);
-            recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-            swipeRefreshLayout.setRefreshing(false);
+            binding.recyclerviewApp.setLayoutManager(layoutManager);
+            binding.recyclerviewApp.setAdapter(recycleAdapter);
+            binding.recyclerviewApp.setItemAnimator(new DefaultItemAnimator());
+
+            binding.swipeRefreshLayout.setRefreshing(false);
         }
     };
 
