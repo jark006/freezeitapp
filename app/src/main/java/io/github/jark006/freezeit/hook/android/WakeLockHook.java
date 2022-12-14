@@ -35,25 +35,25 @@ public class WakeLockHook {
         //            WorkSource ws, String historyTag, int uid, int pid)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            XpUtils.hookMethod(TAG, lpParam.classLoader, acquireWakeLockInternalHook,
+            XpUtils.hookMethod(TAG, lpParam.classLoader, callback,
                     Enum.Class.PowerManagerService, Enum.Method.acquireWakeLockInternal,
                     IBinder.class, int.class, int.class, String.class,
                     String.class, WorkSource.class, String.class, int.class, int.class,
                     Enum.Class.IWakeLockCallback);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            XpUtils.hookMethod(TAG, lpParam.classLoader, acquireWakeLockInternalHook,
+            XpUtils.hookMethod(TAG, lpParam.classLoader, callback,
                     Enum.Class.PowerManagerService, Enum.Method.acquireWakeLockInternal,
                     IBinder.class, int.class, int.class, String.class,
                     String.class, WorkSource.class, String.class, int.class, int.class);
         } else {
-            XpUtils.hookMethod(TAG, lpParam.classLoader, acquireWakeLockInternalHook,
+            XpUtils.hookMethod(TAG, lpParam.classLoader, callback,
                     Enum.Class.PowerManagerService, Enum.Method.acquireWakeLockInternal,
                     IBinder.class, int.class, String.class,
                     String.class, WorkSource.class, String.class, int.class, int.class);
         }
     }
 
-    XC_MethodHook acquireWakeLockInternalHook = new XC_MethodHook() {
+    XC_MethodHook callback = new XC_MethodHook() {
         @SuppressLint("DefaultLocale")
         public void beforeHookedMethod(MethodHookParam param) {
 
@@ -67,9 +67,10 @@ public class WakeLockHook {
             if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid) || config.tolerant.contains(uid))
                 return;
 
-//            String packageName = (String) param.args[Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? 4 : 3];
-//            log(TAG + "阻止：" + packageName);
             param.setResult(null);
+
+//            String packageName = (String) param.args[Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? 4 : 3];
+//            log(TAG, "阻止获取唤醒锁：" + packageName);
         }
     };
 }

@@ -56,12 +56,8 @@
     <string name="cpu_format">CPU:%2d%%  %.1f℃</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
-    <string name="reboot">Reboot to system</string>
-    <string name="reboot2recovery">Reboot to Recovery</string>
-    <string name="reboot2bootloader">Reboot to BootLoader(FASTBOOT)</string>
-    <string name="reboot2edl">Reboot to EDL(9008) Qualcomm</string>
     <string name="help">Help</string>
     <string name="check_freezer">check_freezer_status</string>
     <string name="freezeit_tutorial_text">Freezeit tutorial</string>
-    <string name="xposed_warm">Warning: There will be severe side effects</string>
+    <string name="xposed_warn">Warning: There will be severe side effects</string>
 </resources>

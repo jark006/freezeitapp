@@ -38,7 +38,7 @@ public class ConfigFragment extends Fragment {
 
     private FragmentConfigBinding binding;
     AppCfgAdapter recycleAdapter;
-    ArrayList<Integer> uidList = new ArrayList<>();
+    final ArrayList<Integer> uidList = new ArrayList<>();
     long lastTimestamp = 0;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -49,13 +49,11 @@ public class ConfigFragment extends Fragment {
         // 下拉刷新时，先更新应用缓存
         binding.swipeRefreshLayout.setOnRefreshListener(() -> new Thread(() -> {
             AppInfoCache.refreshCache(requireContext());
-            uidList.clear();
-            AppInfoCache.cacheInfo.forEach((uid, info) -> uidList.add(uid));
-
+            AppInfoCache.getUidList(uidList);
             Utils.freezeitTask(Utils.getAppCfg, null, getAppCfgHandler);
         }).start());
 
-        AppInfoCache.cacheInfo.forEach((uid, info) -> uidList.add(uid));
+        AppInfoCache.getUidList(uidList);
 
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
@@ -67,14 +65,14 @@ public class ConfigFragment extends Fragment {
                     searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                         @Override
                         public boolean onQueryTextSubmit(String query) {//按下搜索触发
-                            return false;
+                            return true;
                         }
 
                         @Override
                         public boolean onQueryTextChange(String newText) {
                             if (recycleAdapter != null)
                                 recycleAdapter.filter(newText);
-                            return false;
+                            return true;
                         }
                     });
                 } else {

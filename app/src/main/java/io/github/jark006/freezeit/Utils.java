@@ -36,18 +36,18 @@ public class Utils {
 
     // 获取信息 无附加数据 No additional data required
     public final static byte getStatus = 1;       // return string: "Freezeit is running"
-    public final static byte getInfo = 2;         // return string: "ID\nName\nVersion\nVersionCode\nAuthor"
+    public final static byte getInfo = 2;         // return string: "ID\nName\nVersion\nVersionCode\nAuthor\nNum" ClusterNum
     public final static byte getChangelog = 3;    // return string: "changelog"
     public final static byte getLog = 4;          // return string: "log"
-    public final static byte getAppCfg = 5;       // return string: "package x\n..."   "包名 配置号\n..."
-    public final static byte getRealTimeInfo = 6; // return bytes[variable]: (rawBitmap 内存 频率 使用率 电流)
+    public final static byte getAppCfg = 5;       // return string: "uid cfg isTolerant\n..."   "包名 配置 宽松\n..." <uid, <cfg, isTolerant>>
+    public final static byte getRealTimeInfo = 6; // return bytes[rawBitmap+String]: (rawBitmap+内存 频率 使用率 电流)
     public final static byte getProcessInfo = 7;  // return string: "process cpu(%) mem(MB)\nprocess cpu(%) mem(MB)\nprocess cpu(%) mem(MB)\n..."
     public final static byte getSettings = 8;     // return bytes[256]: all settings parameter
-    public final static byte getUidTime = 9;      // return "uid time_micro_seconds increase_micro_seconds\n..."
+    public final static byte getUidTime = 9;      // return "uid x x x x\n..."
 
     // 设置 需附加数据
-    public final static byte setAppCfg = 21;      // send "package x\n..."   "包名 配置号\n..."
-    public final static byte setAppLabel = 22;    // send "uid label\nuid label\nuid label\n..."
+    public final static byte setAppCfg = 21;      // send "" same as CMD:getAppCfg
+    public final static byte setAppLabel = 22;    // send "uid label\n..."
     public final static byte setSettingsVar = 23; // send bytes[2]: [0]index [1]value
 
     // 进程管理 需附加数据
@@ -58,11 +58,6 @@ public class Utils {
     // 其他命令 无附加数据 No additional data required
     public final static byte clearLog = 61;         // return string: "log" //清理并返回log
     public final static byte printFreezerProc = 62; // return string: "log" //打印冻结状态进程并返回log
-
-    public final static byte reboot = 81;
-    public final static byte rebootRecovery = 82;
-    public final static byte rebootBootloader = 83;
-    public final static byte rebootEdl = 84;
 
     public static synchronized void freezeitTask(byte command, byte[] AdditionalData, Handler handler) {
         final String hostname = "127.0.0.1";

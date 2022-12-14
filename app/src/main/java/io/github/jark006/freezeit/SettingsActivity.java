@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -20,16 +19,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.chip.Chip;
 
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+
 
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
     final String TAG = "Settings";
 
-    Chip chipForeground, chipBatteryMonitor, chipBatteryFix, chipKillMsf, chipLmk, chipDoze;
+    Chip chipForeground, chipBatteryMonitor, chipBatteryFix, chipBreakNetwork, chipLmk, chipDoze;
     SeekBar seekbarCPU, seekbarTimeouts, seekbarWakeup, seekbarTerminate, seekbarMode;
-    TextView cpuText, timeoutsText, wakeupText, terminateText, modeText, systemInfo;
+    TextView cpuText, timeoutsText, wakeupText, terminateText, modeText;
 
 
     //    final int verIdx = 0;
@@ -43,7 +41,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     final int batteryMonitorIdx = 13;
     final int batteryFixIdx = 14;
-    final int killMsfIdx = 15;
+    final int breakNetworkIdx = 15;
     final int lmkAdjustIdx = 16;
     final int dozeIdx = 17;
 
@@ -68,23 +66,19 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         findViewById(R.id.github_link).setOnClickListener(this);
         findViewById(R.id.lanzou_link).setOnClickListener(this);
 
-
-
         chipForeground = findViewById(R.id.chip_foreground);
         chipBatteryMonitor = findViewById(R.id.chip_battery);
         chipBatteryFix = findViewById(R.id.chip_current);
-        chipKillMsf = findViewById(R.id.chip_kill_msf);
+        chipBreakNetwork = findViewById(R.id.chip_break_network);
         chipLmk = findViewById(R.id.chip_lmk);
         chipDoze = findViewById(R.id.chip_doze);
 
         chipForeground.setOnClickListener(this);
         chipBatteryMonitor.setOnClickListener(this);
         chipBatteryFix.setOnClickListener(this);
-        chipKillMsf.setOnClickListener(this);
+        chipBreakNetwork.setOnClickListener(this);
         chipLmk.setOnClickListener(this);
         chipDoze.setOnClickListener(this);
-
-        systemInfo = findViewById(R.id.system_info);
 
         cpuText = findViewById(R.id.cpu_text);
         timeoutsText = findViewById(R.id.timeout_text);
@@ -339,68 +333,9 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         updateChip(chipForeground, settingsVar[radicalIdx] != 0);
         updateChip(chipBatteryMonitor, settingsVar[batteryMonitorIdx] != 0);
         updateChip(chipBatteryFix, settingsVar[batteryFixIdx] != 0);
-        updateChip(chipKillMsf, settingsVar[killMsfIdx] != 0);
+        updateChip(chipBreakNetwork, settingsVar[breakNetworkIdx] != 0);
         updateChip(chipLmk, settingsVar[lmkAdjustIdx] != 0);
         updateChip(chipDoze, settingsVar[dozeIdx] != 0);
-
-
-        StringBuilder infoString = new StringBuilder();
-        try {
-            infoString.append("Build.ID: ").append(Build.ID).append('\n');
-            infoString.append("Build.DISPLAY: ").append(Build.DISPLAY).append('\n');
-            infoString.append("Build.PRODUCT: ").append(Build.PRODUCT).append('\n');
-            infoString.append("Build.DEVICE: ").append(Build.DEVICE).append('\n');
-            infoString.append("Build.BOARD: ").append(Build.BOARD).append('\n');
-
-
-            infoString.append("Build.MANUFACTURER: ").append(Build.MANUFACTURER).append('\n');
-            infoString.append("Build.BRAND: ").append(Build.BRAND).append('\n');
-            infoString.append("Build.MODEL: ").append(Build.MODEL).append('\n');
-            if (Build.VERSION.SDK_INT >= 31) {
-                infoString.append("Build.SOC_MANUFACTURER: ").append(Build.SOC_MANUFACTURER).append('\n');
-                infoString.append("Build.SOC_MODEL: ").append(Build.SOC_MODEL).append('\n');
-                infoString.append("Build.SKU: ").append(Build.SKU).append('\n');
-                infoString.append("Build.ODM_SKU: ").append(Build.ODM_SKU).append('\n');
-            }
-            infoString.append("Build.BOOTLOADER: ").append(Build.BOOTLOADER).append('\n');
-            infoString.append("Build.HARDWARE: ").append(Build.HARDWARE).append('\n');
-
-            infoString.append("Build.SUPPORTED_ABIS: ");
-            for (String abi : Build.SUPPORTED_ABIS)
-                infoString.append('[').append(abi).append("] ");
-            infoString.append('\n');
-
-            infoString.append("Build.VERSION.INCREMENTAL: ").append(Build.VERSION.INCREMENTAL).append('\n');
-            infoString.append("Build.VERSION.RELEASE: ").append(Build.VERSION.RELEASE).append('\n');
-            if (Build.VERSION.SDK_INT >= 30)
-                infoString.append("Build.VERSION.RELEASE_OR_CODENAME: ").append(Build.VERSION.RELEASE_OR_CODENAME).append('\n');
-
-            infoString.append("Build.VERSION.BASE_OS: ").append(Build.VERSION.BASE_OS).append('\n');
-            infoString.append("Build.VERSION.SECURITY_PATCH: ").append(Build.VERSION.SECURITY_PATCH).append('\n');
-            infoString.append("Build.VERSION.SDK_INT: ").append(Build.VERSION.SDK_INT).append('\n');
-            infoString.append("Build.VERSION.CODENAME: ").append(Build.VERSION.CODENAME).append('\n');
-
-            infoString.append("Build.TYPE: ").append(Build.TYPE).append('\n');
-            infoString.append("Build.TAGS: ").append(Build.TAGS).append('\n');
-            infoString.append("Build.FINGERPRINT: ").append(Build.FINGERPRINT).append('\n');
-
-            infoString.append("Build.TIME: ").append(Build.TIME).append(' ');
-
-            @SuppressLint("SimpleDateFormat")
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date date = new Date(Build.TIME);
-            infoString.append(simpleDateFormat.format(date)).append('\n');
-
-            infoString.append("Build.USER: ").append(Build.USER).append('\n');
-            infoString.append("Build.HOST: ").append(Build.HOST).append('\n');
-
-            infoString.append("RadioVersion: ").append(Build.getRadioVersion()).append('\n');
-
-        } catch (Exception e) {
-            Log.e(TAG, "refreshView: " + e);
-            infoString.append(e);
-        }
-        systemInfo.setText(infoString);
     }
 
 
@@ -443,9 +378,9 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         } else if (id == R.id.chip_current) {
             chipForHandle = chipBatteryFix;
             varIndexForHandle = batteryFixIdx;
-        } else if (id == R.id.chip_kill_msf) {
-            chipForHandle = chipKillMsf;
-            varIndexForHandle = killMsfIdx;
+        } else if (id == R.id.chip_break_network) {
+            chipForHandle = chipBreakNetwork;
+            varIndexForHandle = breakNetworkIdx;
         } else if (id == R.id.chip_lmk) {
             chipForHandle = chipLmk;
             varIndexForHandle = lmkAdjustIdx;

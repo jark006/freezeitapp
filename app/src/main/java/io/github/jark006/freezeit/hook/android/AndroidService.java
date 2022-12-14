@@ -1,7 +1,5 @@
 package io.github.jark006.freezeit.hook.android;
 
-//import static de.robv.android.xposed.XposedBridge.log;
-
 import static io.github.jark006.freezeit.hook.XpUtils.log;
 
 import android.content.Context;
@@ -28,10 +26,16 @@ import io.github.jark006.freezeit.hook.XpUtils;
 
 public class AndroidService {
     final static String TAG = "Freezeit[AndroidService]:";
+
+    final static String CFG_TAG = "Freezeit[CFG]:";
+    final static String FGD_TAG = "Freezeit[FGD]:";
+
     final static String AMS_TAG = "Freezeit[AMS]:";
     final static String NMS_TAG = "Freezeit[NMS]:";
     final static String OPS_TAG = "Freezeit[OPS]:";
     final static String BSS_TAG = "Freezeit[BSS]:";
+    final static String DPC_TAG = "Freezeit[DPC]:";
+
     final int REPLY_SUCCESS_POSITIVE = 2; // 执行成功，结果积极
     final int REPLY_SUCCESS_NEGATIVE = 1; // 执行成功，结果消极
     final int REPLY_FAILURE = 0;          // 执行失败
@@ -42,15 +46,14 @@ public class AndroidService {
     Object mProcessList;
     ArrayList<?> mLruProcesses;
 
-    Object screen_mStats;
+    //    Object screen_mStats;
+    int mScreenState = 0;
 
     Object appOps;
     Method setUidModeMethod;
 
-    Object networkManagementService;
     Object mNetdService;
     Class<?> UidRangeParcel;
-    Method socketDestroyMethod;
 
 
     LocalSocketServer serverThread = new LocalSocketServer();
@@ -61,21 +64,32 @@ public class AndroidService {
 
         // A10-13
         // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java
-        XpUtils.hookConstructor(AMS_TAG, classLoader, AMSHook, Enum.Class.ActivityManagerService,
-                Context.class, Enum.Class.ActivityTaskManagerService);
+        XpUtils.hookConstructor(AMS_TAG, classLoader, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) {
+                mProcessList = XposedHelpers.getObjectField(param.thisObject, Enum.Field.mProcessList);
+                mLruProcesses = (ArrayList<?>) XposedHelpers.getObjectField(mProcessList, Enum.Field.mLruProcesses);
+                log(AMS_TAG, "Init mProcessList mLruProcesses");
+            }
+        }, Enum.Class.ActivityManagerService, Context.class, Enum.Class.ActivityTaskManagerService);
 
-        XpUtils.hookConstructor(NMS_TAG, classLoader, NMSHook, Enum.Class.NetworkManagementService,
-                Context.class, Enum.Class.Dependencies);
+        // A10-A13
+        // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/NetworkManagementService.java
+        UidRangeParcel = XposedHelpers.findClassIfExists(Enum.Class.UidRangeParcel, classLoader);
+        log(NMS_TAG, "Init UidRangeParcel " + ((UidRangeParcel == null ? "fail" : "success")));
+        XpUtils.hookMethod(NMS_TAG, classLoader, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) {
+                mNetdService = XposedHelpers.getObjectField(param.thisObject, Enum.Field.mNetdService);
+                log(NMS_TAG, "Init mNetdService " + ((mNetdService == null ? "fail" : "success")));
+            }
+        }, Enum.Class.NetworkManagementService, Enum.Method.connectNativeNetdService);
 
         // A11-13
         // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/appop/AppOpsService.java;l=1776
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             XpUtils.hookConstructor(OPS_TAG, classLoader, AppOpsHook, Enum.Class.AppOpsService,
                     File.class, Handler.class, Context.class);
-
-            //public void setUidMode(int code, int uid, int mode)
-//            XpUtils.hookMethod(OPS_TAG, classLoader, testHook, Enum.Class.AppOpsService,
-//                    Enum.Method.setUidMode, int.class, int.class, int.class);
         } else { // A10
             XpUtils.hookConstructor(OPS_TAG, classLoader, AppOpsHook, Enum.Class.AppOpsService,
                     File.class, Handler.class);
@@ -84,45 +98,26 @@ public class AndroidService {
         // A10-13
         // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/view/Display.java;drc=fc06fc5cb18df9fa16b7a34bb0a8e6749d2e0bca;l=387
         // https://cs.android.com/android/platform/superproject/+/master:out/soong/.intermediates/frameworks/base/framework-minus-apex-intdefs/android_common/xref35/srcjars.xref/android/view/ViewProtoEnums.java;l=10
-        XpUtils.hookConstructor(BSS_TAG, classLoader, BSSHook, Enum.Class.BatteryStatsService,
-                Context.class, File.class, Handler.class);
+//        XpUtils.hookConstructor(BSS_TAG, classLoader, new XC_MethodHook() {
+//            @Override
+//            protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) {
+//                screen_mStats = XposedHelpers.getObjectField(param.thisObject, Enum.Field.mStats);
+//                log(TAG, "Init BatteryStatsService mStats");
+//            }
+//        }, Enum.Class.BatteryStatsService, Context.class, File.class, Handler.class);
+
+        // DisplayPowerController.java  setScreenState(int state, boolean reportOnly)
+        // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/display/DisplayPowerController.java;l=1927
+        XpUtils.hookMethod(DPC_TAG, classLoader, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) {
+                mScreenState = (int) param.args[0];
+            }
+        }, Enum.Class.DisplayPowerController, Enum.Method.setScreenState, int.class, boolean.class);
 
         serverThread.start();
     }
 
-//    XC_MethodHook testHook = new XC_MethodHook() {
-//        @Override
-//        protected void afterHookedMethod(MethodHookParam param) {
-//            int code = (int) param.args[0];
-//            int uid = (int) param.args[1];
-//            int mode = (int) param.args[2];
-//            log(TAG, "APP_OPS监控 code:" + code + " uid:" + uid + " mode:" + mode);
-//        }
-//    };
-
-    XC_MethodHook AMSHook = new XC_MethodHook() {
-        @Override
-        protected void afterHookedMethod(MethodHookParam param) {
-            mProcessList = XposedHelpers.getObjectField(param.thisObject, Enum.Field.mProcessList);
-            mLruProcesses = (ArrayList<?>) XposedHelpers.getObjectField(mProcessList, Enum.Field.mLruProcesses);
-            log(TAG, "Init mProcessList mLruProcesses");
-        }
-    };
-
-    XC_MethodHook NMSHook = new XC_MethodHook() {
-        @Override
-        protected void afterHookedMethod(MethodHookParam param) {
-            networkManagementService = param.thisObject;
-            mNetdService = XposedHelpers.getObjectField(networkManagementService, Enum.Field.mNetdService);
-            UidRangeParcel = XposedHelpers.findClassIfExists(Enum.Class.UidRangeParcel, classLoader);
-
-            socketDestroyMethod = XposedHelpers.findMethodExactIfExists(
-                    mNetdService.getClass(), Enum.Method.socketDestroy,
-                    UidRangeParcel, int[].class);
-
-            log(TAG, "Init networkManagementService mNetdService");
-        }
-    };
 
     XC_MethodHook AppOpsHook = new XC_MethodHook() {
         @Override
@@ -131,18 +126,9 @@ public class AndroidService {
             setUidModeMethod = XposedHelpers.findMethodExactIfExists(
                     appOps.getClass(), Enum.Method.setUidMode,
                     int.class, int.class, int.class);
-            log(TAG, "Init appOps");
+            log(NMS_TAG, "Init setUidModeMethod " + ((setUidModeMethod == null ? "fail" : "success")));
         }
     };
-
-    XC_MethodHook BSSHook = new XC_MethodHook() {
-        @Override
-        protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) {
-            screen_mStats = XposedHelpers.getObjectField(param.thisObject, Enum.Field.mStats);
-            log(TAG, "Init BatteryStatsService mStats");
-        }
-    };
-
 
     public class LocalSocketServer extends Thread {
         // 冻它命令识别码, 1359322925 是字符串"Freezeit"的10进制CRC32值
@@ -277,7 +263,7 @@ public class AndroidService {
                     config.top.add(uid);
             }
         } catch (Exception e) {
-            log(TAG, "前台服务错误:" + e);
+            log(FGD_TAG, "前台服务错误:" + e);
         }
 
         // 开头的4字节放置UID的个数，往后每4个字节放一个UID  [小端]
@@ -290,10 +276,10 @@ public class AndroidService {
 
     // 0获取失败 1息屏 2亮屏
     void handleScreen(OutputStream os, byte[] replyBuff) throws Exception {
-        if (screen_mStats == null) {
-            log(TAG, "mStats 未初始化");
-            Utils.Int2Byte(REPLY_FAILURE, replyBuff, 0);
-        } else {
+//        if ( == null) {
+//            log(TAG, "mStats 未初始化");
+//            Utils.Int2Byte(REPLY_FAILURE, replyBuff, 0);
+//        } else {
 /*
             https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/view/Display.java;drc=fc06fc5cb18df9fa16b7a34bb0a8e6749d2e0bca;l=387
             enum DisplayStateEnum
@@ -305,13 +291,14 @@ public class AndroidService {
             public static final int DISPLAY_STATE_VR = 5;
             public static final int DISPLAY_STATE_ON_SUSPEND = 6; //非Doze, 类似4
  */
-            int mScreenState = XposedHelpers.getIntField(screen_mStats, Enum.Field.mScreenState);
-            boolean isScreenOn = (mScreenState == 2) || (mScreenState == 5) || (mScreenState == 6) || (mScreenState == 0);
-            Utils.Int2Byte(isScreenOn ? REPLY_SUCCESS_POSITIVE : REPLY_SUCCESS_NEGATIVE, replyBuff, 0);
+//            int mScreenState = XposedHelpers.getIntField(screen_mStats, Enum.Field.mScreenState);
+//            boolean isScreenOn = (mScreenState == 2) || (mScreenState == 5) || (mScreenState == 6) || (mScreenState == 0);
 
-            if (mScreenState != 1 && mScreenState != 2) // 其他状态打一下日志
-                log(TAG, "mScreenState:" + mScreenState);
-        }
+        Utils.Int2Byte(mScreenState, replyBuff, 0);
+
+//            if (mScreenState != 1 && mScreenState != 2) // 其他状态打一下日志
+//                log(TAG, "mScreenState:" + mScreenState);
+//        }
 
         os.write(replyBuff, 0, 4);
         os.close();
@@ -325,12 +312,11 @@ public class AndroidService {
      * 第四行：宽松前台UID列表 (此行可能为空)
      */
     void handleConfig(OutputStream os, byte[] recvBuff, int recvLen, byte[] replyBuff) throws Exception {
-
         var splitLine = new String(recvBuff, 0, recvLen).split("\n");
         if (splitLine.length < 3 || splitLine.length > 4) {
-            log(TAG, "Fail splitLine.length:" + splitLine.length);
+            log(CFG_TAG, "Fail splitLine.length:" + splitLine.length);
             for (String line : splitLine)
-                log(TAG, "START:" + line);
+                log(CFG_TAG, "START:" + line);
 
             Utils.Int2Byte(REPLY_FAILURE, replyBuff, 0);
             os.write(replyBuff, 0, 4);
@@ -342,7 +328,7 @@ public class AndroidService {
         config.whitelist.clear();
         config.tolerant.clear();
 
-        log(TAG, "Start parse, line:" + splitLine.length);
+        log(CFG_TAG, "Start parse, line:" + splitLine.length);
         try {
             for (int lineIdx = 0; lineIdx < splitLine.length; lineIdx++) {
                 var split = splitLine[lineIdx].split(" ");
@@ -350,32 +336,32 @@ public class AndroidService {
                     case 0:
                         for (int i = 0; i < split.length; i++)
                             config.settings[i] = Integer.parseInt(split[i]);
-                        log(TAG, "Parse settings  " + split.length);
+                        log(CFG_TAG, "Parse settings  " + split.length);
                         break;
                     case 1:
                         for (String s : split)
                             if (s.length() == 5) // UID 10XXX 长度是5
                                 config.thirdApp.add(Integer.parseInt(s));
-                        log(TAG, "Parse thirdApp  " + config.thirdApp.size());
+                        log(CFG_TAG, "Parse thirdApp  " + config.thirdApp.size());
                         break;
                     case 2:
                         for (String s : split)
                             if (s.length() == 5)
                                 config.whitelist.add(Integer.parseInt(s));
-                        log(TAG, "Parse whitelist " + config.whitelist.size());
+                        log(CFG_TAG, "Parse whitelist " + config.whitelist.size());
                         break;
                     case 3:
                         for (String s : split)
                             if (s.length() == 5)
                                 config.tolerant.add(Integer.parseInt(s));
-                        log(TAG, "Parse tolerant  " + config.tolerant.size());
+                        log(CFG_TAG, "Parse tolerant  " + config.tolerant.size());
                         break;
                 }
             }
-            log(TAG, "Finish parse");
+            log(CFG_TAG, "Finish parse");
             Utils.Int2Byte(REPLY_SUCCESS_POSITIVE, replyBuff, 0);
         } catch (Exception e) {
-            log(TAG, "IOException: [" + Arrays.toString(splitLine) + "]: \n" + e);
+            log(CFG_TAG, "IOException: [" + Arrays.toString(splitLine) + "]: \n" + e);
             Utils.Int2Byte(REPLY_SUCCESS_NEGATIVE, replyBuff, 0);
         }
 
@@ -395,48 +381,65 @@ public class AndroidService {
         //            "foreground",   // MODE_FOREGROUND
         //    };
 
+        final int WAKEUP_LOCK_IGNORE = 1;
+        final int WAKEUP_LOCK_DEFAULT = 3;
         final int WAKEUP_LOCK_CODE = 40;
-        int uid = Utils.Byte2Int(recvBuff, 0);
-        int mode = Utils.Byte2Int(recvBuff, 4); // 1:ignore  3:default
 
-        if (recvLen != 8 || (mode != 1 && mode != 3) || !config.thirdApp.contains(uid) || setUidModeMethod == null) {
-            Utils.Int2Byte(REPLY_FAILURE, replyBuff, 0);
-        } else {
+        try {
+            if (recvLen != 8) {
+                log(OPS_TAG, "非法数据长度" + recvLen);
+                throw null;
+            }
+
+            int uid = Utils.Byte2Int(recvBuff, 0);
+            if (!config.thirdApp.contains(uid)) {
+                log(OPS_TAG, "非法UID" + uid);
+                throw null;
+            }
+
+            int mode = Utils.Byte2Int(recvBuff, 4); // 1:ignore  3:default
+            if (mode != WAKEUP_LOCK_IGNORE && mode != WAKEUP_LOCK_DEFAULT) {
+                log(OPS_TAG, "非法mode" + mode);
+                throw null;
+            }
+            if (setUidModeMethod == null) {
+                log(OPS_TAG, "未初始化 setUidModeMethod");
+                throw null;
+            }
+
             setUidModeMethod.invoke(appOps, WAKEUP_LOCK_CODE, uid, mode);
 //            XposedHelpers.callMethod(appOps, Enum.Method.setUidMode, WAKEUP_LOCK_CODE, uid, mode);
             Utils.Int2Byte(REPLY_SUCCESS_POSITIVE, replyBuff, 0);
+        } catch (Exception e) {
+            Utils.Int2Byte(REPLY_FAILURE, replyBuff, 0);
         }
 
         os.write(replyBuff, 0, 4);
         os.close();
     }
 
-    private Object makeUidRangeParcel(int start, int stop) {
-        Object uidRangeParcel;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            uidRangeParcel = XposedHelpers.newInstance(UidRangeParcel, start, stop);
-        } else {
-            uidRangeParcel = XposedHelpers.newInstance(UidRangeParcel);
-            XposedHelpers.setObjectField(uidRangeParcel, "start", start);
-            XposedHelpers.setObjectField(uidRangeParcel, "stop", stop);
-        }
-        return uidRangeParcel;
-    }
-
-    // TODO
     void handleBreakNetwork(OutputStream os, byte[] recvBuff, int recvLen, byte[] replyBuff) throws Exception {
         int uid = Utils.Byte2Int(recvBuff, 0);
-        if (config.thirdApp.contains(uid) && socketDestroyMethod != null) {
-            Object uidRangeParcel = makeUidRangeParcel(uid, uid);
-            Object uidRangeParcels = Array.newInstance(UidRangeParcel, 1);
-            Array.set(uidRangeParcels, 0, uidRangeParcel);
-//            XposedHelpers.callMethod(mNetdService, Enum.Method.socketDestroy, uidRangeParcels, new int[0]);
-            socketDestroyMethod.invoke(mNetdService, uidRangeParcels, new int[0]);
+        try {
+            if (!config.thirdApp.contains(uid)) {
+                log(NMS_TAG, "非法UID" + uid);
+                throw null;
+            }
+            if (mNetdService == null) {
+                log(NMS_TAG, "mNetdService null");
+                throw null;
+            }
+            if (UidRangeParcel == null) {
+                log(NMS_TAG, "UidRangeParcel null");
+                throw null;
+            }
+
+            Object uidRanges = Array.newInstance(UidRangeParcel, 1);
+            Array.set(uidRanges, 0, XposedHelpers.newInstance(UidRangeParcel, uid, uid));
+            XposedHelpers.callMethod(mNetdService, Enum.Method.socketDestroy, uidRanges, new int[0]);
             Utils.Int2Byte(REPLY_SUCCESS_POSITIVE, replyBuff, 0);
-            log(TAG, "断网成功 UID" + uid);
-        } else {
+        } catch (Exception e) {
             Utils.Int2Byte(REPLY_FAILURE, replyBuff, 0);
-            log(TAG, "断网失败 UID" + uid);
         }
 
         os.write(replyBuff, 0, 4);

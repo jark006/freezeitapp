@@ -60,8 +60,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     Timer timer;
 
-    final int imgScale = 2;
-    int imgWidth = 0; //图像宽高 缩小为控件的 1/imgScale, 减少绘图花销，显示到imageView控件时再放大 imgScale 倍
+    final int imgScale = 3;
+    int imgWidth = 0; //图像宽/高均缩小为控件的 1/imgScale, 减少绘图花销，显示到imageView控件时再临近像素取值放大 imgScale 倍
     int imgHeight = 0;
     long availMem = 0;
 
@@ -322,7 +322,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 statusStr.append(getString(R.string.xposed_online)).append(" v").append(BuildConfig.VERSION_NAME);
             else
                 statusStr.append(getString(R.string.xposed_offline)).append(" v").append(BuildConfig.VERSION_NAME)
-                        .append('\n').append(getString(R.string.xposed_warm));
+                        .append('\n').append(getString(R.string.xposed_warn));
 
             binding.statusText.setText(statusStr);
 

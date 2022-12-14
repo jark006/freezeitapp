@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -30,33 +31,51 @@ public class AppInfoCache {
         }
     }
 
-    public static HashMap<Integer, Info> cacheInfo = new HashMap<>();
+    private final static HashMap<Integer, Info> cacheInfo = new HashMap<>();
 
     public static void refreshCache(Context context) {
-        PackageManager pm = context.getPackageManager();
-        List<ApplicationInfo> applicationList;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            applicationList = pm.getInstalledApplications(
-                    PackageManager.ApplicationInfoFlags.of(PackageManager.MATCH_UNINSTALLED_PACKAGES));
-        } else {
-            applicationList = pm.getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES);
-        }
+        synchronized (cacheInfo) {
+            PackageManager pm = context.getPackageManager();
+            List<ApplicationInfo> applicationList;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                applicationList = pm.getInstalledApplications(
+                        PackageManager.ApplicationInfoFlags.of(PackageManager.MATCH_UNINSTALLED_PACKAGES));
+            } else {
+                applicationList = pm.getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES);
+            }
 
-        HashMap<Integer, Info> newCacheInfo = new HashMap<>();
-        for (ApplicationInfo appInfo : applicationList) {
-            if (appInfo.uid < 10000)
-                continue;
-            if ((appInfo.flags & (FLAG_SYSTEM | FLAG_UPDATED_SYSTEM_APP)) != 0)
-                continue;
+            cacheInfo.clear();
+            for (ApplicationInfo appInfo : applicationList) {
+                if (appInfo.uid < 10000)
+                    continue;
+                if ((appInfo.flags & (FLAG_SYSTEM | FLAG_UPDATED_SYSTEM_APP)) != 0)
+                    continue;
 
-            String label = pm.getApplicationLabel(appInfo).toString();
-            newCacheInfo.put(appInfo.uid, new Info(appInfo.loadIcon(pm), appInfo.packageName, label));
+                String label = pm.getApplicationLabel(appInfo).toString();
+                cacheInfo.put(appInfo.uid, new Info(appInfo.loadIcon(pm), appInfo.packageName, label));
+            }
+            Log.d(TAG, "更新缓存" + cacheInfo.size());
         }
-        Log.d(TAG, "更新缓存" + newCacheInfo.size());
-        cacheInfo = newCacheInfo;
     }
 
     public static Info get(int uid) {
-        return cacheInfo.get(uid);
+        synchronized (cacheInfo) {
+            return cacheInfo.get(uid);
+        }
+    }
+
+    public static void getUidList(ArrayList<Integer> uidList) {
+        uidList.clear();
+        synchronized (cacheInfo) {
+            AppInfoCache.cacheInfo.forEach((uid, info) -> uidList.add(uid));
+        }
+    }
+
+    public static String getAppLabelString() {
+        StringBuilder appLabel = new StringBuilder();
+        synchronized (cacheInfo) {
+            cacheInfo.forEach((uid, info) -> appLabel.append(uid).append(" ").append(info.label).append('\n'));
+        }
+        return appLabel.toString();
     }
 }

@@ -34,7 +34,7 @@
     <string name="magisk_offline">Magisk 未安装或未运行</string>
     <string name="xposed_online">LSPosed已激活</string>
     <string name="xposed_offline">LSPosed未激活</string>
-    <string name="xposed_warm">警告：会有严重副作用</string>
+    <string name="xposed_warn">警告：会有严重副作用</string>
     <string name="freezeit_offline">1.请检查面具模块列表中是否启用了冻它。\n2.若是刚开机，请等几秒后再打开冻它APP。\n3.如果运行异常, 请检查异常日志[ /sdcard/Android/freezeit_crash_log.txt ]</string>
 
     <string name="freezeit_offline_tips">请检查Magisk冻它模块是否安装并启用，若是刚刚安装，则重启生效</string>
@@ -78,10 +78,6 @@
     <string name="slowly_tips">不要操作太快</string>
     <string name="confirm">确定</string>
     <string name="cancel">取消</string>
-    <string name="reboot">重启到 系统</string>
-    <string name="reboot2recovery">重启到 Recovery</string>
-    <string name="reboot2bootloader">重启到 BootLoader(FASTBOOT)</string>
-    <string name="reboot2edl">重启到 EDL(9008) 高通专用</string>
     <string name="help">帮助</string>
     <string name="check_freezer">查看冻结</string>
     <string name="freezeit_tutorial_text">冻它教程说明(建议看完)</string>

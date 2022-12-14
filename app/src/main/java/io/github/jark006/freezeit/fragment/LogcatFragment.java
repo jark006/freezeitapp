@@ -67,7 +67,7 @@ public class LogcatFragment extends Fragment {
         return binding.getRoot();
     }
 
-    private final Handler appNameHandler = new Handler(Looper.getMainLooper()) {
+    private final Handler appLabelHandler = new Handler(Looper.getMainLooper()) {
         @SuppressLint("SetTextI18n")
         @Override
         public void handleMessage(Message msg) {
@@ -92,12 +92,9 @@ public class LogcatFragment extends Fragment {
     };
 
     Runnable updateAppLabelTask = () -> {
-        StringBuilder appName = new StringBuilder();
-
         AppInfoCache.refreshCache(requireContext());
-        AppInfoCache.cacheInfo.forEach((uid, info)-> appName.append(uid).append(" ").append(info.label).append('\n'));
-
-        Utils.freezeitTask(Utils.setAppLabel, appName.toString().getBytes(StandardCharsets.UTF_8), appNameHandler);
+        String appLabel = AppInfoCache.getAppLabelString();
+        Utils.freezeitTask(Utils.setAppLabel, appLabel.getBytes(StandardCharsets.UTF_8), appLabelHandler);
     };
 
     @Override

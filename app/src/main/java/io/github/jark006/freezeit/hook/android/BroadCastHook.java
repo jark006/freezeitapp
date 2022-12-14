@@ -27,7 +27,7 @@ public class BroadCastHook {
     public BroadCastHook(Config config, LoadPackageParam lpParam) {
         this.config = config;
 
-        XpUtils.hookMethod(TAG, lpParam.classLoader, deliverToRegisteredReceiverLockedHook,
+        XpUtils.hookMethod(TAG, lpParam.classLoader, callback,
                 Enum.Class.BroadcastQueue, Enum.Method.deliverToRegisteredReceiverLocked,
                 Enum.Class.BroadcastRecord, Enum.Class.BroadcastFilter, boolean.class, int.class);
     }
@@ -40,7 +40,7 @@ public class BroadCastHook {
      * private void deliverToRegisteredReceiverLocked(BroadcastRecord r, BroadcastFilter filter,
      * boolean ordered, int index)
      */
-    XC_MethodHook deliverToRegisteredReceiverLockedHook = new XC_MethodHook() {
+    XC_MethodHook callback = new XC_MethodHook() {
 
         @SuppressLint("DefaultLocale")
         public void beforeHookedMethod(MethodHookParam param) {
@@ -67,7 +67,7 @@ public class BroadCastHook {
 
 //            String callerPackage = (String) XposedHelpers.getObjectField(broadcastRecord, Enum.Field.callerPackage);
 //            String receiverPackage = (String) XposedHelpers.getObjectField(broadcastFilter, Enum.Field.packageName);
-//            log(TAG+"Clear broadcast of [" + callerPackage + "] to [" + receiverPackage + "]");
+//            log(TAG, "Clear the broadcast from [" + callerPackage + "] to [" + receiverPackage + "]");
         }
     };
 }

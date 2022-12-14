@@ -11,7 +11,7 @@ public class Enum {
     }
 
     public final static class Class {
-        public final static String self = BuildConfig.APPLICATION_ID+".fragment.HomeFragment";
+        public final static String self = BuildConfig.APPLICATION_ID + ".fragment.HomeFragment";
 
         public final static String BroadcastQueue = "com.android.server.am.BroadcastQueue";
         public final static String BroadcastRecord = "com.android.server.am.BroadcastRecord";
@@ -35,6 +35,8 @@ public class Enum {
         public final static String AlarmManagerServiceS = "com.android.server.alarm.AlarmManagerService"; // SDK 31+
         public final static String NetworkManagementService = "com.android.server.NetworkManagementService";
         public final static String Dependencies = "com.android.server.NetworkManagementService$Dependencies";
+        public final static String SystemServices = "com.android.server.NetworkManagementService$SystemServices";
+        public final static String DisplayPowerController = "com.android.server.display.DisplayPowerController";
 
         public final static String PowerManager = "android.os.PowerManager";
         public final static String IPowerManager = "android.os.IPowerManager";
@@ -42,6 +44,7 @@ public class Enum {
         public final static String IWakeLockCallback = "android.os.IWakeLockCallback";
         public final static String WakeLock = "android.os.PowerManager$WakeLock";
         public final static String UidRangeParcel = "android.net.UidRangeParcel";
+        public final static String INetd = "android.net.INetd";
 
         public final static String MilletConfig = "com.miui.powerkeeper.millet.MilletConfig";
         public final static String PowerStateMachine = "com.miui.powerkeeper.statemachine.PowerStateMachine";
@@ -82,6 +85,8 @@ public class Enum {
         public final static String isInteractive = "isInteractive";
         public final static String setUidMode = "setUidMode";
         public final static String socketDestroy = "socketDestroy";
+        public final static String setScreenState = "setScreenState";
+        public final static String connectNativeNetdService = "connectNativeNetdService";
     }
 
     public final static class Field {

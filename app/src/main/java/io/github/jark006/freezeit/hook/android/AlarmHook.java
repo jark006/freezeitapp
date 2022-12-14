@@ -20,7 +20,7 @@ public class AlarmHook {
     public AlarmHook(Config config, LoadPackageParam lpParam) {
         this.config = config;
 
-        XpUtils.hookMethod(TAG, lpParam.classLoader, triggerAlarmsLockedHook,
+        XpUtils.hookMethod(TAG, lpParam.classLoader, callback,
                 Build.VERSION.SDK_INT >= 31 ? Enum.Class.AlarmManagerServiceS : Enum.Class.AlarmManagerServiceR,
                 Enum.Method.triggerAlarmsLocked, ArrayList.class, long.class);
     }
@@ -32,15 +32,13 @@ public class AlarmHook {
     // SDK x ~ R
     // https://cs.android.com/android/platform/superproject/+/android-11.0.0_r48:frameworks/base/services/core/java/com/android/server/AlarmManagerService.java;l=3499
     // https://cs.android.com/android/platform/superproject/+/android-10.0.0_r47:frameworks/base/services/core/java/com/android/server/AlarmManagerService.java;l=3469
-    XC_MethodHook triggerAlarmsLockedHook = new XC_MethodHook() {
+    XC_MethodHook callback = new XC_MethodHook() {
         @SuppressLint("DefaultLocale")
         public void afterHookedMethod(MethodHookParam param) {
-            Object[] args = param.args;
-
             // Alarm
             // SDK31 https://cs.android.com/android/platform/superproject/+/android-12.0.0_r34:frameworks/base/apex/jobscheduler/service/java/com/android/server/alarm/Alarm.java
             // SDK30 https://cs.android.com/android/platform/superproject/+/android-11.0.0_r48:frameworks/base/services/core/java/com/android/server/AlarmManagerService.java;l=3636
-            ArrayList<?> triggerList = (ArrayList<?>) args[0];
+            ArrayList<?> triggerList = (ArrayList<?>) param.args[0];
 
             // 注意：JAVA迭代器与C++不同，C++ item.begin() 指向首个元素
             // JAVA的迭代器初始状：指向首个元素的前一个位置
@@ -52,9 +50,10 @@ public class AlarmHook {
                 if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid))
                     continue;
 
-//                String packageName = (String) XposedHelpers.getObjectField(Alarm, Enum.Field.packageName);
-//                log(TAG+"清理Alarm: " + packageName);
                 iterator.remove();
+
+//                String packageName = (String) XposedHelpers.getObjectField(Alarm, Enum.Field.packageName);
+//                log(TAG, "清理Alarm: " + packageName);
             }
         }
     };
