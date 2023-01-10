@@ -64,7 +64,11 @@ public class WakeLockHook {
             int uid = (int) param.args[Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? 7 : 6];
 
             // 宽松前台允许唤醒锁，但冻结时会被设为 可忽略
-            if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid) || config.tolerant.contains(uid))
+//            if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid) || config.tolerant.contains(uid))
+//                return;
+
+            // 只有自由后台才能获得唤醒锁
+            if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid))
                 return;
 
             param.setResult(null);

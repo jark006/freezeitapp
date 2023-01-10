@@ -26,6 +26,7 @@ public class AnrHook {
         // void appNotResponding(String activityShortComponentName, ApplicationInfo aInfo,
         //            String parentShortComponentName, WindowProcessController parentProcess,
         //            boolean aboveSystem, String annotation, boolean onlyDumpSelf)
+        // ProcessErrorStateRecord A12+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             XpUtils.hookMethod(TAG, lpParam.classLoader, callbackErrorState,
                     Enum.Class.ProcessErrorStateRecord, Enum.Method.appNotResponding,
@@ -34,7 +35,7 @@ public class AnrHook {
                     boolean.class, String.class, boolean.class);
         }
 
-        // A11-13
+        // AnrHelper A11-13
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             XpUtils.hookMethod(TAG, lpParam.classLoader, callbackAnrHelper,
                     Enum.Class.AnrHelper, Enum.Method.appNotResponding,

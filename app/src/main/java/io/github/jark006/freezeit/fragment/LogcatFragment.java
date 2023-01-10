@@ -76,7 +76,6 @@ public class LogcatFragment extends Fragment {
 
             if (response == null || response.length == 0) {
                 Toast.makeText(requireContext(), R.string.freezeit_offline, Toast.LENGTH_LONG).show();
-                Log.e(TAG, getString(R.string.freezeit_offline));
                 return;
             }
 

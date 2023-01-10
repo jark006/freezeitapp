@@ -50,7 +50,7 @@ public class AppTimeAdapter extends RecyclerView.Adapter<AppTimeAdapter.MyViewHo
             holder.app_label.setText(info.label);
             holder.package_name.setText(info.packName);
         } else {
-            holder.package_name.setText("未知");
+            holder.package_name.setText("未知 Unknown");
             holder.app_label.setText("UID:" + uid);
         }
 
@@ -79,7 +79,7 @@ public class AppTimeAdapter extends RecyclerView.Adapter<AppTimeAdapter.MyViewHo
         }
 
         if (time > 60 * 1000) {
-            res.append(time / (60 * 1000)).append("分");
+            res.append(time / (60 * 1000)).append(":");
             time %= (60 * 1000);
         }
         res.append(String.format("%02d.%03d", time / 1000, time % 1000));

@@ -14,145 +14,106 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="40dp"
             android:orientation="vertical"
-            android:paddingHorizontal="20dp">
+            android:paddingHorizontal="30dp"
+            android:paddingBottom="40dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="10dp">
+                android:paddingVertical="15dp">
 
-                <ImageView
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:contentDescription="@string/icon"
-                    android:padding="5dp"
-                    app:srcCompat="@drawable/avatar" />
-
-                <LinearLayout
+                <TextView
+                    android:id="@+id/cluster_title"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    tools:ignore="UseCompoundDrawables">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/developer"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/appVer" />
-                </LinearLayout>
+                    android:text="@string/cluster_title"
+                    android:textSize="18sp" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_height="match_parent">
 
-                    <LinearLayout
+                    <Spinner
+                        android:id="@+id/cluster_spinner"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:id="@+id/coolapk_link"
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:layout_gravity="center_vertical"
-                            android:contentDescription="@string/icon"
-                            android:padding="5dp"
-                            app:srcCompat="@drawable/logo_coolapk" />
-
-                        <ImageView
-                            android:id="@+id/github_link"
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:layout_gravity="center_vertical"
-                            android:contentDescription="@string/icon"
-                            android:padding="5dp"
-                            app:srcCompat="@drawable/logo_github" />
-
-                        <ImageView
-                            android:id="@+id/lanzou_link"
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:layout_gravity="center_vertical"
-                            android:contentDescription="@string/icon"
-                            android:padding="5dp"
-                            app:srcCompat="@drawable/logo_lanzou" />
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="蓝奏云密码: dy6i"/>
+                        android:layout_height="match_parent"
+                        android:background="@color/transparent"
+                        android:entries="@array/cluster"
+                        android:spinnerMode="dropdown" />
                 </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingVertical="5dp">
+                android:orientation="horizontal"
+                android:paddingVertical="15dp">
 
                 <TextView
-                    android:id="@+id/cpu_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:typeface="monospace"
-                    android:text="绑定核心"
-                    android:textSize="16sp" />
+                    android:id="@+id/freeze_mode_title"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/freeze_mode_title"
+                    android:textSize="18sp" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="绑定冻它进程到某簇核心,小核省电,中大核解冻快,重启生效\n4+4架构：小核[0-3] 大核[4-7] 少数会反过来\n4+3+1架构：小核[0-3] 中核[4-6] 大核[7]\n3+2+2+1架构:小核[0-2] 中核[3-4] 中大核[5-6] 大核[7]" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
 
-                <SeekBar
-                    android:id="@+id/seekBarCPU"
-                    style="@style/Widget.AppCompat.SeekBar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:max="6"
-                    android:maxHeight="25dp"
-                    android:min="0"
-                    android:minHeight="25dp"
-                    android:padding="5dp"
-                    android:progressDrawable="@drawable/seekbar_bg"
-                    android:progressTint="@color/purple_500"
-                    android:thumb="@null"
-                    android:thumbOffset="0dp"
-                    android:thumbTint="@null" />
+                    <Spinner
+                        android:id="@+id/freeze_mode_spinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="end"
+                        android:background="@color/transparent"
+                        android:entries="@array/work_mode"
+                        android:gravity="end"
+                        android:spinnerMode="dropdown" />
+                </LinearLayout>
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?android:attr/listDivider" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingVertical="5dp">
+                android:paddingVertical="10dp">
 
-                <TextView
-                    android:id="@+id/timeout_text"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="超时冻结"
-                    android:textSize="18sp" />
+                    android:orientation="horizontal"
+                    android:paddingVertical="5dp">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="设为冻结的应用进入后台之后，需要多久冻结, 不建议秒冻" />
+                    <TextView
+                        android:id="@+id/freeze_timeout_title"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="@string/freeze_timeout_title"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/freeze_timeout_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/number"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/second"
+                        android:textSize="18sp" />
+                </LinearLayout>
 
                 <SeekBar
                     android:id="@+id/seekBarTimeout"
@@ -160,9 +121,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:max="60"
-                    android:maxHeight="25dp"
+                    android:maxHeight="28dp"
                     android:min="1"
-                    android:minHeight="25dp"
+                    android:minHeight="28dp"
                     android:padding="5dp"
                     android:progressDrawable="@drawable/seekbar_bg"
                     android:progressTint="@color/purple_500"
@@ -174,54 +135,35 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingVertical="5dp">
+                android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/wakeup_text"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="定时解冻"
-                    android:textSize="18sp" />
+                    android:orientation="horizontal"
+                    android:paddingVertical="5dp">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="定时解冻被冻结的后台应用，解冻时长为[超时冻结]参数。若应用经常闪弹闪退，建议调短时间，不易冻死。设为最大值120则关闭定时解冻。如果使用FreezerV1存在内存泄漏，请不要关闭，否则无法释放内存" />
-                <SeekBar
-                    android:id="@+id/seekBarWakeup"
-                    style="@style/Widget.AppCompat.SeekBar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:max="120"
-                    android:maxHeight="25dp"
-                    android:min="3"
-                    android:minHeight="25dp"
-                    android:padding="5dp"
-                    android:progressDrawable="@drawable/seekbar_bg"
-                    android:progressTint="@color/purple_500"
-                    android:thumb="@null"
-                    android:thumbOffset="0dp"
-                    android:thumbTint="@null" />
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/terminate_timeout_title"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="@string/terminate_timeout_title"
+                        android:textSize="18sp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingVertical="5dp">
+                    <TextView
+                        android:id="@+id/terminate_timeout_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/number"
+                        android:textSize="18sp" />
 
-                <TextView
-                    android:id="@+id/terminate_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="超时杀死"
-                    android:textSize="18sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="设为[杀死后台]的应用进入后台之后，需要多久杀死" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/second"
+                        android:textSize="18sp" />
+                </LinearLayout>
 
                 <SeekBar
                     android:id="@+id/seekBarTerminate"
@@ -229,9 +171,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:max="120"
-                    android:maxHeight="25dp"
+                    android:maxHeight="28dp"
                     android:min="3"
-                    android:minHeight="25dp"
+                    android:minHeight="28dp"
                     android:padding="5dp"
                     android:progressDrawable="@drawable/seekbar_bg"
                     android:progressTint="@color/purple_500"
@@ -244,29 +186,46 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingVertical="5dp">
+                android:paddingVertical="10dp">
 
-                <TextView
-                    android:id="@+id/mode_text"
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="冻结模式"
-                    android:textSize="18sp" />
+                    android:orientation="horizontal"
+                    android:paddingVertical="5dp">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="选定[SIGSTOP模式]会使全局Freezer策略改为[SIGSTOP]。选定[Freezer模式]则为对应的Freezer策略。重启生效" />
+                    <TextView
+                        android:id="@+id/wakeup_timeout_title"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="@string/wakeup_timeout_title"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/wakeup_timeout_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/number"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/minute"
+                        android:textSize="18sp" />
+                </LinearLayout>
 
                 <SeekBar
-                    android:id="@+id/seekBarMode"
+                    android:id="@+id/seekBarWakeup"
                     style="@style/Widget.AppCompat.SeekBar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:max="5"
-                    android:maxHeight="25dp"
-                    android:min="0"
-                    android:minHeight="25dp"
+                    android:max="120"
+                    android:maxHeight="28dp"
+                    android:min="3"
+                    android:minHeight="28dp"
                     android:padding="5dp"
                     android:progressDrawable="@drawable/seekbar_bg"
                     android:progressTint="@color/purple_500"
@@ -284,124 +243,101 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingVertical="10dp">
+                android:paddingVertical="15dp">
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/radical_fg_title"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="5"
-                    android:orientation="vertical">
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/radical_fg_title"
+                    android:textSize="18sp" />
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="激进识别"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="略微省电的任务切换识别，部分系统不支持，可能导致冻结/解冻失效。重启生效" />
-
-                </LinearLayout>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_foreground"
+                <Switch
+                    android:id="@+id/switch_radical_fg"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector"
+                    android:thumbTint="@color/gray_ee"
+                    android:trackTint="@color/transparent"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingVertical="10dp">
+                android:paddingVertical="15dp">
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/battery_title"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="5"
-                    android:orientation="vertical">
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/battery_title"
+                    android:textSize="18sp" />
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="电池监控"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="记录电池充/放电时长、功率、温度等" />
-
-                </LinearLayout>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_battery"
+                <Switch
+                    android:id="@+id/switch_battery"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector"
+                    android:thumbTint="@color/gray_ee"
+                    android:trackTint="@color/transparent"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingVertical="10dp">
+                android:paddingVertical="15dp">
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/current_title"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="5"
-                    android:orientation="vertical">
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/current_title"
+                    android:textSize="18sp" />
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="电流校准"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="电流或功率数值接近或等于0则需要开启，常见于OPPO/VIVO系" />
-
-                </LinearLayout>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_current"
+                <Switch
+                    android:id="@+id/switch_current"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector"
+                    android:thumbTint="@color/gray_ee"
+                    android:trackTint="@color/transparent"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingVertical="10dp">
+                android:paddingVertical="15dp">
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/break_network_title"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="5"
-                    android:orientation="vertical">
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/break_network_title"
+                    android:textSize="18sp" />
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="QQ/TIM冻结断网"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="冻结QQ/TIM时断开其网络，由HMSPush或MiPush接管消息推送，冻它教程附有HMSPush使用教程" />
-
-                </LinearLayout>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_break_network"
+                <Switch
+                    android:id="@+id/switch_break_network"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector"
+                    android:thumbTint="@color/gray_ee"
+                    android:trackTint="@color/transparent"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
             </LinearLayout>
 
 
@@ -409,63 +345,326 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingVertical="10dp">
+                android:paddingVertical="15dp">
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/lmk_title"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="5"
-                    android:orientation="vertical">
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/lmk_title"
+                    android:textSize="18sp" />
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="调整lmk参数"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="调整安卓11-15的lmk参数，缓解lmkd杀后台，重启生效" />
-
-                </LinearLayout>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_lmk"
+                <Switch
+                    android:id="@+id/switch_lmk"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector"
+                    android:thumbTint="@color/gray_ee"
+                    android:trackTint="@color/transparent"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingVertical="10dp">
+                android:paddingVertical="15dp">
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/doze_title"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="5"
-                    android:orientation="vertical">
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/doze_title"
+                    android:textSize="18sp" />
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="息屏Doze"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="息屏状态超时3分钟后，尝试强制进入深度Doze(低功耗待机模式)，充电状态除外。系统默认会慢慢进入Doze，但冻它会加速这过程。部分系统可能提前进入轻度Doze导致冻它间断暂停运行，进而延迟进入深度Doze" />
-
-                </LinearLayout>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_doze"
+                <Switch
+                    android:id="@+id/switch_doze"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector"
+                    android:thumbTint="@color/gray_ee"
+                    android:trackTint="@color/transparent"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="15dp">
+
+                <TextView
+                    android:id="@+id/extend_fg_title"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/extend_fg_title"
+                    android:textSize="18sp" />
+
+                <Switch
+                    android:id="@+id/switch_extend_fg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector"
+                    android:thumbTint="@color/gray_ee"
+                    android:trackTint="@color/transparent"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?android:attr/listDivider" />
+
+            <LinearLayout
+                android:id="@+id/coolapk_link"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="10dp"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:contentDescription="@string/icon"
+                    android:padding="5dp"
+                    app:srcCompat="@drawable/avatar" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:padding="10dp"
+                    android:text="@string/developer"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/github_link"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="10dp"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:contentDescription="@string/icon"
+                    android:padding="5dp"
+                    app:srcCompat="@drawable/logo_github" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:padding="10dp"
+                    android:text="@string/github_publish"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/lanzou_link"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="10dp"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:contentDescription="@string/icon"
+                    android:padding="5dp"
+                    app:srcCompat="@drawable/logo_lanzou" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:padding="10dp"
+                    android:text="@string/lanzou_password"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/qq_group_link"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="10dp"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:contentDescription="@string/icon"
+                    android:padding="5dp"
+                    app:srcCompat="@drawable/logo_qq" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:padding="10dp"
+                    android:text="@string/qq_group_text"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/qq_channel_link"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="10dp"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:contentDescription="@string/icon"
+                    android:padding="5dp"
+                    app:srcCompat="@drawable/logo_qqchannel" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:padding="10dp"
+                    android:text="@string/qq_channel_text"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/telegram_link"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="10dp"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:contentDescription="@string/icon"
+                    android:padding="5dp"
+                    app:srcCompat="@drawable/logo_telegram" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:padding="10dp"
+                    android:text="@string/tg_group_text"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/tutorial_link"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="10dp"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:contentDescription="@string/icon"
+                    android:padding="5dp"
+                    app:srcCompat="@drawable/ic_launcher_round" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:padding="10dp"
+                    android:text="@string/freezeit_tutorial_text"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/changelog_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="10dp"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:contentDescription="@string/icon"
+                    android:padding="5dp"
+                    app:srcCompat="@drawable/logo_logcat" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:padding="10dp"
+                    android:text="@string/online_changelog"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?android:attr/listDivider" />
+
+            <LinearLayout
+                android:id="@+id/wechat_pay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="10dp"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:contentDescription="@string/icon"
+                    android:padding="5dp"
+                    app:srcCompat="@drawable/logo_wechatpay" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:padding="10dp"
+                    android:text="@string/donate_wechat"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/alipay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="10dp"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:contentDescription="@string/icon"
+                    android:padding="5dp"
+                    app:srcCompat="@drawable/logo_alipay" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:padding="10dp"
+                    android:text="@string/donate_alipay"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingVertical="20dp"
+                android:text="@string/versionName" />
 
         </LinearLayout>
     </ScrollView>

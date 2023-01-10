@@ -18,13 +18,11 @@ public class Enum {
         public final static String BroadcastFilter = "com.android.server.am.BroadcastFilter";
         public final static String AnrHelper = "com.android.server.am.AnrHelper";
         public final static String ProcessRecord = "com.android.server.am.ProcessRecord";
-        public final static String WindowProcessController = "com.android.server.wm.WindowProcessController";
         public final static String AnrRecord = "com.android.server.am.AnrHelper$AnrRecord";
         public final static String AppErrors = "com.android.server.am.AppErrors";
         public final static String ActivityRecord = "com.android.server.am.ActivityRecord";
         public final static String ActivityManagerService = "com.android.server.am.ActivityManagerService";
         public final static String BatteryStatsService = "com.android.server.am.BatteryStatsService";
-        public final static String ActivityTaskManagerService = "com.android.server.wm.ActivityTaskManagerService";
         public final static String ActiveUids = "com.android.server.am.ActiveUids";
         public final static String ProcessStateRecord = "com.android.server.am.ProcessStateRecord";
         public final static String ProcessList = "com.android.server.am.ProcessList";
@@ -37,6 +35,11 @@ public class Enum {
         public final static String Dependencies = "com.android.server.NetworkManagementService$Dependencies";
         public final static String SystemServices = "com.android.server.NetworkManagementService$SystemServices";
         public final static String DisplayPowerController = "com.android.server.display.DisplayPowerController";
+
+        public final static String WindowProcessController = "com.android.server.wm.WindowProcessController";
+        public final static String ActivityTaskManagerService = "com.android.server.wm.ActivityTaskManagerService";
+        public final static String WindowManagerService = "com.android.server.wm.WindowManagerService";
+        public static String RootWindowContainer = "com.android.server.wm.RootWindowContainer";
 
         public final static String PowerManager = "android.os.PowerManager";
         public final static String IPowerManager = "android.os.IPowerManager";
@@ -87,6 +90,8 @@ public class Enum {
         public final static String socketDestroy = "socketDestroy";
         public final static String setScreenState = "setScreenState";
         public final static String connectNativeNetdService = "connectNativeNetdService";
+        public final static String getAllRootTaskInfos= "getAllRootTaskInfos";
+        public final static String getAllStackInfos = "getAllStackInfos";
     }
 
     public final static class Field {
@@ -110,6 +115,7 @@ public class Enum {
         public final static String mStats = "mStats";
         public final static String mScreenState = "mScreenState";
         public final static String mNetdService = "mNetdService";
+        public final static String mActivityTaskManager = "mActivityTaskManager";
     }
 
 }

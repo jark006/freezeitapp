@@ -31,7 +31,6 @@ public class XpUtils {
         log(TAG, "HookConstructor success: " + className);
     }
 
-    // TODO 重定向到底层?
     public static void log(String TAG, String content) {
         XposedBridge.log(TAG + content);
     }

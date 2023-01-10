@@ -56,6 +56,7 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/realtimeLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="20dp"
@@ -63,7 +64,6 @@
                 card_view:cardUseCompatPadding="true">
 
                 <LinearLayout
-                    android:id="@+id/realtimeLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/gray_white"
@@ -215,11 +215,12 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-
             <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/update_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="16dp"
+                android:visibility="gone"
                 card_view:cardUseCompatPadding="true">
 
                 <LinearLayout
@@ -229,213 +230,35 @@
                     android:orientation="vertical"
                     android:padding="10dp">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingHorizontal="10dp"
-                        android:text="@string/supportTitle"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingHorizontal="10dp"
-                        android:text="@string/supportDescriptionText"
-                        android:textSize="10sp"
-                        tools:ignore="SmallSp" />
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
                         android:orientation="horizontal">
 
-                        <ImageView
-                            android:id="@+id/wechatpay"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:contentDescription="@string/icon"
-                            android:paddingTop="14dp"
-                            android:src="@drawable/logo_wechatpay" />
-
-                        <ImageView
-                            android:id="@+id/qqpay"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:contentDescription="@string/icon"
-                            android:paddingTop="14dp"
-                            android:src="@drawable/logo_qqpay" />
-
-                        <ImageView
-                            android:id="@+id/alipay"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:contentDescription="@string/icon"
-                            android:paddingTop="14dp"
-                            android:src="@drawable/logo_alipay" />
-
-                        <ImageView
-                            android:id="@+id/ecnypay"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:contentDescription="@string/icon"
-                            android:paddingTop="14dp"
-                            android:src="@drawable/logo_ecnypay" />
-
-                        <ImageView
-                            android:id="@+id/ethereumpay"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:contentDescription="@string/icon"
-                            android:paddingTop="14dp"
-                            android:src="@drawable/logo_ethereum" />
-
-                        <ImageView
-                            android:id="@+id/bitcoinpay"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:contentDescription="@string/icon"
-                            android:paddingTop="14dp"
-                            android:src="@drawable/logo_bitcoin" />
-
-                    </LinearLayout>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:cardCornerRadius="16dp"
-                app:cardUseCompatPadding="true">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/gray_white"
-                    android:orientation="vertical"
-                    android:padding="10dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal">
-
                         <TextView
+                            android:id="@+id/version_text"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:paddingHorizontal="10dp"
-                            android:text="@string/communityTitle"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
-                        <TextView
-                            android:id="@+id/updateTips"
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_download"
+                            card_view:chipBackgroundColor="@color/normal_green"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-                        <TextView
-                            android:id="@+id/changelogTips"
-                            android:paddingLeft="20dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="match_parent"
+                            android:text="@string/download"/>
                     </LinearLayout>
 
-                    <LinearLayout
+                    <TextView
+                        android:id="@+id/changelog_text"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:layout_gravity="center"
-                            android:contentDescription="@string/icon"
-                            android:padding="10dp"
-                            android:scaleType="centerInside"
-                            android:src="@drawable/logo_qq" />
-
-                        <TextView
-                            android:id="@+id/qqgroup_link"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:gravity="start|center_vertical"
-                            android:paddingStart="10dp"
-                            android:text="@string/qq_group_text" />
-
-                        <TextView
-                            android:id="@+id/qqchannel_link"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:gravity="start|center_vertical"
-                            android:text="@string/qq_channel_text" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:contentDescription="@string/icon"
-                            android:padding="10dp"
-                            android:scaleType="centerInside"
-                            android:src="@drawable/logo_telegram" />
-
-                        <TextView
-                            android:id="@+id/telegram_link"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:gravity="start|center_vertical"
-                            android:paddingStart="10dp"
-                            android:text="@string/tg_group_text" />
-
-                        <TextView
-                            android:id="@+id/telegram_channel_link"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:gravity="start|center_vertical"
-                            android:text="@string/tg_channel_text" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:contentDescription="@string/icon"
-                            android:padding="10dp"
-                            android:scaleType="centerInside"
-                            android:src="@drawable/ic_launcher_round" />
-
-                        <TextView
-                            android:id="@+id/tutorial_link"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:gravity="start|center_vertical"
-                            android:paddingStart="10dp"
-                            android:text="@string/freezeit_tutorial_text" />
-                    </LinearLayout>
-
+                        android:layout_height="wrap_content"/>
                 </LinearLayout>
-
             </androidx.cardview.widget.CardView>
+
         </LinearLayout>
     </ScrollView>
 

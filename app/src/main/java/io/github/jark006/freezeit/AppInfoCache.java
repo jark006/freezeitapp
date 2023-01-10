@@ -54,7 +54,7 @@ public class AppInfoCache {
                 String label = pm.getApplicationLabel(appInfo).toString();
                 cacheInfo.put(appInfo.uid, new Info(appInfo.loadIcon(pm), appInfo.packageName, label));
             }
-            Log.d(TAG, "更新缓存" + cacheInfo.size());
+            Log.d(TAG, context.getString(R.string.update_cache) + cacheInfo.size());
         }
     }
 

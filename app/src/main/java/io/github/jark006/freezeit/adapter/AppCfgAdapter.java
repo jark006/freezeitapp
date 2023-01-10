@@ -84,7 +84,7 @@ public class AppCfgAdapter extends RecyclerView.Adapter<AppCfgAdapter.MyViewHold
             holder.app_label.setText(info.label);
             holder.package_name.setText(info.packName);
         } else {
-            holder.package_name.setText("未知");
+            holder.package_name.setText("未知 Unknown");
             holder.app_label.setText("UID:" + uid);
         }
 
@@ -113,7 +113,7 @@ public class AppCfgAdapter extends RecyclerView.Adapter<AppCfgAdapter.MyViewHold
                 appCfg.put(uid, new Pair<>(cfgValue, isTolerant));
 
                 if (cfgValue >= CFG_WHITELIST)
-                    holder.spinner_tolerant.setVisibility(View.INVISIBLE);
+                    holder.spinner_tolerant.setVisibility(View.GONE);
                 else holder.spinner_tolerant.setVisibility(View.VISIBLE);
             }
 
@@ -157,14 +157,12 @@ public class AppCfgAdapter extends RecyclerView.Adapter<AppCfgAdapter.MyViewHold
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
 
-        LinearLayout item;
         ImageView app_icon;
         TextView app_label, package_name;
         Spinner spinner_cfg, spinner_tolerant;
 
         public MyViewHolder(View view) {
             super(view);
-            item = view.findViewById(R.id.app_item_background);
             app_icon = view.findViewById(R.id.app_icon);
             app_label = view.findViewById(R.id.app_label);
             package_name = view.findViewById(R.id.package_name);

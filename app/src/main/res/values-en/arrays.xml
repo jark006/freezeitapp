@@ -7,15 +7,15 @@
     </array>
 
     <string-array name="level">
-        <item>😡严格</item>
-        <item>😐宽松</item>
+        <item>😡Strict</item>
+        <item>😐lenient</item>
     </string-array>
 
     <string-array name="freeze_mode">
-        <item>杀死后台</item>
-        <item>SIGSTOP冻结</item>
-        <item>Freezer冻结</item>
-        <item>自由后台</item>
+        <item>Terminate</item>
+        <item>SIGSTOP</item>
+        <item>Freezer</item>
+        <item>Free</item>
     </string-array>
 
     <string-array name="cluster">
@@ -29,11 +29,11 @@
     </string-array>
 
     <string-array name="work_mode">
-        <item>全局SIGSTOP</item>
+        <item>Global SIGSTOP</item>
         <item>FreezerV1(uid)</item>
         <item>FreezerV1(frozen)</item>
         <item>FreezerV2(uid)</item>
         <item>FreezerV2(frozen)</item>
-        <item>自动选择</item>
+        <item>Auto</item>
     </string-array>
 </resources>

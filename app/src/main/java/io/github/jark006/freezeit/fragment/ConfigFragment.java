@@ -142,11 +142,13 @@ public class ConfigFragment extends Fragment {
             super.handleMessage(msg);
             byte[] response = msg.getData().getByteArray("response");
 
-            if (response == null || response.length == 0)
+            if (response == null || response.length == 0) {
+                binding.swipeRefreshLayout.setRefreshing(false);
                 return;
+            }
 
-            // 配置名单 <uid, <cfg, isTolerant>>
-            // cfg: [10]:杀死 [20]:SIGSTOP [30]:Freezer [40]:自由 [50]:内置
+            // 配置名单 <uid, <freezeMode, isTolerant>>
+            // freezeMode: [10]:杀死 [20]:SIGSTOP [30]:Freezer [40]:自由 [50]:内置
             HashMap<Integer, Pair<Integer, Integer>> appCfg = new HashMap<>();
 
             String[] list = new String(response, StandardCharsets.UTF_8).split("\n");
