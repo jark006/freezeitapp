@@ -1,7 +1,5 @@
 package io.github.jark006.freezeit.hook.android;
 
-import static io.github.jark006.freezeit.hook.XpUtils.log;
-
 import android.content.pm.ApplicationInfo;
 import android.os.Build;
 
@@ -47,6 +45,18 @@ public class AnrHook {
                     String.class, ApplicationInfo.class, String.class, Enum.Class.WindowProcessController,
                     boolean.class, String.class);
         }
+
+        // A10-A13
+        // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/am/ActiveServices.java;l=5731
+        XpUtils.hookMethod(TAG, lpParam.classLoader, callbackServiceTimeout,
+                Enum.Class.ActiveServices, Enum.Method.serviceTimeout, Enum.Class.ProcessRecord);
+
+        // A10-A13
+        // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/am/ActiveServices.java;l=5782
+        XpUtils.hookMethod(TAG, lpParam.classLoader, callbackServiceForegroundTimeout,
+                Enum.Class.ActiveServices, Enum.Method.serviceForegroundTimeout, Enum.Class.ServiceRecord);
+
+        // TODO 暂时忽略 ContentProvider Timeout 和 InputDispatching Timeout
     }
 
     // A12+ ProcessErrorStateRecord
@@ -54,15 +64,12 @@ public class AnrHook {
         @Override
         protected void beforeHookedMethod(MethodHookParam param) {
             ApplicationInfo aInfo = (ApplicationInfo) param.args[1];
-            if (aInfo == null) {
-                log(TAG, "跳过ANR ErrorState: null aInfo " + param.args[0] + " " + param.args[2]);
-                return;
-            }
+            if (aInfo == null) return;
             int uid = aInfo.uid;
-            if (config.thirdApp.contains(uid) && !config.whitelist.contains(uid)) {
-                log(TAG, "跳过ANR ErrorState:" + aInfo.packageName + " " + param.args[0] + " " + param.args[2]);
-                param.setResult(null);
-            }
+            if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid)) return;
+
+            param.setResult(null);
+            XpUtils.log(TAG, "跳过ANR ErrorState:" + aInfo.packageName + " " + param.args[0] + " " + param.args[2]);
         }
     };
 
@@ -73,11 +80,39 @@ public class AnrHook {
             Object processRecord = param.args[0];
             if (processRecord == null) return;
             int uid = XposedHelpers.getIntField(processRecord, Enum.Field.uid);
-            if (config.thirdApp.contains(uid) && !config.whitelist.contains(uid)) {
-                log(TAG, "跳过ANR AnrHelper:" + XposedHelpers.getObjectField(processRecord, "processName"));
-                param.setResult(null);
-            }
+            if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid)) return;
+
+            param.setResult(null);
+            XpUtils.log(TAG, "跳过ANR AnrHelper:" + config.pkgIndex.getOrDefault(uid, "Unknown:" + uid));
         }
     };
 
+
+    // A10-A13
+    XC_MethodHook callbackServiceTimeout = new XC_MethodHook() {
+        @Override
+        protected void beforeHookedMethod(MethodHookParam param) {
+            Object processRecord = param.args[0];
+            if (processRecord == null) return;
+            int uid = XposedHelpers.getIntField(processRecord, Enum.Field.uid);
+            if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid)) return;
+
+            param.setResult(null);
+            XpUtils.log(TAG, "跳过 ServiceTimeout: " + config.pkgIndex.getOrDefault(uid, "UID:" + uid));
+        }
+    };
+
+    // A10-A13
+    XC_MethodHook callbackServiceForegroundTimeout = new XC_MethodHook() {
+        @Override
+        protected void beforeHookedMethod(MethodHookParam param) {
+            Object serviceRecord = param.args[0];
+            if (serviceRecord == null) return;
+            int uid = XposedHelpers.getIntField(serviceRecord, Enum.Field.definingUid);
+            if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid)) return;
+
+            param.setResult(null);
+            XpUtils.log(TAG, "跳过 ServiceForegroundTimeout: " + config.pkgIndex.getOrDefault(uid, "UID:" + uid));
+        }
+    };
 }

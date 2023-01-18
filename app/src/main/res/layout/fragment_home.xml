@@ -39,7 +39,7 @@
                         android:contentDescription="@string/icon"
                         android:padding="5dp"
                         android:scaleType="centerInside"
-                        android:src="@drawable/ic_launcher_round" />
+                        android:src="@mipmap/ic_launcher" />
 
                     <TextView
                         android:id="@+id/statusText"
@@ -95,7 +95,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:paddingTop="5dp">
+                        android:paddingVertical="5dp">
 
                         <TextView
                             android:id="@+id/cpu0"
@@ -175,6 +175,7 @@
                             android:gravity="center"
                             android:textColor="@color/cpu_big"
                             android:textSize="8sp"
+                            android:text="@string/developer"
                             tools:ignore="SmallSp" />
 
                     </LinearLayout>
@@ -216,11 +217,11 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/update_layout"
+                android:id="@+id/changelog_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="16dp"
-                android:visibility="gone"
+                android:visibility="invisible"
                 card_view:cardUseCompatPadding="true">
 
                 <LinearLayout
@@ -232,23 +233,23 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="40dp"
+                        android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
                         <TextView
                             android:id="@+id/version_text"
                             android:layout_width="0dp"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:paddingHorizontal="10dp"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
                         <com.google.android.material.chip.Chip
-                            android:id="@+id/chip_download"
+                            android:id="@+id/download_button"
                             card_view:chipBackgroundColor="@color/normal_green"
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:text="@string/download"/>
                     </LinearLayout>
 

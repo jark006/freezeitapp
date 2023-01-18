@@ -65,7 +65,7 @@
     <string name="developer">Developer JARK006</string>
     <string name="physical_ram_text">[PhysicalRAM] Total: %.2f GiB\nUse: %.1f%% Remain: %.2f %s</string>
     <string name="virtual_ram_text">[VirtualRAM] Total: %.2f GiB\nUse: %.1f%% Remain: %.2f %s</string>
-    <string name="cluster_tips">Binding freeze it process to a cluster of cores, small cores save power, medium and large cores unfreeze fast, restart effective  4+4 architecture: small core [0~3] large core [4~7] a few will be reversed  4+3+1 architecture: small core [0~3] medium core [4~6] large core [7]  3+2+2+1 architecture: small core [0~2] medium core [3~4] medium and large core [5~6] large core [7]</string>
+    <string name="cluster_tips">Binding freeze it process to a cluster of cores, small cores save power, medium and large cores unfreeze fast, restart effective\n4+4 architecture: small core [0~3] large core [4~7] a few will be reversed\n4+3+1 architecture: small core [0~3] medium core [4~6] large core [7]\n3+2+2+1 architecture: small core [0~2] medium core [3~4] medium and large core [5~6] large core [7]</string>
     <string name="freeze_timeout_tips">How long does it take to freeze an application that is set to freeze after it enters the background, it is not recommended to freeze it in seconds</string>
     <string name="wakeup_timeout_tips">Timed to unfreeze frozen background applications, the unfreeze duration is [Timeout Freeze] parameter. If the application often flash bounce and flash back, it is recommended to adjust the short time, it is not easy to freeze. Set to the maximum value of 120 to turn off timed thawing. If there is a memory leak with FreezerV1, please do not turn it off, otherwise it will not be able to release memory.</string>
     <string name="terminate_timeout_tips">How long it takes to kill an app set to [Terminate] after it enters the background</string>
@@ -88,4 +88,5 @@
     <string name="online_changelog">History Changelog</string>
     <string name="extend_fg_tips">Some systems will modify the foreground/background state mechanism (some COS11), resulting in some foreground applications not being recognized correctly and being frozen. If you have encountered this situation, then you need to turn it on and reboot to take effect. If everything is fine then it is recommended to turn off</string>
     <string name="extend_fg_title">Extended Foreground Recognize</string>
+    <string name="title_activity_about">About</string>
 </resources>

@@ -27,6 +27,9 @@ public class Enum {
         public final static String ProcessStateRecord = "com.android.server.am.ProcessStateRecord";
         public final static String ProcessList = "com.android.server.am.ProcessList";
         public final static String ProcessErrorStateRecord = "com.android.server.am.ProcessErrorStateRecord";
+        public final static String ActiveServices = "com.android.server.am.ActiveServices";
+        public final static String ServiceRecord = "com.android.server.am.ServiceRecord";
+
         public final static String AppOpsService = "com.android.server.appop.AppOpsService";
         public final static String PowerManagerService = "com.android.server.power.PowerManagerService";
         public final static String AlarmManagerServiceR = "com.android.server.AlarmManagerService"; //SDK x ~ 30
@@ -92,6 +95,8 @@ public class Enum {
         public final static String connectNativeNetdService = "connectNativeNetdService";
         public final static String getAllRootTaskInfos= "getAllRootTaskInfos";
         public final static String getAllStackInfos = "getAllStackInfos";
+        public final static String serviceTimeout = "serviceTimeout";
+        public final static String serviceForegroundTimeout = "serviceForegroundTimeout";
     }
 
     public final static class Field {
@@ -116,6 +121,7 @@ public class Enum {
         public final static String mScreenState = "mScreenState";
         public final static String mNetdService = "mNetdService";
         public final static String mActivityTaskManager = "mActivityTaskManager";
+        public final static String definingUid = "definingUid";
     }
 
 }

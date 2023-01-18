@@ -43,7 +43,6 @@ public class AndroidService {
     final int REPLY_FAILURE = 0;
 
     Config config;
-    ClassLoader classLoader;
 
     ArrayList<?> mLruProcesses;
 
@@ -68,34 +67,32 @@ public class AndroidService {
 
     public AndroidService(Config config, XC_LoadPackage.LoadPackageParam lpParam) {
         this.config = config;
-        this.classLoader = lpParam.classLoader;
 
         // A10-13 ActivityManagerService
         // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java
-        XpUtils.hookConstructor(AMS_TAG, classLoader, new XC_MethodHook() {
+        XpUtils.hookConstructor(AMS_TAG, lpParam.classLoader, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) {
                 Object mProcessList = XposedHelpers.getObjectField(param.thisObject, Enum.Field.mProcessList);
                 mLruProcesses = (ArrayList<?>) XposedHelpers.getObjectField(mProcessList, Enum.Field.mLruProcesses);
-                log(AMS_TAG, "Init mProcessList mLruProcesses");
+                log(AMS_TAG, "Init mLruProcesses");
             }
         }, Enum.Class.ActivityManagerService, Context.class, Enum.Class.ActivityTaskManagerService);
 
-        // A13 RootWindowContainer
-        // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/wm/RootWindowContainer.java
 
         // A12-A13
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             getAllRootTaskInfosMethod = XposedHelpers.findMethodExactIfExists(
-                    Enum.Class.RootWindowContainer, classLoader, Enum.Method.getAllRootTaskInfos, int.class);
+                    Enum.Class.RootWindowContainer, lpParam.classLoader, Enum.Method.getAllRootTaskInfos, int.class);
             log(WIN_TAG, "Init getAllRootTaskInfosMethod " + ((getAllRootTaskInfosMethod == null ? "fail" : "success")));
         } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) {
             getAllStackInfosMethod = XposedHelpers.findMethodExactIfExists(
-                    Enum.Class.RootWindowContainer, classLoader, Enum.Method.getAllStackInfos, int.class);
+                    Enum.Class.RootWindowContainer, lpParam.classLoader, Enum.Method.getAllStackInfos, int.class);
             log(WIN_TAG, "Init getAllStackInfosMethod " + ((getAllStackInfosMethod == null ? "fail" : "success")));
         }
-
-        XpUtils.hookConstructor(WIN_TAG, classLoader, new XC_MethodHook() {
+        // A13 RootWindowContainer
+        // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/wm/RootWindowContainer.java
+        XpUtils.hookConstructor(WIN_TAG, lpParam.classLoader, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) {
                 mRootWindowContainer = param.thisObject;
@@ -103,11 +100,12 @@ public class AndroidService {
             }
         }, Enum.Class.RootWindowContainer, Enum.Class.WindowManagerService);
 
+
         // A10-A13 NetworkManagementService
         // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/NetworkManagementService.java
-        UidRangeParcelClazz = XposedHelpers.findClassIfExists(Enum.Class.UidRangeParcel, classLoader);
+        UidRangeParcelClazz = XposedHelpers.findClassIfExists(Enum.Class.UidRangeParcel, lpParam.classLoader);
         log(NMS_TAG, "Init UidRangeParcel " + ((UidRangeParcelClazz == null ? "fail" : "success")));
-        XpUtils.hookMethod(NMS_TAG, classLoader, new XC_MethodHook() {
+        XpUtils.hookMethod(NMS_TAG, lpParam.classLoader, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) {
                 mNetdService = XposedHelpers.getObjectField(param.thisObject, Enum.Field.mNetdService);
@@ -115,10 +113,11 @@ public class AndroidService {
             }
         }, Enum.Class.NetworkManagementService, Enum.Method.connectNativeNetdService);
 
-        // A11-13 AppOpsService
+
+        // AppOpsService
         // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/appop/AppOpsService.java;l=1776
         setUidModeMethod = XposedHelpers.findMethodExactIfExists(
-                Enum.Class.AppOpsService, classLoader, Enum.Method.setUidMode,
+                Enum.Class.AppOpsService, lpParam.classLoader, Enum.Method.setUidMode,
                 int.class, int.class, int.class);
         log(WAK_TAG, "Init setUidModeMethod " + ((setUidModeMethod == null ? "fail" : "success")));
         XC_MethodHook AppOpsHook = new XC_MethodHook() {
@@ -127,17 +126,19 @@ public class AndroidService {
                 appOps = param.thisObject;
             }
         };
+        // A11-13
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            XpUtils.hookConstructor(WAK_TAG, classLoader, AppOpsHook, Enum.Class.AppOpsService,
+            XpUtils.hookConstructor(WAK_TAG, lpParam.classLoader, AppOpsHook, Enum.Class.AppOpsService,
                     File.class, Handler.class, Context.class);
         } else { // A10
-            XpUtils.hookConstructor(WAK_TAG, classLoader, AppOpsHook, Enum.Class.AppOpsService,
+            XpUtils.hookConstructor(WAK_TAG, lpParam.classLoader, AppOpsHook, Enum.Class.AppOpsService,
                     File.class, Handler.class);
         }
 
+
         // A10-A13 DisplayPowerController
         // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/display/DisplayPowerController.java;l=1927
-        XpUtils.hookMethod(DPC_TAG, classLoader, new XC_MethodHook() {
+        XpUtils.hookMethod(DPC_TAG, lpParam.classLoader, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) {
                 mScreenState = (int) param.args[0];
@@ -258,7 +259,7 @@ public class AndroidService {
 
 
     void handleForeground(OutputStream os, byte[] replyBuff) throws Exception {
-        config.top.clear();
+        config.foreground.clear();
         try {
             for (int i = mLruProcesses.size() - 1; i > 10; i--) { //逆序, 最近活跃应用在最后
                 var processRecord = mLruProcesses.get(i);
@@ -281,7 +282,7 @@ public class AndroidService {
                 // ProcessStateEnum: https://cs.android.com/android/platform/superproject/+/master:out/soong/.intermediates/frameworks/base/framework-minus-apex/android_common/xref35/srcjars.xref/android/app/ProcessStateEnum.java;l=10
                 if (mCurProcState == 2 || mCurProcState == 3 ||
                         (4 <= mCurProcState && mCurProcState <= 6 && config.tolerant.contains(uid)))
-                    config.top.add(uid);
+                    config.foreground.add(uid);
             }
 
             if (config.isExtendFg()) {
@@ -299,7 +300,7 @@ public class AndroidService {
                                 int uid = applicationInfo.uid;
                                 if (uid < 10000 || !config.thirdApp.contains(uid) || config.whitelist.contains(uid))
                                     continue;
-                                config.top.add(uid);
+                                config.foreground.add(uid);
                             }
                         }
                     }
@@ -316,7 +317,7 @@ public class AndroidService {
                                 Integer uid = config.uidIndex.get(topActivity.getPackageName());
                                 if (uid == null || uid < 10000 || !config.thirdApp.contains(uid) || config.whitelist.contains(uid))
                                     continue;
-                                config.top.add(uid);
+                                config.foreground.add(uid);
                             }
                         }
                     }
@@ -328,10 +329,10 @@ public class AndroidService {
         }
 
         // 开头的4字节放置UID的个数，往后每4个字节放一个UID  [小端]
-        Utils.Int2Byte(config.top.size(), replyBuff, 0);
-        Utils.HashSet2Byte(config.top, replyBuff, 4);
+        Utils.Int2Byte(config.foreground.size(), replyBuff, 0);
+        Utils.HashSet2Byte(config.foreground, replyBuff, 4);
 
-        os.write(replyBuff, 0, (config.top.size() + 1) * 4);
+        os.write(replyBuff, 0, (config.foreground.size() + 1) * 4);
         os.close();
     }
 
@@ -356,7 +357,7 @@ public class AndroidService {
                     mCurProcState = XposedHelpers.getIntField(processRecord, "mCurProcState");
                 }
 
-                // 2在顶层 3绑定了顶层应用, 有前台服务:4常驻状态栏 6悬浮窗
+                // 19
                 // ProcessStateEnum: https://cs.android.com/android/platform/superproject/+/master:out/soong/.intermediates/frameworks/base/framework-minus-apex/android_common/xref35/srcjars.xref/android/app/ProcessStateEnum.java;l=10
                 if (mCurProcState == 19) {
                     String processName = (String) XposedHelpers.getObjectField(processRecord, "processName");
@@ -421,40 +422,43 @@ public class AndroidService {
 
         config.thirdApp.clear();
         config.uidIndex.clear();
+        config.pkgIndex.clear();
         config.whitelist.clear();
         config.tolerant.clear();
 
         try {
             StringBuilder sb = new StringBuilder("Parse: ");
             for (int lineIdx = 0; lineIdx < splitLine.length; lineIdx++) {
-                var split = splitLine[lineIdx].split(" ");
+                var elementList = splitLine[lineIdx].split(" ");
                 switch (lineIdx) {
                     case 0:
-                        for (int i = 0; i < split.length; i++)
-                            config.settings[i] = Integer.parseInt(split[i]);
-                        sb.append("settings:").append(split.length).append(" ");
+                        for (int i = 0; i < elementList.length; i++)
+                            config.settings[i] = Integer.parseInt(elementList[i]);
+                        sb.append("settings: ").append(elementList.length).append(' ');
                         break;
                     case 1:
-                        for (String s : split) {
-                            var spl = s.split("####");
-                            if (spl.length == 2) {
-                                int uid = Integer.parseInt(spl[0]);
+                        for (String element : elementList) {
+                            var tmp = element.split("####"); // element: "uid####package"
+                            if (tmp.length == 2) {
+                                int uid = Integer.parseInt(tmp[0]);
                                 config.thirdApp.add(uid);
-                                config.uidIndex.put(spl[1], uid);
+                                config.uidIndex.put(tmp[1], uid);
+                                config.pkgIndex.put(uid, tmp[1]);
                             }
                         }
-                        sb.append("thirdApp:").append(config.thirdApp.size()).append(" ");
-                        sb.append("uidIndex:").append(config.uidIndex.size()).append(" ");
+                        sb.append("thirdApp: ").append(config.thirdApp.size()).append(' ');
+                        sb.append("uidIndex: ").append(config.uidIndex.size()).append(' ');
+                        sb.append("pkgIndex: ").append(config.pkgIndex.size()).append(' ');
                         break;
                     case 2:
-                        for (String s : split)
-                            config.whitelist.add(Integer.parseInt(s));
-                        sb.append("whitelist:").append(config.whitelist.size()).append(" ");
+                        for (String uidStr : elementList)
+                            config.whitelist.add(Integer.parseInt(uidStr));
+                        sb.append("whitelist:").append(config.whitelist.size()).append(' ');
                         break;
                     case 3:
-                        for (String s : split)
-                            config.tolerant.add(Integer.parseInt(s));
-                        sb.append("tolerant:").append(config.tolerant.size()).append(" ");
+                        for (String uidStr : elementList)
+                            config.tolerant.add(Integer.parseInt(uidStr));
+                        sb.append("tolerant: ").append(config.tolerant.size()).append(' ');
                         break;
                 }
             }

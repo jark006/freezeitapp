@@ -58,7 +58,7 @@
                 android:gravity="end"
                 android:singleLine="true"
                 android:typeface="monospace"
-                android:textColor="@color/normal_green"
+                android:textColor="?attr/colorSecondary"
                 android:text="@string/todo" />
 
             <TextView
@@ -87,7 +87,7 @@
                 android:gravity="end"
                 android:singleLine="true"
                 android:typeface="monospace"
-                android:textColor="@color/normal_green"
+                android:textColor="?attr/colorSecondary"
                 android:text="@string/todo" />
 
             <TextView

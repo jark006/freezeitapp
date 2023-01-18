@@ -138,6 +138,9 @@ public class Utils {
 
     public static void getData(String link, Handler handler) {
         byte[] res = null;
+        if (handler == null)
+            return;
+
         try {
             URL url = new URL(link);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();

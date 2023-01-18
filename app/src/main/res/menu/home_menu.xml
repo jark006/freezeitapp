@@ -7,4 +7,10 @@
         app:showAsAction="ifRoom"
         android:title="@string/title_activity_setting"
         android:icon="@drawable/ic_settings_24dp" />
+    <item
+        android:id="@+id/about"
+        android:orderInCategory="100"
+        android:title="@string/help"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_info_24dp"/>
 </menu>

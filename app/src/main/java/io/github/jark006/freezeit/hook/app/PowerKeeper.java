@@ -15,18 +15,18 @@ public class PowerKeeper {
     public static void Hook(XC_LoadPackage.LoadPackageParam lpParam) {
 
         ClassLoader classLoader = lpParam.classLoader;
-        XC_MethodHook callback = XC_MethodReplacement.DO_NOTHING;
-        XC_MethodHook callbackTrue = XC_MethodReplacement.returnConstant(true);
+        XC_MethodHook doNothing = XC_MethodReplacement.DO_NOTHING;
+        XC_MethodHook returnTrue = XC_MethodReplacement.returnConstant(true);
 
-        XpUtils.hookMethod(TAG, classLoader, callbackTrue, Enum.Class.ProcessManager, Enum.Method.kill, Enum.Class.ProcessConfig);
-        XpUtils.hookMethod(TAG, classLoader, callback, Enum.Class.SleepModeControllerNew, Enum.Method.clearApp);
-        XpUtils.hookMethod(TAG, classLoader, callback, Enum.Class.PowerStateMachine, Enum.Method.clearAppWhenScreenOffTimeOut);
-        XpUtils.hookMethod(TAG, classLoader, callback, Enum.Class.PowerStateMachine, Enum.Method.clearAppWhenScreenOffTimeOutInNight);
-        XpUtils.hookMethod(TAG, classLoader, callback, Enum.Class.PowerStateMachine, Enum.Method.clearUnactiveApps, Context.class);
-        XpUtils.hookMethod(TAG, classLoader, callback, Enum.Class.PowerCheckerController, Enum.Method.clearApp);
-        XpUtils.hookMethod(TAG, classLoader, callbackTrue, Enum.Class.PowerCheckerController, Enum.Method.autoKillApp, int.class, String.class);
-        XpUtils.hookMethod(TAG, classLoader, callback, Enum.Class.DynamicTurboPowerHandler, Enum.Method.clearApp);
-        XpUtils.hookMethod(TAG, classLoader, callback, Enum.Class.SleepProcessHelper, Enum.Method.killAppsInSleep);
+        XpUtils.hookMethod(TAG, classLoader, returnTrue, Enum.Class.ProcessManager, Enum.Method.kill, Enum.Class.ProcessConfig);
+        XpUtils.hookMethod(TAG, classLoader, doNothing, Enum.Class.SleepModeControllerNew, Enum.Method.clearApp);
+        XpUtils.hookMethod(TAG, classLoader, doNothing, Enum.Class.PowerStateMachine, Enum.Method.clearAppWhenScreenOffTimeOut);
+        XpUtils.hookMethod(TAG, classLoader, doNothing, Enum.Class.PowerStateMachine, Enum.Method.clearAppWhenScreenOffTimeOutInNight);
+        XpUtils.hookMethod(TAG, classLoader, doNothing, Enum.Class.PowerStateMachine, Enum.Method.clearUnactiveApps, Context.class);
+        XpUtils.hookMethod(TAG, classLoader, doNothing, Enum.Class.PowerCheckerController, Enum.Method.clearApp);
+        XpUtils.hookMethod(TAG, classLoader, returnTrue, Enum.Class.PowerCheckerController, Enum.Method.autoKillApp, int.class, String.class);
+        XpUtils.hookMethod(TAG, classLoader, doNothing, Enum.Class.DynamicTurboPowerHandler, Enum.Method.clearApp);
+        XpUtils.hookMethod(TAG, classLoader, doNothing, Enum.Class.SleepProcessHelper, Enum.Method.killAppsInSleep);
 
     }
 }

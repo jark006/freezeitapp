@@ -62,19 +62,10 @@ public class WakeLockHook {
 
             // android S+ 12+:[7]    X~11:[6]
             int uid = (int) param.args[Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? 7 : 6];
-
-            // 宽松前台允许唤醒锁，但冻结时会被设为 可忽略
-//            if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid) || config.tolerant.contains(uid))
-//                return;
-
-            // 只有自由后台才能获得唤醒锁
-            if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid))
-                return;
+            if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid)) return;
 
             param.setResult(null);
-
-//            String packageName = (String) param.args[Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? 4 : 3];
-//            log(TAG, "阻止获取唤醒锁：" + packageName);
+//            XpUtils.log(TAG, "阻止唤醒锁: " + config.pkgIndex.getOrDefault(uid, "UID:" + uid));
         }
     };
 }

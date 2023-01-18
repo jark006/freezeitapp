@@ -34,6 +34,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import io.github.jark006.freezeit.AboutActivity;
 import io.github.jark006.freezeit.AppTimeActivity;
 import io.github.jark006.freezeit.BuildConfig;
 import io.github.jark006.freezeit.R;
@@ -58,7 +59,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         am = (ActivityManager) requireActivity().getSystemService(ACTIVITY_SERVICE);
         memoryInfo = new ActivityManager.MemoryInfo();
 
-        binding.chipDownload.setOnClickListener(this);
+        binding.downloadButton.setOnClickListener(this);
         binding.realtimeLayout.setOnClickListener(this);
 
         requireActivity().addMenuProvider(new MenuProvider() {
@@ -76,6 +77,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         startActivity(new Intent(requireContext(), SettingsActivity.class));
                     else
                         Toast.makeText(requireContext(), getString(R.string.freezeit_offline), Toast.LENGTH_LONG).show();
+                } else if (id == R.id.about) {
+                    startActivity(new Intent(requireContext(), AboutActivity.class));
                 }
                 return true;
             }
@@ -335,13 +338,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 return;
 
             if (StaticData.onlineVersionCode > StaticData.moduleVersionCode) {
-                binding.updateLayout.setVisibility(View.VISIBLE);
-                binding.versionText.setText(
-                        (StaticData.moduleVersionCode == 0 ?
-                                requireContext().getString(R.string.online_version) :
-                                requireContext().getString(R.string.new_version))
-                                + " " + StaticData.onlineVersion);
-                binding.changelogText.setText(StaticData.onlineChangelog);
+                binding.changelogLayout.setVisibility(View.VISIBLE);
+                String tmp = (StaticData.moduleVersionCode == 0 ?
+                        requireContext().getString(R.string.online_version) :
+                        requireContext().getString(R.string.new_version))
+                        + " " + StaticData.onlineVersion;
+                binding.versionText.setText(tmp);
 
                 if (StaticData.onlineChangelog.length() > 0)
                     binding.changelogText.setText(StaticData.onlineChangelog);
@@ -349,16 +351,20 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     new Thread(() -> Utils.getData(StaticData.changelogUrl, onlineChangelogHandler)).start();
 
             } else if (StaticData.onlineVersionCode < StaticData.moduleVersionCode) {
-                binding.chipDownload.setVisibility(View.GONE);
+                binding.downloadButton.setVisibility(View.GONE);
+                binding.changelogLayout.setVisibility(View.VISIBLE);
 
-                binding.updateLayout.setVisibility(View.VISIBLE);
-                binding.versionText.setText(R.string.beta_version);
+                var sb = new StringBuilder();
+                sb.append(getString(R.string.beta_version)).append(": ").append(StaticData.moduleVersion)
+                        .append('(').append(StaticData.moduleVersionCode).append(")\n");
+                sb.append(getString(R.string.online_version)).append(": ").append(StaticData.onlineVersion)
+                        .append('(').append(StaticData.onlineVersionCode).append(")\n");
+                binding.versionText.setText(sb);
 
                 if (StaticData.localChangelog.length() > 0)
                     binding.changelogText.setText(StaticData.localChangelog);
                 else
                     new Thread(() -> Utils.freezeitTask(Utils.getChangelog, null, localChangelogHandler)).start();
-
             }
         }
     };
@@ -393,10 +399,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 return;
 
             var split = new String(response, StandardCharsets.UTF_8).split("###");
-            if (split.length > 2 && split[1].length() > 2) {
-                StaticData.localChangelog = getString(R.string.current_version) + ": " + StaticData.moduleVersion + "(" + StaticData.moduleVersionCode + ")\n" +
-                        getString(R.string.online_version) + ": " + StaticData.onlineVersion + "(" + StaticData.onlineVersionCode + ")\n\n" + split[1];
-            }
+            if (split.length > 2 && split[1].length() > 2)
+                StaticData.localChangelog = split[1];
+
             if (binding != null)
                 binding.changelogText.setText(StaticData.localChangelog);
         }
@@ -407,7 +412,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         int id = v.getId();
         if (id == R.id.realtimeLayout) {
             startActivity(new Intent(requireContext(), AppTimeActivity.class));
-        } else if (id == R.id.chip_download) {
+        } else if (id == R.id.download_button) {
             if (StaticData.zipUrl.length() > 2)
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(StaticData.zipUrl)));
         }
