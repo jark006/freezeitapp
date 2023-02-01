@@ -26,7 +26,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     Switch radicalFgSwitch, batterySwitch, currentSwitch, breakNetworkSwitch,
-            lmkSwitch, dozeSwitch, extendFgSwitch;
+            lmkSwitch, dozeSwitch, extendFgSwitch, dozeDebugSwitch;
 
     final int clusterBindIdx = 1;
     final int freezeTimeoutIdx = 2;
@@ -42,6 +42,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     final int lmkIdx = 16;
     final int dozeIdx = 17;
     final int extendFgIdx = 18;
+
+    final int dozeDebugIdx = 30;
 
     byte[] settingsVar = new byte[256];
     long lastTimestamp = System.currentTimeMillis();
@@ -66,6 +68,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         findViewById(R.id.lmk_title).setOnClickListener(this);
         findViewById(R.id.doze_title).setOnClickListener(this);
         findViewById(R.id.extend_fg_title).setOnClickListener(this);
+        findViewById(R.id.doze_debug_title).setOnClickListener(this);
 
 
         clusterBindSpinner = findViewById(R.id.cluster_spinner);
@@ -85,6 +88,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         lmkSwitch = findViewById(R.id.switch_lmk);
         dozeSwitch = findViewById(R.id.switch_doze);
         extendFgSwitch = findViewById(R.id.switch_extend_fg);
+        dozeDebugSwitch = findViewById(R.id.switch_doze_debug);
     }
 
     @Override
@@ -238,6 +242,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             InitSwitch(lmkSwitch, lmkIdx);
             InitSwitch(dozeSwitch, dozeIdx);
             InitSwitch(extendFgSwitch, extendFgIdx);
+            InitSwitch(dozeDebugSwitch, dozeDebugIdx);
         }
     };
 
@@ -268,6 +273,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             Utils.textDialog(this, R.string.doze_title, R.string.doze_tips);
         } else if (id == R.id.extend_fg_title) {
             Utils.textDialog(this, R.string.extend_fg_title, R.string.extend_fg_tips);
+        } else if (id == R.id.doze_debug_title) {
+            Utils.textDialog(this, R.string.doze_debug_title, R.string.doze_debug_tips);
         }
     }
 }

@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray_white_background"
     tools:context=".SettingsActivity">
 
     <ScrollView
@@ -19,57 +18,49 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="15dp">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/cluster_title"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:paddingVertical="15dp"
                     android:text="@string/cluster_title"
                     android:textSize="18sp" />
 
-                <LinearLayout
+                <Spinner
+                    android:id="@+id/cluster_spinner"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:entries="@array/cluster"
+                    android:spinnerMode="dropdown" />
 
-                    <Spinner
-                        android:id="@+id/cluster_spinner"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:entries="@array/cluster"
-                        android:spinnerMode="dropdown" />
-                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="15dp">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/freeze_mode_title"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:paddingVertical="15dp"
                     android:text="@string/freeze_mode_title"
                     android:textSize="18sp" />
 
-                <LinearLayout
+                <Spinner
+                    android:id="@+id/freeze_mode_spinner"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:entries="@array/work_mode"
+                    android:spinnerMode="dropdown" />
 
-                    <Spinner
-                        android:id="@+id/freeze_mode_spinner"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end"
-                        android:entries="@array/work_mode"
-                        android:gravity="end"
-                        android:spinnerMode="dropdown" />
-                </LinearLayout>
             </LinearLayout>
 
             <View
@@ -80,20 +71,20 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingVertical="10dp">
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingVertical="5dp">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/freeze_timeout_title"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:paddingVertical="15dp"
                         android:text="@string/freeze_timeout_title"
                         android:textSize="18sp" />
 
@@ -121,7 +112,6 @@
                     android:maxHeight="28dp"
                     android:min="1"
                     android:minHeight="28dp"
-                    android:padding="5dp"
                     android:progressDrawable="@drawable/seekbar_bg"
                     android:progressTint="@color/purple_500"
                     android:thumb="@null"
@@ -137,14 +127,15 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingVertical="5dp">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/terminate_timeout_title"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:paddingVertical="15dp"
                         android:text="@string/terminate_timeout_title"
                         android:textSize="18sp" />
 
@@ -172,7 +163,6 @@
                     android:maxHeight="28dp"
                     android:min="3"
                     android:minHeight="28dp"
-                    android:padding="5dp"
                     android:progressDrawable="@drawable/seekbar_bg"
                     android:progressTint="@color/purple_500"
                     android:thumb="@null"
@@ -184,20 +174,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingVertical="10dp">
-
+                android:paddingBottom="10dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingVertical="5dp">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/wakeup_timeout_title"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:paddingVertical="15dp"
                         android:text="@string/wakeup_timeout_title"
                         android:textSize="18sp" />
 
@@ -222,10 +212,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:max="120"
-                    android:maxHeight="28dp"
+                    android:maxHeight="30dp"
                     android:min="3"
-                    android:minHeight="28dp"
-                    android:padding="5dp"
+                    android:minHeight="30dp"
                     android:progressDrawable="@drawable/seekbar_bg"
                     android:progressTint="@color/purple_500"
                     android:thumb="@null"
@@ -242,14 +231,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingVertical="15dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/radical_fg_title"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:paddingVertical="15dp"
                     android:text="@string/radical_fg_title"
                     android:textSize="18sp" />
 
@@ -268,14 +257,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingVertical="15dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/battery_title"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:paddingVertical="15dp"
                     android:text="@string/battery_title"
                     android:textSize="18sp" />
 
@@ -293,14 +282,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingVertical="15dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/current_title"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:paddingVertical="15dp"
                     android:text="@string/current_title"
                     android:textSize="18sp" />
 
@@ -318,14 +307,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingVertical="15dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/break_network_title"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:paddingVertical="15dp"
                     android:text="@string/break_network_title"
                     android:textSize="18sp" />
 
@@ -343,14 +332,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingVertical="15dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/lmk_title"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:paddingVertical="15dp"
                     android:text="@string/lmk_title"
                     android:textSize="18sp" />
 
@@ -368,14 +357,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingVertical="15dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/doze_title"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:paddingVertical="15dp"
                     android:text="@string/doze_title"
                     android:textSize="18sp" />
 
@@ -393,19 +382,49 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingVertical="15dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/extend_fg_title"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:paddingVertical="15dp"
                     android:text="@string/extend_fg_title"
                     android:textSize="18sp" />
 
                 <Switch
                     android:id="@+id/switch_extend_fg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector"
+                    android:thumbTint="@color/gray_ee"
+                    android:trackTint="@color/transparent"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?android:attr/listDivider" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/doze_debug_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingVertical="15dp"
+                    android:text="@string/doze_debug_title"
+                    android:textSize="18sp" />
+
+                <Switch
+                    android:id="@+id/switch_doze_debug"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/selector"

@@ -1,10 +1,8 @@
 package io.github.jark006.freezeit.fragment;
 
-import static android.content.Context.ACTIVITY_SERVICE;
 import static androidx.core.content.ContextCompat.getColor;
 
 import android.annotation.SuppressLint;
-import android.app.ActivityManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -48,16 +46,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private FragmentHomeBinding binding;
 
     Timer timer;
-    long availMem = 0;
-    ActivityManager am;
-    ActivityManager.MemoryInfo memoryInfo;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
-
-        am = (ActivityManager) requireActivity().getSystemService(ACTIVITY_SERVICE);
-        memoryInfo = new ActivityManager.MemoryInfo();
 
         binding.downloadButton.setOnClickListener(this);
         binding.realtimeLayout.setOnClickListener(this);
@@ -184,10 +176,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 return;
             }
 
-            long[] memList = new long[4];
+            // Unit: KiB
+            int MemTotal, MemAvailable, SwapTotal, SwapFree;
             try {
-                for (int i = 0; i < 4; i++)
-                    memList[i] = Long.parseLong(realTimeInfo[i]);
+                MemTotal = Integer.parseInt(realTimeInfo[0]);
+                MemAvailable = Integer.parseInt(realTimeInfo[1]);
+                SwapTotal = Integer.parseInt(realTimeInfo[2]);
+                SwapFree = Integer.parseInt(realTimeInfo[3]);
             } catch (Exception e) {
                 StringBuilder sb = new StringBuilder("handleMessage: memList");
                 for (int i = 0; i < 4; i++)
@@ -197,18 +192,20 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 return;
             }
 
+            final double GiB_UnitSize = 1024 * 1024.0;
+            final double MiB_UnitSize = 1024.0;
             @SuppressLint("DefaultLocale")
             String tmp = String.format(getString(R.string.physical_ram_text),
-                    (memList[0] / Math.pow(1024, 3)), 100.0 * (memList[0] - availMem) / memList[0],
-                    availMem > Math.pow(1024, 3) ? (availMem / Math.pow(1024, 3)) : (availMem / Math.pow(1024, 2)),
-                    availMem > Math.pow(1024, 3) ? "GiB" : "MiB");
+                    MemTotal / GiB_UnitSize, 100.0 * (MemTotal - MemAvailable) / MemTotal,
+                    MemAvailable > GiB_UnitSize ? (MemAvailable / GiB_UnitSize) : (MemAvailable / MiB_UnitSize),
+                    MemAvailable > GiB_UnitSize ? "GiB" : "MiB");
             binding.memInfo.setText(tmp);
 
-            if (memList[2] > 0) { //可能没有 虚拟内存
+            if (SwapTotal > 0) { //可能没有 虚拟内存
                 tmp = String.format(getString(R.string.virtual_ram_text),
-                        (memList[2] / Math.pow(1024, 3)), 100.0 * (memList[2] - memList[3]) / memList[2],
-                        memList[3] > Math.pow(1024, 3) ? (memList[3] / Math.pow(1024, 3)) : (memList[3] / Math.pow(1024, 2)),
-                        memList[3] > Math.pow(1024, 3) ? "GiB" : "MiB");
+                        SwapTotal / GiB_UnitSize, 100.0 * (SwapTotal - SwapFree) / SwapTotal,
+                        SwapFree > GiB_UnitSize ? (SwapFree / GiB_UnitSize) : (SwapFree / MiB_UnitSize),
+                        SwapFree > GiB_UnitSize ? "GiB" : "MiB");
                 binding.zramInfo.setText(tmp);
             }
 
@@ -226,7 +223,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
 
             binding.cpu.setText(String.format(getString(R.string.cpu_format), percent, temperature / 1000.0));
-            binding.battery.setText(Math.abs(mA) > 2000 ? String.format("%.2f A", mA / 1e3) : (mA + " mA"));
+            binding.battery.setText(Math.abs(mA) > 2000 ? String.format("%.2f A\uD83D\uDD0B", mA / 1e3) : (mA + " mA\uD83D\uDD0B"));
 
             binding.cpu0.setText("cpu0\n" + realTimeInfo[4] + "MHz\n" + realTimeInfo[12] + "%");
             binding.cpu1.setText("cpu1\n" + realTimeInfo[5] + "MHz\n" + realTimeInfo[13] + "%");
@@ -240,10 +237,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     };
 
     Runnable realTimeTask = () -> {
-        am.getMemoryInfo(memoryInfo);
-        availMem = memoryInfo.availMem;
+        byte[] payload = new byte[8];
+        Utils.Int2Byte(StaticData.imgHeight, payload, 0);
+        Utils.Int2Byte(StaticData.imgWidth, payload, 4);
 
-        byte[] payload = ("" + StaticData.imgHeight + " " + StaticData.imgWidth + " " + availMem).getBytes();
         Utils.freezeitTask(Utils.getRealTimeInfo, payload, realTimeHandler);
     };
 
@@ -356,9 +353,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                 var sb = new StringBuilder();
                 sb.append(getString(R.string.beta_version)).append(": ").append(StaticData.moduleVersion)
-                        .append('(').append(StaticData.moduleVersionCode).append(")\n");
+                        .append(" (").append(StaticData.moduleVersionCode).append(")\n");
                 sb.append(getString(R.string.online_version)).append(": ").append(StaticData.onlineVersion)
-                        .append('(').append(StaticData.onlineVersionCode).append(")\n");
+                        .append(" (").append(StaticData.onlineVersionCode).append(")\n");
                 binding.versionText.setText(sb);
 
                 if (StaticData.localChangelog.length() > 0)

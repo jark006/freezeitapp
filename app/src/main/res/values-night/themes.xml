@@ -8,8 +8,9 @@
         <item name="colorPrimaryDark">@color/purple_500</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/purple_500</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorSecondaryVariant">@color/gray_dd</item>
         <item name="colorOnSecondary">@color/purple_500</item>
+        <item name="colorOnSurface">@color/purple_500</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/gray_55</item>
         <!-- Customize your theme here. -->

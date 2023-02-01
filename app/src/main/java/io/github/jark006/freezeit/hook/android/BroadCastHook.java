@@ -9,15 +9,6 @@ import io.github.jark006.freezeit.hook.Config;
 import io.github.jark006.freezeit.hook.Enum;
 import io.github.jark006.freezeit.hook.XpUtils;
 
-/**
- * note:
- *
- * @link https://www.jianshu.com/p/bc290e328e56
- * @link https://www.jianshu.com/p/59ef3150b171
- * @link https://www.jianshu.com/p/6fbc1a43c837
- * @link https://blog.csdn.net/huaxun66/article/details/52935631
- */
-
 public class BroadCastHook {
     final static String TAG = "Freezeit[BroadCastHook]:";
     Config config;
@@ -34,7 +25,7 @@ public class BroadCastHook {
      * deliverToRegisteredReceiverLocked 处理动态注册的BroadCastReceiver
      * SDK29 ~ SDK33 (Android 10-13/Q-T) BroadcastQueue.java : deliverToRegisteredReceiverLocked()
      * SourceCode frameworks/base/services/core/java//com/android/server/am/BroadcastQueue.java
-     * https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/am/BroadcastQueue.java;l=702
+     * <a href="https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/am/BroadcastQueue.java;l=702">连接</a>
      * private void deliverToRegisteredReceiverLocked(BroadcastRecord r, BroadcastFilter filter,
      * boolean ordered, int index)
      */
@@ -48,16 +39,17 @@ public class BroadCastHook {
             int receiverUid = XposedHelpers.getIntField(broadcastFilter, Enum.Field.owningUid);
 
             // 若是 [系统应用] [自由后台] [在顶层前台] 则不清理广播
-            if (!config.thirdApp.contains(receiverUid) || config.whitelist.contains(receiverUid) || config.foreground.contains(receiverUid))
+            if (!config.thirdApp.contains(receiverUid) || config.whitelist.contains(receiverUid)
+                    || config.foregroundUid.contains(receiverUid))
                 return;
 
             // BroadcastRecord https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/am/BroadcastRecord.java
-            Object broadcastRecord = param.args[0];
+//            Object broadcastRecord = param.args[0];
 //            int callerUid = (int) XposedHelpers.getObjectField(broadcastRecord, Enum.Field.callingUid);
 
             final int DELIVERY_SKIPPED = 2;  // BroadcastRecord.DELIVERY_SKIPPED == 2;
             int index = (int) param.args[3];
-            int[] delivery = (int[]) XposedHelpers.getObjectField(broadcastRecord, "delivery");
+            int[] delivery = (int[]) XposedHelpers.getObjectField(param.args[0], "delivery");
             delivery[index] = DELIVERY_SKIPPED;
             param.setResult(null);
 //            XpUtils.log(TAG, "跳过广播: " +

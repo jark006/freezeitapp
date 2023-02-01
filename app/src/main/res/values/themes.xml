@@ -8,8 +8,9 @@
         <item name="colorPrimaryDark">@color/purple_500</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/gray_55</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorSecondaryVariant">@color/gray_77</item>
         <item name="colorOnSecondary">@color/purple_500</item>
+        <item name="colorOnSurface">@color/purple_500</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/purple_500</item>
         <!-- Customize your theme here. -->
@@ -17,4 +18,15 @@
     <style name="footButton" parent="Theme.AppCompat.DayNight.DarkActionBar">
         <item name="colorPrimary">@color/purple_500</item>
     </style>
+
+    <style name="AppTheme.Spinner" parent="Theme.AppCompat.DayNight">
+        <item name="android:spinnerItemStyle">@style/SpinnerItem</item>
+        <item name="android:spinnerDropDownItemStyle">@style/SpinnerItem</item>
+    </style>
+
+    <style name="SpinnerItem">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
 </resources>

@@ -332,10 +332,8 @@ public class ConfigFragment extends Fragment {
             if (info != null) {
                 holder.app_icon.setImageDrawable(info.icon);
                 holder.app_label.setText(info.label);
-                holder.package_name.setText(info.packName);
             } else {
-                holder.package_name.setText("未知 Unknown");
-                holder.app_label.setText("UID:" + uid);
+                holder.app_label.setText(String.valueOf(uid));
             }
 
             Pair<Integer, Integer> cfg = appCfg.get(uid);
@@ -405,14 +403,13 @@ public class ConfigFragment extends Fragment {
         static class MyViewHolder extends RecyclerView.ViewHolder {
 
             ImageView app_icon;
-            TextView app_label, package_name;
+            TextView app_label;
             Spinner spinner_cfg, spinner_tolerant;
 
             public MyViewHolder(View view) {
                 super(view);
                 app_icon = view.findViewById(R.id.app_icon);
                 app_label = view.findViewById(R.id.app_label);
-                package_name = view.findViewById(R.id.package_name);
                 spinner_cfg = view.findViewById(R.id.spinner_cfg);
                 spinner_tolerant = view.findViewById(R.id.spinner_level);
             }

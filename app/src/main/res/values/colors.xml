@@ -10,9 +10,9 @@
 
     <color name="gray_11">#111111</color>
     <color name="gray_33">#333333</color>
-    <color name="gray_55">#444444</color>
-    <color name="gray_77">#444444</color>
-    <color name="gray_99">#444444</color>
+    <color name="gray_55">#555555</color>
+    <color name="gray_77">#777777</color>
+    <color name="gray_99">#999999</color>
     <color name="gray_bb">#bbbbbb</color>
     <color name="gray_dd">#dddddd</color>
     <color name="gray_ee">#eeeeee</color>
@@ -23,7 +23,7 @@
     <color name="black_77">#77000000</color>
     <color name="black_99">#99000000</color>
 
-    <color name="float_button">#2288EE</color>
+    <color name="float_button">#4488ff</color>
     <color name="transparent">#00000000</color>
 
     <color name="trans_gray_11">#11bbbbbb</color>
@@ -46,5 +46,6 @@
     <color name="warn_orange">#66FF8800</color>
     <color name="normal_green">#6600FF00</color>
     <color name="gray_white">#10000000</color>
-    <color name="gray_white_background">#10555555</color>
+
+    <color name="ic_launcher_background">#4090FF</color>
 </resources>

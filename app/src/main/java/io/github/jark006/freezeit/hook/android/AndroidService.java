@@ -153,7 +153,6 @@ public class AndroidService {
         final int baseCode = 1359322925;
         final int GET_FOREGROUND = baseCode + 1;
         final int GET_SCREEN_STATE = baseCode + 2;
-        final int GET_CACHE_EMPTY = baseCode + 3;
         final int SET_CONFIG = baseCode + 20;
         final int SET_WAKEUP_LOCK = baseCode + 21; // 设置唤醒锁权限，针对[宽松]应用，[严格]应用已禁止申请唤醒锁
         final int BREAK_NETWORK = baseCode + 41;
@@ -162,7 +161,6 @@ public class AndroidService {
         final Set<Integer> requestCodeSet = Set.of(
                 GET_FOREGROUND,
                 GET_SCREEN_STATE,
-                GET_CACHE_EMPTY,
                 SET_CONFIG,
                 SET_WAKEUP_LOCK,
                 BREAK_NETWORK
@@ -230,9 +228,6 @@ public class AndroidService {
                         case GET_FOREGROUND:
                             handleForeground(os, buff);
                             break;
-                        case GET_CACHE_EMPTY:
-                            handleCacheEmpty(os, buff);
-                            break;
                         case GET_SCREEN_STATE:
                             handleScreen(os, buff);
                             break;
@@ -259,7 +254,8 @@ public class AndroidService {
 
 
     void handleForeground(OutputStream os, byte[] replyBuff) throws Exception {
-        config.foreground.clear();
+        config.foregroundUid.clear();
+//        config.cacheEmptyPid.clear();
         try {
             for (int i = mLruProcesses.size() - 1; i > 10; i--) { //逆序, 最近活跃应用在最后
                 var processRecord = mLruProcesses.get(i);
@@ -282,7 +278,14 @@ public class AndroidService {
                 // ProcessStateEnum: https://cs.android.com/android/platform/superproject/+/master:out/soong/.intermediates/frameworks/base/framework-minus-apex/android_common/xref35/srcjars.xref/android/app/ProcessStateEnum.java;l=10
                 if (mCurProcState == 2 || mCurProcState == 3 ||
                         (4 <= mCurProcState && mCurProcState <= 6 && config.tolerant.contains(uid)))
-                    config.foreground.add(uid);
+                    config.foregroundUid.add(uid);
+//                else if (mCurProcState == 19) {  // CacheEmpty
+//                    String processName = (String) XposedHelpers.getObjectField(processRecord, "processName");
+//                    if (processName != null && processName.contains(":")) {
+//                        int mPid = XposedHelpers.getIntField(processRecord, "mPid");
+//                        config.cacheEmptyPid.add(mPid);
+//                    }
+//                }
             }
 
             if (config.isExtendFg()) {
@@ -300,7 +303,7 @@ public class AndroidService {
                                 int uid = applicationInfo.uid;
                                 if (uid < 10000 || !config.thirdApp.contains(uid) || config.whitelist.contains(uid))
                                     continue;
-                                config.foreground.add(uid);
+                                config.foregroundUid.add(uid);
                             }
                         }
                     }
@@ -317,7 +320,7 @@ public class AndroidService {
                                 Integer uid = config.uidIndex.get(topActivity.getPackageName());
                                 if (uid == null || uid < 10000 || !config.thirdApp.contains(uid) || config.whitelist.contains(uid))
                                     continue;
-                                config.foreground.add(uid);
+                                config.foregroundUid.add(uid);
                             }
                         }
                     }
@@ -329,54 +332,15 @@ public class AndroidService {
         }
 
         // 开头的4字节放置UID的个数，往后每4个字节放一个UID  [小端]
-        Utils.Int2Byte(config.foreground.size(), replyBuff, 0);
-        Utils.HashSet2Byte(config.foreground, replyBuff, 4);
+        int payloadBytes = (config.foregroundUid.size() + 1) * 4;
+        Utils.Int2Byte(config.foregroundUid.size(), replyBuff, 0);
+        Utils.HashSet2Byte(config.foregroundUid, replyBuff, 4);
 
-        os.write(replyBuff, 0, (config.foreground.size() + 1) * 4);
-        os.close();
-    }
+//        Utils.Int2Byte(config.cacheEmptyPid.size(), replyBuff, payloadBytes);
+//        Utils.HashSet2Byte(config.cacheEmptyPid, replyBuff, payloadBytes + 4);
+//        payloadBytes += (config.cacheEmptyPid.size() + 1) * 4;
 
-
-    void handleCacheEmpty(OutputStream os, byte[] replyBuff) throws Exception {
-        config.cacheEmptyPid.clear();
-        try {
-            for (int i = mLruProcesses.size() - 1; i > 10; i--) { //逆序, 最近活跃应用在最后
-                var processRecord = mLruProcesses.get(i);
-                if (processRecord == null) continue;
-
-                int uid = XposedHelpers.getIntField(processRecord, "uid");
-                if (uid < 10000 || !config.thirdApp.contains(uid) || config.whitelist.contains(uid))
-                    continue;
-
-                int mCurProcState;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    var mState = XposedHelpers.getObjectField(processRecord, "mState");
-                    if (mState == null) continue;
-                    mCurProcState = XposedHelpers.getIntField(mState, "mCurProcState");
-                } else {
-                    mCurProcState = XposedHelpers.getIntField(processRecord, "mCurProcState");
-                }
-
-                // 19
-                // ProcessStateEnum: https://cs.android.com/android/platform/superproject/+/master:out/soong/.intermediates/frameworks/base/framework-minus-apex/android_common/xref35/srcjars.xref/android/app/ProcessStateEnum.java;l=10
-                if (mCurProcState == 19) {
-                    String processName = (String) XposedHelpers.getObjectField(processRecord, "processName");
-                    if (processName != null && processName.contains(":")) {
-                        int mPid = XposedHelpers.getIntField(processRecord, "mPid");
-                        config.cacheEmptyPid.add(mPid);
-                    }
-                }
-            }
-
-        } catch (Exception e) {
-            log(FGD_TAG, "缓存进程服务错误:" + e);
-        }
-
-        // 开头的4字节放置UID的个数，往后每4个字节放一个UID  [小端]
-        Utils.Int2Byte(config.cacheEmptyPid.size(), replyBuff, 0);
-        Utils.HashSet2Byte(config.cacheEmptyPid, replyBuff, 4);
-
-        os.write(replyBuff, 0, (config.cacheEmptyPid.size() + 1) * 4);
+        os.write(replyBuff, 0, payloadBytes);
         os.close();
     }
 
@@ -475,7 +439,7 @@ public class AndroidService {
 
 
     /**
-     * https://cs.android.com/android/platform/superproject/+/android-mainline-10.0.0_r9:out/soong/.intermediates/frameworks/base/framework-minus-apex/android_common/xref35/srcjars.xref/android/app/AppProtoEnums.java;l=84
+     * <a href="https://cs.android.com/android/platform/superproject/+/android-mainline-10.0.0_r9:out/soong/.intermediates/frameworks/base/framework-minus-apex/android_common/xref35/srcjars.xref/android/app/AppProtoEnums.java;l=84">...</a>
      * WAKEUP_LOCK CODE is [40] A10-A13
      * public static final String[] MODE_NAMES = new String[] {
      * "allow",        // MODE_ALLOWED

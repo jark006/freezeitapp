@@ -6,7 +6,7 @@
         android:id="@+id/update_label"
         app:showAsAction="always"
         android:title="@string/update_app_label"
-        android:icon="@drawable/ic_update_app_name_24dp"/>
+        android:icon="@drawable/ic_update_label_24dp"/>
     <item
         android:id="@+id/printf_freeze"
         android:title="@string/check_freezer"

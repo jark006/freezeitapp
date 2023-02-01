@@ -18,7 +18,7 @@ android {
         minSdk 29
         targetSdk 33
         versionCode 203000 // v2.3.0起，版本代号不再更新，开放随意升、降级
-        versionName "2.4.3"
+        versionName "2.4.6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resValue "string", "versionName", "${versionName}"
@@ -61,7 +61,7 @@ dependencies {
 
     compileOnly 'de.robv.android.xposed:api:82'
 
-    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'androidx.appcompat:appcompat:1.6.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
