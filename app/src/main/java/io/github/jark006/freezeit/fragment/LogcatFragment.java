@@ -19,7 +19,6 @@ import androidx.annotation.NonNull;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -79,7 +78,7 @@ public class LogcatFragment extends Fragment {
                 return;
             }
 
-            String res = new String(response, StandardCharsets.UTF_8);
+            String res = new String(response);
             if (res.equals("success")) {
                 Toast.makeText(requireContext(), R.string.update_success, Toast.LENGTH_SHORT).show();
             } else {
@@ -93,7 +92,7 @@ public class LogcatFragment extends Fragment {
     Runnable updateAppLabelTask = () -> {
         AppInfoCache.refreshCache(requireContext());
         String appLabel = AppInfoCache.getAppLabelString();
-        Utils.freezeitTask(Utils.setAppLabel, appLabel.getBytes(StandardCharsets.UTF_8), appLabelHandler);
+        Utils.freezeitTask(Utils.setAppLabel, appLabel.getBytes(), appLabelHandler);
     };
 
     @Override
@@ -139,7 +138,7 @@ public class LogcatFragment extends Fragment {
             lastLogLen = response.length;
 
             binding.logView.setMovementMethod(ScrollingMovementMethod.getInstance());//流畅滑动
-            binding.logView.setText(new String(response, StandardCharsets.UTF_8));
+            binding.logView.setText(new String(response));
             binding.forBottom.requestFocus();//请求焦点，直接到日志底部
             binding.forBottom.clearFocus();
         }

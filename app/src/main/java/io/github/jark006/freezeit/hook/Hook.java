@@ -1,6 +1,5 @@
 package io.github.jark006.freezeit.hook;
 
-
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
@@ -14,15 +13,15 @@ import io.github.jark006.freezeit.hook.android.BroadCastHook;
 import io.github.jark006.freezeit.hook.android.WakeLockHook;
 import io.github.jark006.freezeit.hook.app.PowerKeeper;
 
-
 public class Hook implements IXposedHookLoadPackage {
 
     @Override
     public void handleLoadPackage(LoadPackageParam lpParam) {
         switch (lpParam.packageName) {
             case Enum.Package.self:
-                XC_MethodReplacement callback = XC_MethodReplacement.returnConstant(true);
-                XpUtils.hookMethod("Freezeit[Self]:", lpParam.classLoader, callback, Enum.Class.self, Enum.Method.isXposedActive);
+                XpUtils.hookMethod("Freezeit[Self]:", lpParam.classLoader,
+                        XC_MethodReplacement.returnConstant(true),
+                        Enum.Class.self, Enum.Method.isXposedActive);
                 return;
             case Enum.Package.android:
                 hookAndroid(lpParam);

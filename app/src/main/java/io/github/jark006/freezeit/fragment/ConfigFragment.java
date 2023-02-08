@@ -33,7 +33,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -160,7 +159,7 @@ public class ConfigFragment extends Fragment {
             // freezeMode: [10]:杀死 [20]:SIGSTOP [30]:Freezer [40]:自由 [50]:内置
             HashMap<Integer, Pair<Integer, Integer>> appCfg = new HashMap<>();
 
-            String[] list = new String(response, StandardCharsets.UTF_8).split("\n");
+            String[] list = new String(response).split("\n");
             for (String item : list) {
                 String[] package_mode = item.split(" ");
 
@@ -184,7 +183,7 @@ public class ConfigFragment extends Fragment {
             });
             // 检查非法配置
             appCfg.forEach((uid, cfg) -> {
-                if (cfg.first < Utils.CFG_TERMINATE || cfg.first > Utils.CFG_WHITEFORCE)
+                if (!Utils.CFG_SET.contains(cfg.first))
                     appCfg.put(uid, new Pair<>(Utils.CFG_FREEZER, cfg.second));
             });
 
@@ -258,7 +257,7 @@ public class ConfigFragment extends Fragment {
             super.handleMessage(msg);
             byte[] response = msg.getData().getByteArray("response");
 
-            String res = new String(response, StandardCharsets.UTF_8);
+            String res = new String(response);
             if (res.equals("success")) {
                 Toast.makeText(getContext(), R.string.update_success, Toast.LENGTH_SHORT).show();
             } else {
@@ -291,7 +290,8 @@ public class ConfigFragment extends Fragment {
         @NonNull
         @Override
         public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.app_cfg_layout, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).
+                    inflate(R.layout.app_cfg_layout, parent, false);
             return new MyViewHolder(view);
         }
 
@@ -446,7 +446,7 @@ public class ConfigFragment extends Fragment {
                     tmp.append(uid).append(' ').append(cfg.first).append(' ').append(cfg.second).append('\n');
             });
 
-            return tmp.toString().getBytes(StandardCharsets.UTF_8);
+            return tmp.toString().getBytes();
         }
     }
 

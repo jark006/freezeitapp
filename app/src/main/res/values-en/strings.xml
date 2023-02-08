@@ -37,11 +37,11 @@
     <string name="xposed_offline">LSPosed Inactivated</string>
     <string name="title_activity_setting">Settings</string>
     <string name="title_activity_task_manager">APP CPU Time</string>
-    <string name="cluster_title">ClusterBind</string>
-    <string name="freeze_timeout_title">FreezeTimeout</string>
-    <string name="wakeup_timeout_title">ScheduledWakeup</string>
-    <string name="terminate_timeout_title">TerminateTimeout</string>
-    <string name="freeze_mode_title">FreezerType</string>
+    <string name="cluster_title">ClusterBind ⓘ</string>
+    <string name="freeze_timeout_title">FreezeTimeout ⓘ</string>
+    <string name="wakeup_timeout_title">ScheduledWakeup ⓘ</string>
+    <string name="terminate_timeout_title">TerminateTimeout ⓘ</string>
+    <string name="freeze_mode_title">FreezerType ⓘ</string>
     <string name="slowly_tips">Be Slowly</string>
     <string name="help">Help</string>
     <string name="check_freezer">check_freezer_status</string>
@@ -55,12 +55,12 @@
     <string name="donate_wechat">Donate Wechat</string>
     <string name="donate_alipay">Donate Alipay</string>
     <string name="github_publish">Github Publish</string>
-    <string name="doze_title">OffScreen Doze</string>
-    <string name="lmk_title">Adjust LMK Parameter</string>
-    <string name="current_title">Adjust Current</string>
-    <string name="battery_title">Battery Monitor</string>
-    <string name="radical_fg_title">Radical Foreground</string>
-    <string name="break_network_title">QQ BreakNetwork</string>
+    <string name="doze_title">OffScreen Doze ⓘ</string>
+    <string name="lmk_title">Adjust LMK Parameter ⓘ</string>
+    <string name="current_title">Adjust Current ⓘ</string>
+    <string name="battery_title">Battery Monitor ⓘ</string>
+    <string name="radical_fg_title">Radical Foreground ⓘ</string>
+    <string name="break_network_title">QQ BreakNetwork ⓘ</string>
     <string name="developer">Developer JARK006</string>
     <string name="physical_ram_text">[PhysicalRAM] Total: %.2f GiB\nUse: %.1f%% Remain: %.2f %s</string>
     <string name="virtual_ram_text">[VirtualRAM] Total: %.2f GiB\nUse: %.1f%% Remain: %.2f %s</string>
@@ -89,8 +89,9 @@ Reboot takes effect</string>
     <string name="current_version">Current Version</string>
     <string name="online_changelog">History Changelog</string>
     <string name="extend_fg_tips">Some systems will modify the foreground/background state mechanism (some COS 11), resulting in some foreground applications not being recognized correctly and being frozen. If you have encountered this situation, then you need to turn it on and reboot to take effect. If everything is fine then it is recommended to turn off</string>
-    <string name="extend_fg_title">Extended Foreground Recognize</string>
+    <string name="extend_fg_title">Extended Foreground Recognize ⓘ</string>
     <string name="title_activity_about">About</string>
-    <string name="doze_debug_title">Doze Debug</string>
+    <string name="doze_debug_title">Doze Debug ⓘ</string>
     <string name="doze_debug_tips">If you cannot enter , turning this option on enables debug logging and helps to analyze the cause.</string>
+    <string name="github_open_source">"APP open "</string>
 </resources>

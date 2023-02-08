@@ -25,9 +25,17 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.Set;
 
 public class Utils {
     public final static int CFG_TERMINATE = 10, CFG_SIGSTOP = 20, CFG_FREEZER = 30, CFG_WHITELIST = 40, CFG_WHITEFORCE = 50;
+    public final static Set<Integer> CFG_SET = Set.of(
+            CFG_TERMINATE,
+            CFG_SIGSTOP,
+            CFG_FREEZER,
+            CFG_WHITELIST,
+            CFG_WHITEFORCE
+    );
 
     private static final String TAG = "Freezeit[Utils]";
 

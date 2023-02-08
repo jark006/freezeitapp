@@ -15,8 +15,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.nio.charset.StandardCharsets;
-
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -201,7 +199,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 Toast.makeText(getBaseContext(), getString(R.string.no_response), Toast.LENGTH_LONG).show();
                 return;
             }
-            String res = new String(response, StandardCharsets.UTF_8);
+            String res = new String(response);
             if (res.equals("success")) {
                 Toast.makeText(getBaseContext(), getString(R.string.setup_successful), Toast.LENGTH_SHORT).show();
                 settingsVar[varIndexForHandle] = (byte) newValueForHandle;

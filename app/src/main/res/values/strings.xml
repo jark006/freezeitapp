@@ -51,7 +51,8 @@
     <string name="tg_https_link" translatable="false">https://t.me/+sjDX1oTk31ZmYjY1</string>
     <string name="tg_channel_link" translatable="false">tg://resolve?domain=freezeitRelease</string>
     <string name="tg_channel_https_link" translatable="false">https://t.me/freezeitRelease</string>
-    <string name="github_link" translatable="false">https://github.com/jark006/freezeitRelease</string>
+    <string name="github_link" translatable="false">https://github.com/jark006</string>
+    <string name="github_rel_link" translatable="false">https://github.com/jark006/freezeitRelease</string>
     <string name="github_app_link" translatable="false">https://github.com/jark006/freezeitapp</string>
     <string name="lanzou_link" translatable="false">https://jark006.lanzout.com/b017oz9if</string>
     <string name="update_success">更新成功</string>
@@ -69,7 +70,7 @@
     <string name="help">帮助</string>
     <string name="check_freezer">查看冻结</string>
     <string name="freezeit_tutorial_text">冻它教程说明</string>
-    <string name="tutorial_link" translatable="false">https://jark006.github.io/FreezeitIntroduction/</string>
+        <string name="tutorial_link" translatable="false">https://jark006.gitee.io/FreezeitIntroduction/</string>
     <string name="update_json_link" translatable="false">https://raw.fastgit.org/jark006/freezeitRelease/master/update.json</string>
     <string name="download">下载</string>
 
@@ -79,6 +80,7 @@
     <string name="lanzou_password">蓝奏云密码: dy6i</string>
     <string name="donate_wechat">微信捐赠</string>
     <string name="donate_alipay">支付宝捐赠</string>
+    <string name="github_open_source">APP开源</string>
     <string name="github_publish">Github发布页</string>
     <string name="physical_ram_text">[物理内存] 全部: %.2f GiB\n已用:%.1f%% 剩余: %.2f %s</string>
     <string name="virtual_ram_text">[虚拟内存] 全部: %.2f GiB\n已用:%.1f%% 剩余: %.2f %s</string>

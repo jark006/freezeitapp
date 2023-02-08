@@ -9,6 +9,8 @@ public class StaticData {
     public static String zipUrl = "";
     public static String changelogUrl = "";
 
+    public static String onlineTipsTitle = "";
+    public static String onlineTipsContent = "";
     public static boolean hasGetPropInfo = false;
     public static int clusterNum = 0;
     public static int moduleVersionCode = 0;
@@ -18,7 +20,7 @@ public class StaticData {
 
     // 图像宽/高均缩小为控件的 1/imgScale, 减少绘图花销
     // 显示到imageView控件时再放大 imgScale 倍
-    public static final int imgScale = 3;
+    public static int imgScale = 3;
     public static int imgWidth = 0;
     public static int imgHeight = 0;
 }

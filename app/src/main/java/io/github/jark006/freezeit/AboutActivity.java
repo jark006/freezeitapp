@@ -17,6 +17,8 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
 
         findViewById(R.id.coolapk_link).setOnClickListener(this);
         findViewById(R.id.github_link).setOnClickListener(this);
+        findViewById(R.id.github_app_link).setOnClickListener(this);
+        findViewById(R.id.github_rel_link).setOnClickListener(this);
         findViewById(R.id.lanzou_link).setOnClickListener(this);
 
         findViewById(R.id.qq_group_link).setOnClickListener(this);
@@ -45,6 +47,10 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
             }
         } else if (id == R.id.github_link) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.github_link))));
+        } else if (id == R.id.github_app_link) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.github_app_link))));
+        } else if (id == R.id.github_rel_link) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.github_rel_link))));
         } else if (id == R.id.lanzou_link) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.lanzou_link))));
         } else if (id == R.id.qq_group_link) {

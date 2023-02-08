@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -93,7 +92,7 @@ public class AppTimeActivity extends AppCompatActivity {
             if (response == null || response.length == 0)
                 return;
 
-            String[] newLines = new String(response, StandardCharsets.UTF_8).split("\n");
+            String[] newLines = new String(response).split("\n");
 
             if (newLines.length != lines.length) {
                 recycleAdapter.update(newLines);
@@ -120,7 +119,8 @@ public class AppTimeActivity extends AppCompatActivity {
         @NonNull
         @Override
         public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.app_time_layout, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).
+                    inflate(R.layout.app_time_layout, parent, false);
             return new MyViewHolder(view);
         }
 
@@ -158,6 +158,7 @@ public class AppTimeActivity extends AppCompatActivity {
         @SuppressLint("DefaultLocale")
         String getTimeStr(long time) {
             if (time <= 0) return "";
+            else if (time <= 1000) return time + "ms";
 
             StringBuilder res = new StringBuilder();
             int ms = (int) (time % 1000);

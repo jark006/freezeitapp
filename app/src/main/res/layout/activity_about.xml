@@ -17,7 +17,7 @@
             android:paddingHorizontal="30dp">
 
             <LinearLayout
-                android:id="@+id/coolapk_link"
+                android:id="@+id/github_link"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -41,7 +41,40 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/github_link"
+                android:id="@+id/github_app_link"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:contentDescription="@string/icon"
+                    android:padding="10dp"
+                    app:srcCompat="@drawable/logo_github" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:padding="10dp"
+                    android:text="@string/github_open_source"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:contentDescription="@string/icon"
+                    android:padding="15dp"
+                    app:srcCompat="@drawable/ic_navigate_next_24dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/github_rel_link"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -73,6 +106,38 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/coolapk_link"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:contentDescription="@string/icon"
+                    android:padding="10dp"
+                    app:srcCompat="@drawable/logo_coolapk" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:padding="10dp"
+                    android:text="@string/coolapk_text"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:contentDescription="@string/icon"
+                    android:padding="15dp"
+                    app:srcCompat="@drawable/ic_navigate_next_24dp" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/lanzou_link"
