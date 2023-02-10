@@ -36,10 +36,10 @@
     <string name="xposed_warn">未激活\n警告：不激活则无法工作</string>
     <string name="freezeit_offline">冻它未启用或工作异常</string>
     <string name="freezeit_error_tips">
-        1.若刚开机请稍后再打开冻它APP。\n
+        1.进入桌面1分钟后才启动，请稍后再打开。\n
         2.请检查面具模块是否已启用。\n
         3.请检查冻它APP的网络权限。\n
-        4.请检查异常日志\n
+        4.请检查异常日志:\n
         /sdcard/Android/freezeit_crash_log.txt</string>
     <string name="get_log_fail_tips">工作日志获取失败</string>
     <string name="get_changelog_fail_tips">更新日志获取失败</string>
@@ -82,8 +82,8 @@
     <string name="donate_alipay">支付宝捐赠</string>
     <string name="github_open_source">APP开源</string>
     <string name="github_publish">Github发布页</string>
-    <string name="physical_ram_text">[物理内存] 全部: %.2f GiB\n已用:%.1f%% 剩余: %.2f %s</string>
-    <string name="virtual_ram_text">[虚拟内存] 全部: %.2f GiB\n已用:%.1f%% 剩余: %.2f %s</string>
+    <string name="physical_ram_text">[物理内存] 全部: %.2f GiB\n已用:%.1f%% 可用: %.2f %s</string>
+    <string name="virtual_ram_text">[虚拟内存] 全部: %.2f GiB\n已用:%.1f%% 可用: %.2f %s</string>
     <string name="setup_successful">设置成功</string>
     <string name="setup_failed">设置失败</string>
     <string name="no_response">无响应，设置失败</string>

@@ -22,12 +22,14 @@ public class AppInfoCache {
         public String packName;
         public String label;
         public String forSearch;
+        public boolean isSystemApp;
 
-        public Info(Drawable icon, String packName, String label) {
+        public Info(Drawable icon, String packName, String label, int uid, boolean isSystemApp) {
             this.icon = icon;
             this.packName = packName;
             this.label = label;
-            this.forSearch = label.toLowerCase() + packName.toLowerCase();
+            this.forSearch = label.toLowerCase() + packName.toLowerCase() + uid;
+            this.isSystemApp = isSystemApp;
         }
     }
 
@@ -48,11 +50,11 @@ public class AppInfoCache {
             for (ApplicationInfo appInfo : applicationList) {
                 if (appInfo.uid < 10000)
                     continue;
-                if ((appInfo.flags & (FLAG_SYSTEM | FLAG_UPDATED_SYSTEM_APP)) != 0)
-                    continue;
 
+                boolean isSystemApp = (appInfo.flags & (FLAG_SYSTEM | FLAG_UPDATED_SYSTEM_APP)) != 0;
                 String label = pm.getApplicationLabel(appInfo).toString();
-                cacheInfo.put(appInfo.uid, new Info(appInfo.loadIcon(pm), appInfo.packageName, label));
+                cacheInfo.put(appInfo.uid, new Info(
+                        appInfo.loadIcon(pm), appInfo.packageName, label, appInfo.uid, isSystemApp));
             }
             Log.d(TAG, context.getString(R.string.update_cache) + cacheInfo.size());
         }

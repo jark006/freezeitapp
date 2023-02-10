@@ -127,12 +127,8 @@ public class LogcatFragment extends Fragment {
             super.handleMessage(msg);
             byte[] response = msg.getData().getByteArray("response");
 
-            if (response == null || response.length == 0) {
-                binding.logView.setText("null");
-                return;
-            }
-
-            if (lastLogLen == response.length)
+            if (response == null || response.length == 0 || binding == null ||
+                    lastLogLen == response.length)
                 return;
 
             lastLogLen = response.length;

@@ -133,6 +133,19 @@ public class ConfigFragment extends Fragment {
                 recycleAdapter.convertTolerant();
             }
         });
+
+        binding.fabSwitchSys.setOnClickListener(view -> {
+            if ((System.currentTimeMillis() - lastTimestamp) < 500) {
+                Toast.makeText(requireContext(), getString(R.string.slowly_tips), Toast.LENGTH_LONG).show();
+                return;
+            }
+            lastTimestamp = System.currentTimeMillis();
+
+            if (recycleAdapter != null) {
+                recycleAdapter.switchAppType();
+            }
+        });
+
         return binding.getRoot();
     }
 
@@ -150,8 +163,9 @@ public class ConfigFragment extends Fragment {
             super.handleMessage(msg);
             byte[] response = msg.getData().getByteArray("response");
 
-            if (response == null || response.length == 0) {
-                binding.swipeRefreshLayout.setRefreshing(false);
+            if (response == null || response.length == 0 || response.length % 12 != 0) {
+                if (binding != null)
+                    binding.swipeRefreshLayout.setRefreshing(false);
                 return;
             }
 
@@ -159,21 +173,12 @@ public class ConfigFragment extends Fragment {
             // freezeMode: [10]:杀死 [20]:SIGSTOP [30]:Freezer [40]:自由 [50]:内置
             HashMap<Integer, Pair<Integer, Integer>> appCfg = new HashMap<>();
 
-            String[] list = new String(response).split("\n");
-            for (String item : list) {
-                String[] package_mode = item.split(" ");
-
-                if (package_mode.length != 3) {
-                    Log.e(TAG, "handleMessage: unknownItem:[" + item + "]");
-                    continue;
-                }
-
-                try {
-                    appCfg.put(Integer.parseInt(package_mode[0]), new Pair<>(
-                            Integer.parseInt(package_mode[1]), Integer.parseInt(package_mode[2])));
-                } catch (Exception e) {
-                    Log.e(TAG, "handleMessage: unknownItem:[" + item + "]");
-                }
+            // 每个配置含：3个[int32]数据，12字节 小端
+            for (int i = 0; i < response.length; i += 12) {
+                int uid = Utils.Byte2Int(response, i);
+                int freezeMode = Utils.Byte2Int(response, i + 4);
+                int isTolerant = Utils.Byte2Int(response, i + 8);
+                appCfg.put(uid, new Pair<>(freezeMode, isTolerant));
             }
 
             // 补全
@@ -242,6 +247,8 @@ public class ConfigFragment extends Fragment {
             LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
             layoutManager.setOrientation(RecyclerView.VERTICAL);
 
+            if (binding == null) return;
+
             binding.recyclerviewApp.setLayoutManager(layoutManager);
             binding.recyclerviewApp.setAdapter(recycleAdapter);
             binding.recyclerviewApp.setItemAnimator(new DefaultItemAnimator());
@@ -279,12 +286,18 @@ public class ConfigFragment extends Fragment {
     public static class AppCfgAdapter extends RecyclerView.Adapter<AppCfgAdapter.MyViewHolder> {
         private final ArrayList<Integer> uidList;
         private ArrayList<Integer> uidListFilter;
-        private final HashMap<Integer, Pair<Integer, Integer>> appCfg; //<uid, <cfg, tolerant>>
+        private final HashMap<Integer, Pair<Integer, Integer>> appCfg; //<uid, <freezeMode, tolerant>>
+        boolean showSystemApp = false;
 
         public AppCfgAdapter(ArrayList<Integer> uidList, HashMap<Integer, Pair<Integer, Integer>> appCfg) {
             this.uidList = uidList;
-            this.uidListFilter = uidList;
             this.appCfg = appCfg;
+
+            uidListFilter = new ArrayList<>();
+            for (int uid : uidList) {
+                if (AppInfoCache.get(uid).isSystemApp == showSystemApp)
+                    uidListFilter.add(uid);
+            }
         }
 
         @NonNull
@@ -388,12 +401,17 @@ public class ConfigFragment extends Fragment {
         @SuppressLint("NotifyDataSetChanged")
         public void filter(String keyWord) {
             if (keyWord == null || keyWord.length() == 0) {
-                uidListFilter = uidList;
+                uidListFilter = new ArrayList<>();
+                for (int uid : uidList) {
+                    if (AppInfoCache.get(uid).isSystemApp == showSystemApp)
+                        uidListFilter.add(uid);
+                }
             } else {
                 keyWord = keyWord.toLowerCase();
                 uidListFilter = new ArrayList<>();
                 for (int uid : uidList) {
-                    if (AppInfoCache.get(uid).forSearch.contains(keyWord))
+                    if (AppInfoCache.get(uid).isSystemApp == showSystemApp &&
+                            AppInfoCache.get(uid).forSearch.contains(keyWord))
                         uidListFilter.add(uid);
                 }
             }
@@ -415,7 +433,6 @@ public class ConfigFragment extends Fragment {
             }
         }
 
-        @SuppressLint("NotifyDataSetChanged")
         public void convertCfg() {
             appCfg.forEach((key, value) -> {
                 if (value.first == CFG_FREEZER)
@@ -423,10 +440,9 @@ public class ConfigFragment extends Fragment {
                 else if (value.first == CFG_SIGSTOP)
                     appCfg.put(key, new Pair<>(CFG_FREEZER, value.second));
             });
-            notifyItemRangeChanged(0, appCfg.size());
+            notifyItemRangeChanged(0, uidListFilter.size());
         }
 
-        @SuppressLint("NotifyDataSetChanged")
         public void convertTolerant() {
             appCfg.forEach((key, value) -> {
                 if (value.second == 0)
@@ -434,19 +450,37 @@ public class ConfigFragment extends Fragment {
                 else
                     appCfg.put(key, new Pair<>(value.first, 0));
             });
-            notifyItemRangeChanged(0, appCfg.size());
+            notifyItemRangeChanged(0, uidListFilter.size());
         }
 
 
         public byte[] getCfgBytes() {
-            StringBuilder tmp = new StringBuilder();
 
+            if (appCfg.size() == 0) return null;
+
+            byte[] tmp = new byte[appCfg.size() * 12];
+            final int[] idx = {0};
             appCfg.forEach((uid, cfg) -> {
-                if (cfg.first < CFG_WHITEFORCE)
-                    tmp.append(uid).append(' ').append(cfg.first).append(' ').append(cfg.second).append('\n');
+                Utils.Int2Byte(uid, tmp, idx[0]);
+                idx[0] += 4;
+                Utils.Int2Byte(cfg.first, tmp, idx[0]);
+                idx[0] += 4;
+                Utils.Int2Byte(cfg.second, tmp, idx[0]);
+                idx[0] += 4;
             });
+            return tmp;
+        }
 
-            return tmp.toString().getBytes();
+        @SuppressLint("NotifyDataSetChanged")
+        public void switchAppType() {
+            showSystemApp = !showSystemApp;
+
+            uidListFilter = new ArrayList<>();
+            for (int uid : uidList) {
+                if (AppInfoCache.get(uid).isSystemApp == showSystemApp)
+                    uidListFilter.add(uid);
+            }
+            notifyDataSetChanged();
         }
     }
 

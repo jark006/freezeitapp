@@ -19,7 +19,6 @@
         android:layout_weight="1"
         android:gravity="center_vertical"
         android:singleLine="true"
-        android:text="@string/app_label"
         android:textSize="18sp"
         android:textStyle="bold" />
 

@@ -47,7 +47,11 @@
     <string name="check_freezer">check_freezer_status</string>
     <string name="freezeit_tutorial_text">Freezeit tutorial</string>
     <string name="xposed_warn">UnActive\nWarning: Will not work without activation</string>
-    <string name="freezeit_error_tips">1. If you have just started up, please open the Freezeit APP later. \n2. Please check if the Freezeit module is enabled or not. \n3. Please check the network permissions of Freezeit APP. \n4. Check the exception log [ /sdcard/Android/freezeit_crash_log.txt ]</string>
+    <string name="freezeit_error_tips">
+        1. It takes 1 minute to init after first unlock, please open it again later.\n
+        2. Please check if the Freezeit module is enabled or not. \n
+        3. Please check the network permissions of Freezeit APP. \n
+        4. Check the exception log [ /sdcard/Android/freezeit_crash_log.txt ]</string>
     <string name="download">Download</string>
     <string name="second">sec</string>
     <string name="minute">min</string>
@@ -62,8 +66,8 @@
     <string name="radical_fg_title">Radical Foreground ⓘ</string>
     <string name="break_network_title">QQ BreakNetwork ⓘ</string>
     <string name="developer">Developer JARK006</string>
-    <string name="physical_ram_text">[PhysicalRAM] Total: %.2f GiB\nUse: %.1f%% Remain: %.2f %s</string>
-    <string name="virtual_ram_text">[VirtualRAM] Total: %.2f GiB\nUse: %.1f%% Remain: %.2f %s</string>
+    <string name="physical_ram_text">[RAM] Total: %.2f GiB\nUse: %.1f%% Remain: %.2f %s</string>
+    <string name="virtual_ram_text">[SWAP] Total: %.2f GiB\nUse: %.1f%% Remain: %.2f %s</string>
     <string name="cluster_tips">Binding freeze it process to a cluster of cores, small cores save power, medium and large cores unfreeze fast, restart effective\n4+4 architecture: small core [0~3] large core [4~7] a few will be reversed\n4+3+1 architecture: small core [0~3] medium core [4~6] large core [7]\n3+2+2+1 architecture: small core [0~2] medium core [3~4] medium and large core [5~6] large core [7]</string>
     <string name="freeze_timeout_tips">How long does it take to freeze an application that is set to freeze after it enters the background, it is not recommended to freeze it in seconds</string>
     <string name="wakeup_timeout_tips">Timed to unfreeze frozen background applications, the unfreeze duration is [Timeout Freeze] parameter. If the application often flash bounce and flash back, it is recommended to adjust the short time, it is not easy to freeze. Set to the maximum value of 120 to turn off timed thawing. If there is a memory leak with FreezerV1, please do not turn it off, otherwise it will not be able to release memory.</string>

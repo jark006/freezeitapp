@@ -166,7 +166,7 @@ public class AndroidService {
                 BREAK_NETWORK
         );
 
-        byte[] buff = new byte[16 * 1024];// 16Kib
+        byte[] buff = new byte[64 * 1024];// 64 KiB
 
         @SuppressWarnings("InfiniteLoopStatement")
         @Override
@@ -324,7 +324,7 @@ public class AndroidService {
                             }
                         }
                     }
-                } // TODO Android 10 暂时不搞
+                }
             }
 
         } catch (Exception e) {

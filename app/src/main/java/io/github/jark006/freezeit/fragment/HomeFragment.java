@@ -118,6 +118,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         binding.swipeRefreshLayout.setOnRefreshListener(() -> new Thread(() -> {
             StaticData.hasGetUpdateInfo = false;
+            StaticData.onlineChangelog = "";
             Utils.getData(getString(R.string.update_json_link), checkUpdateHandler);
         }).start());
 
@@ -158,7 +159,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             super.handleMessage(msg);
             var response = msg.getData().getByteArray("response");
 
-            if (response == null || response.length == 0 ||
+            if (response == null || response.length == 0 || binding == null ||
                     StaticData.imgHeight == 0 || StaticData.imgWidth == 0)
                 return;
 
@@ -244,6 +245,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
 
+            if (binding == null) return;
+
             if (!StaticData.hasGetPropInfo) {
                 byte[] response = msg.getData().getByteArray("response");
 
@@ -257,6 +260,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     binding.stateLayout.setBackgroundResource(R.color.warn_red);
                     binding.statusText.setText(R.string.freezeit_error_tips);
                     binding.realtimeLayout.setVisibility(View.GONE);
+                    binding.freezeitLogo.setVisibility(View.GONE);
                     return;
                 }
 
@@ -307,6 +311,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
 
+            if (binding == null) return;
+
             binding.swipeRefreshLayout.setRefreshing(false);
 
             if (!StaticData.hasGetUpdateInfo) {
@@ -324,9 +330,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     Log.e(TAG, e.toString());
                 }
             }
-
-            if (binding == null)
-                return;
 
             if (StaticData.onlineVersionCode > StaticData.moduleVersionCode) {
                 binding.changelogLayout.setVisibility(View.VISIBLE);
@@ -365,15 +368,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             super.handleMessage(msg);
             byte[] response = msg.getData().getByteArray("response");
 
-            if (response == null || response.length == 0)
+            if (response == null || response.length == 0 || binding == null)
                 return;
 
             var split = new String(response).split("###");
             if (split.length > 2 && split[1].length() > 2)
                 StaticData.onlineChangelog = split[1];
 
-            if (binding != null)
-                binding.changelogText.setText(StaticData.onlineChangelog);
+            binding.changelogText.setText(StaticData.onlineChangelog);
         }
     };
 
@@ -384,15 +386,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             super.handleMessage(msg);
             byte[] response = msg.getData().getByteArray("response");
 
-            if (response == null || response.length == 0)
+            if (response == null || response.length == 0 || binding == null)
                 return;
 
             var split = new String(response).split("###");
             if (split.length > 2 && split[1].length() > 2)
                 StaticData.localChangelog = split[1];
 
-            if (binding != null)
-                binding.changelogText.setText(StaticData.localChangelog);
+            binding.changelogText.setText(StaticData.localChangelog);
         }
     };
 
