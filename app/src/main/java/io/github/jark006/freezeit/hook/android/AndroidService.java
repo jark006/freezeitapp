@@ -298,8 +298,8 @@ public class AndroidService {
                                 boolean visible = XposedHelpers.getBooleanField(info, "visible");
                                 if (!visible) continue;
 
-                                Object topActivityInfo = XposedHelpers.getObjectField(info, "topActivityInfo");
-                                ApplicationInfo applicationInfo = (ApplicationInfo) XposedHelpers.getObjectField(topActivityInfo, "applicationInfo");
+                                ApplicationInfo applicationInfo = (ApplicationInfo) XposedHelpers.getObjectField(
+                                        XposedHelpers.getObjectField(info, "topActivityInfo"), "applicationInfo");
                                 int uid = applicationInfo.uid;
                                 if (uid < 10000 || !config.thirdApp.contains(uid) || config.whitelist.contains(uid))
                                     continue;
@@ -309,7 +309,7 @@ public class AndroidService {
                     }
                 } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) {
                     if (getAllStackInfosMethod != null && mRootWindowContainer != null) {
-                        //https://cs.android.com/android/platform/superproject/+/android-mainline-11.0.0_r13:frameworks/base/core/java/android/app/ActivityManager.java;drc=ee8c25823de9cd16c91210ab2d13a3ec5b3b64b7;l=2816
+                        //https://cs.android.com/android/platform/superproject/+/android-mainline-11.0.0_r13:frameworks/base/core/java/android/app/ActivityManager.java;l=2816
                         List<?> tasks = (List<?>) getAllStackInfosMethod.invoke(mRootWindowContainer, -1);
                         if (tasks != null) {
                             for (Object info : tasks) {

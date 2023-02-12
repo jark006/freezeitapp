@@ -50,7 +50,7 @@ public class AlarmHook {
                     continue;
 
                 iterator.remove();
-//                XpUtils.log(TAG, "清理Alarm: " + config.pkgIndex.getOrDefault(uid, "UID:" + uid));
+//                XpUtils.log(TAG, "清理Alarm: " + XposedHelpers.getObjectField(Alarm, Enum.Field.packageName));
             }
         }
     };

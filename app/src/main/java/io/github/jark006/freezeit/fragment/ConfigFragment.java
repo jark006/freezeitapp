@@ -79,7 +79,7 @@ public class ConfigFragment extends Fragment {
                         @Override
                         public boolean onQueryTextChange(String newText) {
                             if (recycleAdapter != null)
-                                recycleAdapter.filter(newText);
+                                recycleAdapter.filter(newText != null ? newText.toLowerCase() : "");
                             return true;
                         }
                     });
@@ -288,16 +288,20 @@ public class ConfigFragment extends Fragment {
         private ArrayList<Integer> uidListFilter;
         private final HashMap<Integer, Pair<Integer, Integer>> appCfg; //<uid, <freezeMode, tolerant>>
         boolean showSystemApp = false;
+        int userAppSize;
+        int sysAppSize;
 
         public AppCfgAdapter(ArrayList<Integer> uidList, HashMap<Integer, Pair<Integer, Integer>> appCfg) {
             this.uidList = uidList;
             this.appCfg = appCfg;
 
-            uidListFilter = new ArrayList<>();
+            uidListFilter = new ArrayList<>(200);
             for (int uid : uidList) {
                 if (AppInfoCache.get(uid).isSystemApp == showSystemApp)
                     uidListFilter.add(uid);
             }
+            userAppSize = uidListFilter.size();
+            sysAppSize = uidList.size() - userAppSize;
         }
 
         @NonNull
@@ -349,30 +353,30 @@ public class ConfigFragment extends Fragment {
                 holder.app_label.setText(String.valueOf(uid));
             }
 
-            Pair<Integer, Integer> cfg = appCfg.get(uid);
-            if (cfg == null) cfg = new Pair<>(CFG_FREEZER, 0);
+            var cfg = appCfg.get(uid);
+            int freezeMode = cfg == null ? CFG_FREEZER : cfg.first;
+            int isTolerant = cfg == null ? 0 : cfg.second;
 
-            if (cfg.first.equals(CFG_WHITEFORCE)) {
+            if (freezeMode == CFG_WHITEFORCE) {
                 holder.spinner_tolerant.setVisibility(View.GONE);
                 holder.spinner_cfg.setVisibility(View.GONE);
                 return;
             }
 
             holder.spinner_cfg.setVisibility(View.VISIBLE);
-            if (cfg.first >= CFG_WHITELIST) holder.spinner_tolerant.setVisibility(View.INVISIBLE);
-            else holder.spinner_tolerant.setVisibility(View.VISIBLE);
+            holder.spinner_tolerant.setVisibility(freezeMode == CFG_WHITELIST ? View.GONE : View.VISIBLE);
 
-            holder.spinner_cfg.setSelection(cfgValue2idx(cfg.first));
-            holder.spinner_tolerant.setSelection(cfg.second == 0 ? 0 : 1);
+            holder.spinner_cfg.setSelection(cfgValue2idx(freezeMode));
+            holder.spinner_tolerant.setSelection(isTolerant == 0 ? 0 : 1);
 
-            Pair<Integer, Integer> finalCfg = cfg;
             holder.spinner_cfg.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int spinnerPosition, long id) {
-                    int cfgValue = idx2cfgValue(spinnerPosition);
-                    int isTolerant = finalCfg.second;
-                    appCfg.put(uid, new Pair<>(cfgValue, isTolerant));
-                    holder.spinner_tolerant.setVisibility(cfgValue >= CFG_WHITELIST ? View.GONE : View.VISIBLE);
+                    var cfg = appCfg.get(uid);
+                    if (cfg == null) return;
+                    int newFreezeMode = idx2cfgValue(spinnerPosition);
+                    appCfg.put(uid, new Pair<>(newFreezeMode, cfg.second));
+                    holder.spinner_tolerant.setVisibility(newFreezeMode == CFG_WHITELIST ? View.GONE : View.VISIBLE);
                 }
 
                 @Override
@@ -383,8 +387,9 @@ public class ConfigFragment extends Fragment {
             holder.spinner_tolerant.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int spinnerPosition, long id) {
-                    int cfgInt = finalCfg.first;
-                    appCfg.put(uid, new Pair<>(cfgInt, spinnerPosition));
+                    var cfg = appCfg.get(uid);
+                    if (cfg == null) return;
+                    appCfg.put(uid, new Pair<>(cfg.first, spinnerPosition));
                 }
 
                 @Override
@@ -399,16 +404,15 @@ public class ConfigFragment extends Fragment {
         }
 
         @SuppressLint("NotifyDataSetChanged")
-        public void filter(String keyWord) {
-            if (keyWord == null || keyWord.length() == 0) {
-                uidListFilter = new ArrayList<>();
+        public void filter(@NonNull final String keyWord) {
+            if (keyWord.length() == 0) {
+                uidListFilter = new ArrayList<>(100);
                 for (int uid : uidList) {
                     if (AppInfoCache.get(uid).isSystemApp == showSystemApp)
                         uidListFilter.add(uid);
                 }
             } else {
-                keyWord = keyWord.toLowerCase();
-                uidListFilter = new ArrayList<>();
+                uidListFilter = new ArrayList<>(100);
                 for (int uid : uidList) {
                     if (AppInfoCache.get(uid).isSystemApp == showSystemApp &&
                             AppInfoCache.get(uid).forSearch.contains(keyWord))
@@ -475,7 +479,7 @@ public class ConfigFragment extends Fragment {
         public void switchAppType() {
             showSystemApp = !showSystemApp;
 
-            uidListFilter = new ArrayList<>();
+            uidListFilter = new ArrayList<>(showSystemApp ? sysAppSize : userAppSize);
             for (int uid : uidList) {
                 if (AppInfoCache.get(uid).isSystemApp == showSystemApp)
                     uidListFilter.add(uid);

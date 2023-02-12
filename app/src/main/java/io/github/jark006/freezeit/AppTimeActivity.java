@@ -27,7 +27,7 @@ import java.util.TimerTask;
 
 public class AppTimeActivity extends AppCompatActivity {
     AppTimeAdapter recycleAdapter;
-    String[] lines = new String[]{};
+    int[] uidTime = new int[0];
     Timer timer;
 
     @SuppressLint("MissingInflatedId")
@@ -37,7 +37,7 @@ public class AppTimeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_app_time);
 
         RecyclerView recyclerView = findViewById(R.id.recyclerviewApp);
-        recycleAdapter = new AppTimeAdapter(lines);
+        recycleAdapter = new AppTimeAdapter(uidTime);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getBaseContext());
         recyclerView.setLayoutManager(layoutManager);
         layoutManager.setOrientation(RecyclerView.VERTICAL);
@@ -89,31 +89,38 @@ public class AppTimeActivity extends AppCompatActivity {
             super.handleMessage(msg);
             byte[] response = msg.getData().getByteArray("response");
 
-            if (response == null || response.length == 0)
+            // 每个APP时间为5个int32, 共20字节  int[0-4]: [uid lastUserTime lastSysTime userTime sysTime]
+            if (response == null || response.length == 0 || response.length % 20 != 0)
                 return;
 
-            String[] newLines = new String(response).split("\n");
+            int[] newUidTime = new int[response.length / 4];
+            Utils.Byte2Int(response, 0, response.length, newUidTime, 0);
 
-            if (newLines.length != lines.length) {
-                recycleAdapter.update(newLines);
-                recycleAdapter.notifyItemRangeChanged(0, newLines.length);
+            if (newUidTime.length != uidTime.length) {
+                recycleAdapter.update(newUidTime);
+                recycleAdapter.notifyItemRangeChanged(0, newUidTime.length / 5);
             } else {
-                recycleAdapter.update(newLines);
-                for (int i = 0; i < lines.length; i++) {
-                    if (!lines[i].equals(newLines[i]))
-                        recycleAdapter.notifyItemChanged(i);
+                recycleAdapter.update(newUidTime);
+                for (int i = 0; i < newUidTime.length; i += 5) {
+                    if (newUidTime[i] == uidTime[i] &&
+                            newUidTime[i + 1] == uidTime[i + 1] &&
+                            newUidTime[i + 2] == uidTime[i + 2] &&
+                            newUidTime[i + 3] == uidTime[i + 3] &&
+                            newUidTime[i + 4] == uidTime[i + 4])
+                        continue;
+                    recycleAdapter.notifyItemChanged(i / 5);
                 }
             }
-            lines = newLines;
+            uidTime = newUidTime;
         }
     };
 
 
     public static class AppTimeAdapter extends RecyclerView.Adapter<AppTimeAdapter.MyViewHolder> {
-        private String[] lines;
+        int[] uidTime;
 
-        public AppTimeAdapter(String[] lines) {
-            this.lines = lines;
+        public AppTimeAdapter(int[] newUidTime) {
+            uidTime = newUidTime;
         }
 
         @NonNull
@@ -128,40 +135,34 @@ public class AppTimeActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
-            String line = lines[position];
+            int elementPosition = position * 5;
+            int uid = uidTime[elementPosition];
 
-            // lastUserTime, lastSysTime, userTime, sysTime;
-            long[] cpuTime = new long[4];
-            String[] times = line.split(" ");
-            int uid = 0;
-            try {
-                uid = Integer.parseInt(times[0]);
-                for (int i = 0; i < 4; i++)
-                    cpuTime[i] = Long.parseLong(times[i + 1]);
-            } catch (Exception ignored) {
-            }
-
-            AppInfoCache.Info info = AppInfoCache.get(uid);
+            var info = AppInfoCache.get(uid);
             if (info != null) {
                 holder.app_icon.setImageDrawable(info.icon);
                 holder.app_label.setText(info.label);
             } else {
                 holder.app_label.setText(String.valueOf(uid));
             }
+            int lastUserTime = uidTime[elementPosition + 1];
+            int lastSysTime = uidTime[elementPosition + 2];
+            int userTime = uidTime[elementPosition + 3];
+            int sysTime = uidTime[elementPosition + 4];
 
-            holder.userTimeSum.setText(getTimeStr(cpuTime[2]));
-            holder.sysTimeSum.setText(getTimeStr(cpuTime[3]));
-            holder.userTimeDelta.setText(getTimeStr(cpuTime[2] - cpuTime[0]));
-            holder.sysTimeDelta.setText(getTimeStr(cpuTime[3] - cpuTime[1]));
+            holder.userTimeSum.setText(getTimeStr(userTime));
+            holder.sysTimeSum.setText(getTimeStr(sysTime));
+            holder.userTimeDelta.setText(getTimeStr(userTime - lastUserTime));
+            holder.sysTimeDelta.setText(getTimeStr(sysTime - lastSysTime));
         }
 
         @SuppressLint("DefaultLocale")
-        String getTimeStr(long time) {
+        String getTimeStr(int time) {
             if (time <= 0) return "";
             else if (time <= 1000) return time + "ms";
 
             StringBuilder res = new StringBuilder();
-            int ms = (int) (time % 1000);
+            int ms = time % 1000;
             time /= 1000; // now Unit is second
 
             if (time >= 3600) {
@@ -179,11 +180,11 @@ public class AppTimeActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return lines.length;
+            return uidTime.length / 5;
         }
 
-        public void update(String[] newlines) {
-            lines = newlines;
+        public void update(int[] newUidTime) {
+            uidTime = newUidTime;
         }
 
         static class MyViewHolder extends RecyclerView.ViewHolder {

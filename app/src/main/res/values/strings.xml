@@ -70,7 +70,7 @@
     <string name="help">帮助</string>
     <string name="check_freezer">查看冻结</string>
     <string name="freezeit_tutorial_text">冻它教程说明</string>
-        <string name="tutorial_link" translatable="false">https://jark006.gitee.io/FreezeitIntroduction/</string>
+    <string name="tutorial_link" translatable="false">https://jark006.gitee.io/FreezeitIntroduction/</string>
     <string name="update_json_link" translatable="false">https://raw.fastgit.org/jark006/freezeitRelease/master/update.json</string>
     <string name="download">下载</string>
 
@@ -154,11 +154,12 @@
 
     <string name="extend_fg_title">扩展前台识别 ⓘ</string>
     <string name="extend_fg_tips">
-        部分系统会修改前台/后台状态机制(部分COS11)，导致部分前台应用无法被正确识别而被冻结。\n
+        Thanox(灭霸)的后台保护功能以及部分系统(COS11)会修改应用前、后台状态机制，导致应用无法识别为前台而被冻结。\n
         如果你遇到过这种情况，则需要打开，重启生效。若一切正常则建议关闭</string>
 
     <string name="doze_debug_title">Doze调试日志 ⓘ</string>
     <string name="doze_debug_tips">如果无法进入Doze，开启该选项则启用Doze调试日志，助于分析原因。</string>
 
-
+    <string name="more_whitelist_title">内置更多自由后台 ⓘ</string>
+    <string name="more_whitelist_tips">把第三方应用里与系统深度关联的应用内置为自由后台，防止被冻结而影响系统运行，重启生效</string>
 </resources>

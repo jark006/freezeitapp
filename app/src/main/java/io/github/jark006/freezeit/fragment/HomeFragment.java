@@ -50,6 +50,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     ActivityManager am;
     ActivityManager.MemoryInfo memoryInfo;
 
+    final int realTimeInfoIntLen = 23;
+    int[] realTimeInfo = new int[realTimeInfoIntLen]; //ARM64和X64  Native层均为小端
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -180,18 +183,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             bitmap = Utils.resize(bitmap, StaticData.imgScale, StaticData.imgScale);
             binding.cpuImg.setImageBitmap(bitmap);
 
-            final int elementNum = 23;
-            int realTimeInfoLen = response.length - imgBuffBytes;
-            if (realTimeInfoLen != 4 * elementNum) {
-                binding.memInfo.setText("正常字节长度:" + (4 * elementNum) + " 收到长度:" + realTimeInfoLen);
+            int realTimeInfoByteLen = response.length - imgBuffBytes;
+            if (realTimeInfoByteLen != 4 * realTimeInfoIntLen) {
+                binding.memInfo.setText("正常字节长度:" + (4 * realTimeInfoIntLen) + " 收到长度:" + realTimeInfoByteLen);
                 return;
             }
 
             // [0]全部物理内存 [1]可用内存 [2]全部虚拟内存 [3]可用虚拟内存  Unit: MiB
             // [4-11]八个核心频率(MHz) [12-19]八个核心使用率(%)
             // [20]CPU总使用率(%) [21]CPU温度(m℃) [22]电流(mA)
-            int[] realTimeInfo = new int[elementNum]; //ARM64和X64  Native层均为小端
-            Utils.Byte2Int(response, imgBuffBytes, elementNum * 4, realTimeInfo, 0);
+            Utils.Byte2Int(response, imgBuffBytes, realTimeInfoIntLen * 4, realTimeInfo, 0);
 
             final double GiB = 1024.0;
             int MemTotal = realTimeInfo[0], MemAvailable = realTimeInfo[1];
@@ -328,6 +329,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     StaticData.hasGetUpdateInfo = true;
                 } catch (JSONException e) {
                     Log.e(TAG, e.toString());
+                    return;
                 }
             }
 
@@ -372,7 +374,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 return;
 
             var split = new String(response).split("###");
-            if (split.length > 2 && split[1].length() > 2)
+            if (split.length > 1 && split[1].length() > 2)
                 StaticData.onlineChangelog = split[1];
 
             binding.changelogText.setText(StaticData.onlineChangelog);

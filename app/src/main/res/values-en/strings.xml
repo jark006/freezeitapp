@@ -98,4 +98,6 @@ Reboot takes effect</string>
     <string name="doze_debug_title">Doze Debug ⓘ</string>
     <string name="doze_debug_tips">If you cannot enter , turning this option on enables debug logging and helps to analyze the cause.</string>
     <string name="github_open_source">"APP open "</string>
+    <string name="more_whitelist_title">More WhiteList ⓘ</string>
+    <string name="more_whitelist_tips">Add those third-party applications that are deeply associated with the system to an immutable whitelist to prevent them from being frozen, which would otherwise affect the system. Reboot takes effect</string>
 </resources>

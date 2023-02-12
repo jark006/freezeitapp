@@ -122,6 +122,7 @@ public class Enum {
         public final static String mNetdService = "mNetdService";
         public final static String mActivityTaskManager = "mActivityTaskManager";
         public final static String definingUid = "definingUid";
+        public final static String processName = "processName";
     }
 
 }

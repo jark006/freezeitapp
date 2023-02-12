@@ -83,7 +83,8 @@ public class AnrHook {
             if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid)) return;
 
             param.setResult(null);
-            XpUtils.log(TAG, "跳过ANR AnrHelper:" + config.pkgIndex.getOrDefault(uid, "Unknown:" + uid));
+//            XpUtils.log(TAG, "跳过ANR AnrHelper:" +
+//                    XposedHelpers.getObjectField(processRecord, Enum.Field.processName));
         }
     };
 
@@ -98,7 +99,8 @@ public class AnrHook {
             if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid)) return;
 
             param.setResult(null);
-            XpUtils.log(TAG, "跳过 ServiceTimeout: " + config.pkgIndex.getOrDefault(uid, "UID:" + uid));
+//            XpUtils.log(TAG, "跳过 ServiceTimeout: " +
+//                    XposedHelpers.getObjectField(processRecord, Enum.Field.processName));
         }
     };
 
@@ -112,7 +114,8 @@ public class AnrHook {
             if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid)) return;
 
             param.setResult(null);
-            XpUtils.log(TAG, "跳过 ServiceForegroundTimeout: " + config.pkgIndex.getOrDefault(uid, "UID:" + uid));
+//            XpUtils.log(TAG, "跳过 ServiceForegroundTimeout: " +
+//                    XposedHelpers.getObjectField(serviceRecord, Enum.Field.packageName));
         }
     };
 }
