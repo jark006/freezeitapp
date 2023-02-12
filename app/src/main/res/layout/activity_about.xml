@@ -69,7 +69,7 @@
                     android:layout_height="60dp"
                     android:contentDescription="@string/icon"
                     android:padding="15dp"
-                    app:srcCompat="@drawable/ic_navigate_next_24dp" />
+                    app:srcCompat="@drawable/ic_jump_24dp" />
 
             </LinearLayout>
 
@@ -102,7 +102,7 @@
                     android:layout_height="60dp"
                     android:contentDescription="@string/icon"
                     android:padding="15dp"
-                    app:srcCompat="@drawable/ic_navigate_next_24dp" />
+                    app:srcCompat="@drawable/ic_jump_24dp" />
 
             </LinearLayout>
 
@@ -135,7 +135,7 @@
                     android:layout_height="60dp"
                     android:contentDescription="@string/icon"
                     android:padding="15dp"
-                    app:srcCompat="@drawable/ic_navigate_next_24dp" />
+                    app:srcCompat="@drawable/ic_jump_24dp" />
 
             </LinearLayout>
 
@@ -168,7 +168,7 @@
                     android:layout_height="60dp"
                     android:contentDescription="@string/icon"
                     android:padding="15dp"
-                    app:srcCompat="@drawable/ic_navigate_next_24dp" />
+                    app:srcCompat="@drawable/ic_jump_24dp" />
 
             </LinearLayout>
 
@@ -201,7 +201,7 @@
                     android:layout_height="60dp"
                     android:contentDescription="@string/icon"
                     android:padding="15dp"
-                    app:srcCompat="@drawable/ic_navigate_next_24dp" />
+                    app:srcCompat="@drawable/ic_jump_24dp" />
 
             </LinearLayout>
 
@@ -234,7 +234,7 @@
                     android:layout_height="60dp"
                     android:contentDescription="@string/icon"
                     android:padding="15dp"
-                    app:srcCompat="@drawable/ic_navigate_next_24dp" />
+                    app:srcCompat="@drawable/ic_jump_24dp" />
 
             </LinearLayout>
 
@@ -267,7 +267,7 @@
                     android:layout_height="60dp"
                     android:contentDescription="@string/icon"
                     android:padding="15dp"
-                    app:srcCompat="@drawable/ic_navigate_next_24dp" />
+                    app:srcCompat="@drawable/ic_jump_24dp" />
 
             </LinearLayout>
 
@@ -284,7 +284,7 @@
                     android:layout_height="60dp"
                     android:contentDescription="@string/icon"
                     android:padding="10dp"
-                    app:srcCompat="@drawable/ic_launcher_round" />
+                    app:srcCompat="@drawable/logo_freezeit" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -300,7 +300,7 @@
                     android:layout_height="60dp"
                     android:contentDescription="@string/icon"
                     android:padding="15dp"
-                    app:srcCompat="@drawable/ic_navigate_next_24dp" />
+                    app:srcCompat="@drawable/ic_jump_24dp" />
 
             </LinearLayout>
 
@@ -333,7 +333,7 @@
                     android:layout_height="60dp"
                     android:contentDescription="@string/icon"
                     android:padding="15dp"
-                    app:srcCompat="@drawable/ic_navigate_next_24dp" />
+                    app:srcCompat="@drawable/ic_jump_24dp" />
 
             </LinearLayout>
 
@@ -387,6 +387,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:padding="20dp"
                 android:text="@string/versionName" />
 
         </LinearLayout>

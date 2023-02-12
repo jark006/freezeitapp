@@ -41,7 +41,7 @@
                         android:contentDescription="@string/icon"
                         android:padding="5dp"
                         android:scaleType="centerInside"
-                        android:src="@drawable/ic_launcher_round" />
+                        android:src="@drawable/logo_freezeit" />
 
                     <TextView
                         android:id="@+id/statusText"

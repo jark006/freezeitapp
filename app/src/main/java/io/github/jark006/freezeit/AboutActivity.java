@@ -77,9 +77,9 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
         } else if (id == R.id.changelog_text) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.online_changelog_link))));
         } else if (id == R.id.wechat_pay) {
-            Utils.imgDialog(this, R.drawable.wechatpay);
+            Utils.imgDialog(this, R.drawable.img_wechatpay);
         } else if (id == R.id.alipay) {
-            Utils.imgDialog(this, R.drawable.alipay);
+            Utils.imgDialog(this, R.drawable.img_alipay);
         }
     }
 }
