@@ -62,9 +62,7 @@ public class WakeLockHook {
 
             // android S+ 12+:[7]    X~11:[6]
             int uid = (int) param.args[Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? 7 : 6];
-            if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid)) return;
-
-            param.setResult(null);
+            if (uid < 10000 || !config.managedApp.contains(uid) || config.whitelist.contains(uid)) return;            param.setResult(null);
 //            XpUtils.log(TAG, "阻止唤醒锁: " + config.pkgIndex.getOrDefault(uid, "UID:" + uid));
         }
     };

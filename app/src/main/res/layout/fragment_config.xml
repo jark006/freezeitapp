@@ -15,7 +15,7 @@
             android:id="@+id/recyclerviewApp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingHorizontal="10dp" />
+            android:paddingHorizontal="@dimen/width_margin"/>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -26,10 +26,11 @@
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="@dimen/fab_margin"
         android:contentDescription="@string/icon"
+        android:alpha="0.75"
         app:backgroundTint="@color/float_button"
-        app:layout_constraintBottom_toTopOf="@id/fabConvertTolerant"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_split_24dp" />
+        app:layout_constraintBottom_toTopOf="@+id/fabConvertTolerant"
+        app:layout_constraintRight_toRightOf="parent"
+        app:srcCompat="@drawable/ic_android_24dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabConvertTolerant"
@@ -38,9 +39,10 @@
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="@dimen/fab_margin"
         android:contentDescription="@string/icon"
+        android:alpha="0.75"
         app:backgroundTint="@color/float_button"
-        app:layout_constraintBottom_toTopOf="@id/fabConvertCfg"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/fabConvertCfg"
+        app:layout_constraintRight_toRightOf="parent"
         app:srcCompat="@drawable/ic_convert2_24dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -50,9 +52,10 @@
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="@dimen/fab_margin"
         android:contentDescription="@string/icon"
+        android:alpha="0.75"
         app:backgroundTint="@color/float_button"
-        app:layout_constraintBottom_toTopOf="@id/fabSave"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/fabSave"
+        app:layout_constraintRight_toRightOf="parent"
         app:srcCompat="@drawable/ic_convert_24dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -62,9 +65,10 @@
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="@dimen/fab_margin"
         android:contentDescription="@string/icon"
+        android:alpha="0.75"
         app:backgroundTint="@color/float_button"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:srcCompat="@drawable/ic_save_24dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

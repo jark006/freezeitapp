@@ -44,19 +44,19 @@ public class AppTimeActivity extends AppCompatActivity {
         recyclerView.setAdapter(recycleAdapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        Context ctx = this;
+        Context context = this;
         this.addMenuProvider(new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
                 menu.clear();
-                menuInflater.inflate(R.menu.task_menu, menu);
+                menuInflater.inflate(R.menu.apptime_menu, menu);
             }
 
             @Override
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
                 int id = menuItem.getItemId();
                 if (id == R.id.help_task) {
-                    Utils.imgDialog(ctx, R.drawable.help_task);
+                    Utils.layoutDialog(context, R.layout.help_dialog_app_time);
                 }
                 return true;
             }

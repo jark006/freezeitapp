@@ -35,12 +35,10 @@ public class BroadCastHook {
         public void beforeHookedMethod(MethodHookParam param) {
 
             // BroadcastFilter https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/am/BroadcastFilter.java
-            Object broadcastFilter = param.args[1];
-            int receiverUid = XposedHelpers.getIntField(broadcastFilter, Enum.Field.owningUid);
+            int uid = XposedHelpers.getIntField(param.args[1], Enum.Field.owningUid); // receiverUid
 
             // 若是 [系统应用] [自由后台] [在顶层前台] 则不清理广播
-            if (!config.thirdApp.contains(receiverUid) || config.whitelist.contains(receiverUid)
-                    || config.foregroundUid.contains(receiverUid))
+            if (uid < 10000 || !config.managedApp.contains(uid) || config.whitelist.contains(uid) || config.foregroundUid.contains(uid))
                 return;
 
             // BroadcastRecord https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/am/BroadcastRecord.java

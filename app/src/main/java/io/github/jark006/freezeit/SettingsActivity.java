@@ -18,7 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
 
-    Spinner clusterBindSpinner, freezeModeSpinner;
+    Spinner clusterBindSpinner, freezeModeSpinner, reFreezeTimeoutSpinner;
     SeekBar freezeTimeoutSeekbar, wakeupTimeoutSeekbar, terminateTimeoutSeekbar;
     TextView freezeTimeoutText, wakeupTimeoutText, terminateTimeoutText;
 
@@ -31,6 +31,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     final int wakeupTimeoutIdx = 3;
     final int terminateTimeoutIdx = 4;
     final int freezeModeIdx = 5;
+    final int reFreezeTimeoutIdx = 6;
 
     final int radicalFgIdx = 10;
 
@@ -58,6 +59,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         findViewById(R.id.cluster_title).setOnClickListener(this);
         findViewById(R.id.freeze_mode_title).setOnClickListener(this);
         findViewById(R.id.freeze_timeout_title).setOnClickListener(this);
+        findViewById(R.id.refreeze_timeout_title).setOnClickListener(this);
         findViewById(R.id.terminate_timeout_title).setOnClickListener(this);
         findViewById(R.id.wakeup_timeout_title).setOnClickListener(this);
         findViewById(R.id.radical_fg_title).setOnClickListener(this);
@@ -74,6 +76,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
         clusterBindSpinner = findViewById(R.id.cluster_spinner);
         freezeModeSpinner = findViewById(R.id.freeze_mode_spinner);
+        reFreezeTimeoutSpinner = findViewById(R.id.refreeze_timeout_spinner);
 
         freezeTimeoutText = findViewById(R.id.freeze_timeout_text);
         wakeupTimeoutText = findViewById(R.id.wakeup_timeout_text);
@@ -230,9 +233,11 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             if (settingsVar[freezeTimeoutIdx] > 60) settingsVar[freezeTimeoutIdx] = 10;
             if (settingsVar[terminateTimeoutIdx] > 120) settingsVar[terminateTimeoutIdx] = 30;
             if (settingsVar[wakeupTimeoutIdx] > 120) settingsVar[wakeupTimeoutIdx] = 30;
+            if (settingsVar[reFreezeTimeoutIdx] > 5) settingsVar[reFreezeTimeoutIdx] = 0;
 
             InitSpinner(clusterBindSpinner, clusterBindIdx);
             InitSpinner(freezeModeSpinner, freezeModeIdx);
+            InitSpinner(reFreezeTimeoutSpinner, reFreezeTimeoutIdx);
 
             InitSeekbar(freezeTimeoutSeekbar, freezeTimeoutText, freezeTimeoutIdx);
             InitSeekbar(wakeupTimeoutSeekbar, wakeupTimeoutText, wakeupTimeoutIdx);
@@ -260,6 +265,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             Utils.textDialog(this, R.string.freeze_mode_title, R.string.freeze_mode_tips);
         } else if (id == R.id.freeze_timeout_title) {
             Utils.textDialog(this, R.string.freeze_timeout_title, R.string.freeze_timeout_tips);
+        } else if (id == R.id.refreeze_timeout_title) {
+            Utils.textDialog(this, R.string.refreeze_timeout_title, R.string.refreeze_timeout_tips);
         } else if (id == R.id.terminate_timeout_title) {
             Utils.textDialog(this, R.string.terminate_timeout_title, R.string.terminate_timeout_tips);
         } else if (id == R.id.wakeup_timeout_title) {

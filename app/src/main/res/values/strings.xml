@@ -8,7 +8,6 @@
     <string name="title_other">其他</string>
     <string name="icon">图标</string>
     <string name="supportTitle">支持开发</string>
-    <string name="supportDescriptionText">模块完全免费使用，捐赠开发者以获得更多开发动力。</string>
 
     <string name="xposed_description">
         禁止应用无响应、唤醒锁及定时器，清理广播(防止卡拨号、卡安装等等)\n
@@ -17,13 +16,30 @@
     <string name="changelogTitle">更新日志</string>
     <string name="changelogText">冻它模块更新日志</string>
 
+    <string name="number" translatable="false">0</string>
+    <string name="todo" translatable="false">TODO</string>
+    <string name="cpu_format" translatable="false">🎛️ %2d%% %.1f℃</string>
+    <string name="coolapk_link" translatable="false">http://www.coolapk.com/u/1212220</string>
+    <string name="qq_group_link" translatable="false">https://jq.qq.com/?_wv=1027&amp;k=ZsyKpCP8</string>
+    <string name="qq_channel_link" translatable="false">https://qun.qq.com/qqweb/qunpro/share?_wv=3&amp;_wwv=128&amp;appChannel=share&amp;inviteCode=1W6opB7&amp;appChannel=share&amp;businessType=9&amp;from=246610&amp;biz=ka</string>
+    <string name="tg_link" translatable="false">tg://join?invite=sjDX1oTk31ZmYjY1</string>
+    <string name="tg_https_link" translatable="false">https://t.me/+sjDX1oTk31ZmYjY1</string>
+    <string name="tg_channel_link" translatable="false">tg://resolve?domain=freezeitRelease</string>
+    <string name="tg_channel_https_link" translatable="false">https://t.me/freezeitRelease</string>
+    <string name="github_link" translatable="false">https://github.com/jark006</string>
+    <string name="github_rel_link" translatable="false">https://github.com/jark006/freezeitRelease</string>
+    <string name="github_app_link" translatable="false">https://github.com/jark006/freezeitapp</string>
+    <string name="lanzou_link" translatable="false">https://jark006.lanzout.com/b017oz9if</string>
+    <string name="tutorial_link" translatable="false">https://jark006.gitee.io/FreezeitIntroduction/</string>
+    <string name="update_json_link" translatable="false">https://raw.fastgit.org/jark006/freezeitRelease/master/update.json</string>
+    <string name="online_changelog_link" translatable="false">https://raw.fastgit.org/jark006/freezeitRelease/main/changelogFull.txt</string>
+
     <string name="communityTitle">社区交流</string>
     <string name="coolapk_text">酷安 @JARK006</string>
     <string name="qq_group_text">QQ群组 781222669</string>
     <string name="qq_channel_text">QQ频道 冻它模块</string>
     <string name="tg_group_text">Telegram 群组</string>
     <string name="tg_channel_text">Telegram 频道</string>
-    <string name="lanzou_text">更新 蓝奏云密码:dy6i</string>
 
     <string name="update_app_label">更新应用名称</string>
     <string name="about">关于</string>
@@ -36,47 +52,30 @@
     <string name="xposed_warn">未激活\n警告：不激活则无法工作</string>
     <string name="freezeit_offline">冻它未启用或工作异常</string>
     <string name="freezeit_error_tips">
-        1.进入桌面1分钟后才启动，请稍后再打开。\n
-        2.请检查面具模块是否已启用。\n
-        3.请检查冻它APP的网络权限。\n
-        4.请检查异常日志:\n
-        /sdcard/Android/freezeit_crash_log.txt</string>
+1.进入桌面1分钟后才启动，请稍后再打开。\n
+2.请检查面具模块是否已启用。\n
+3.请检查冻它APP的网络权限。\n
+4.请检查异常日志:\n/sdcard/Android/freezeit_crash_log.txt
+    </string>
     <string name="get_log_fail_tips">工作日志获取失败</string>
     <string name="get_changelog_fail_tips">更新日志获取失败</string>
-
-    <string name="coolapk_link" translatable="false">http://www.coolapk.com/u/1212220</string>
-    <string name="qq_group_link" translatable="false">https://jq.qq.com/?_wv=1027&amp;k=ZsyKpCP8</string>
-    <string name="qq_channel_link" translatable="false">https://qun.qq.com/qqweb/qunpro/share?_wv=3&amp;_wwv=128&amp;appChannel=share&amp;inviteCode=1W6opB7&amp;appChannel=share&amp;businessType=9&amp;from=246610&amp;biz=ka</string>
-    <string name="tg_link" translatable="false">tg://join?invite=sjDX1oTk31ZmYjY1</string>
-    <string name="tg_https_link" translatable="false">https://t.me/+sjDX1oTk31ZmYjY1</string>
-    <string name="tg_channel_link" translatable="false">tg://resolve?domain=freezeitRelease</string>
-    <string name="tg_channel_https_link" translatable="false">https://t.me/freezeitRelease</string>
-    <string name="github_link" translatable="false">https://github.com/jark006</string>
-    <string name="github_rel_link" translatable="false">https://github.com/jark006/freezeitRelease</string>
-    <string name="github_app_link" translatable="false">https://github.com/jark006/freezeitapp</string>
-    <string name="lanzou_link" translatable="false">https://jark006.lanzout.com/b017oz9if</string>
     <string name="update_success">更新成功</string>
     <string name="update_fail">更新失败</string>
     <string name="update_start">开始更新 应用名称</string>
     <string name="app_label">应用名称</string>
     <string name="clear_log_text">清空日志</string>
     <string name="clear_log_tips">已清空日志</string>
-    <string name="todo" translatable="false">TODO</string>
     <string name="title_activity_setting">设置</string>
     <string name="title_activity_task_manager">应用CPU时间</string>
 
-    <string name="cpu_format" translatable="false">🎛️ %2d%% %.1f℃</string>
     <string name="slowly_tips">别急，慢点</string>
     <string name="help">帮助</string>
     <string name="check_freezer">查看冻结</string>
     <string name="freezeit_tutorial_text">冻它教程说明</string>
-    <string name="tutorial_link" translatable="false">https://jark006.gitee.io/FreezeitIntroduction/</string>
-    <string name="update_json_link" translatable="false">https://raw.fastgit.org/jark006/freezeitRelease/master/update.json</string>
     <string name="download">下载</string>
 
     <string name="second">秒</string>
     <string name="minute">分</string>
-    <string name="number" translatable="false">0</string>
     <string name="lanzou_password">蓝奏云密码: dy6i</string>
     <string name="donate_wechat">微信捐赠</string>
     <string name="donate_alipay">支付宝捐赠</string>
@@ -94,7 +93,6 @@
     <string name="current_version">当前版本</string>
     <string name="online_version">在线版本</string>
     <string name="online_changelog">历史更新日志</string>
-    <string name="online_changelog_link" translatable="false">https://raw.fastgit.org/jark006/freezeitRelease/main/changelog.txt</string>
     <string name="title_activity_about">关于</string>
 
 
@@ -112,6 +110,12 @@
         内核4.14~4.19支持V1和不完整V2(默认不开启，可尝试使用模块进行挂载)。\n
         内核5.4起支持完整版V2。\n
         frozen和uid模式仅路径不同，差别不大，建议优先使用frozen。设置重启生效</string>
+
+    <string name="refreeze_timeout_title">定时压制 ⓘ</string>
+    <string name="refreeze_timeout_tips">
+        定时检查后台活动，重新冻结被关联唤醒的后台进程，以及压制开机自启动的后台进程。正常情况下不会压制正在前台的应用。\n
+        如果在Thanox中设置了”后台保护“的应用，会被冻它识别成”后台状态“而被冻结，这是机制冲突导致误伤，开启扩展前台识别即可。\n
+        如果扩展前台无效，请检查并关闭其他可能冲突的“保后台”机制，若“前台被冻结”的误伤一直存在，那就关闭定时压制。</string>
 
     <string name="wakeup_timeout_title">定时解冻 ⓘ</string>
     <string name="wakeup_timeout_tips">
@@ -148,18 +152,41 @@
 
     <string name="doze_title">息屏Doze ⓘ</string>
     <string name="doze_tips">
-        虽然系统默认会进入Doze(低功耗待机模式)，但多是轻度doze，进入深度Doze更慢。\n
-        开启后，息屏状态超时3分钟，尝试强制进入深度Doze，息屏播放和充电状态除外。\n
-        部分系统可能提前进入轻度Doze导致冻它间断暂停运行，进而延迟进入深度Doze</string>
+虽然系统默认会进入Doze(低功耗待机模式)，但多是轻度doze，进入深度Doze更慢。\n
+开启后，息屏状态超时3分钟，尝试强制进入深度Doze，息屏播放和充电状态除外。\n
+部分系统可能提前进入轻度Doze导致冻它间断暂停运行，进而延迟进入深度Doze
+    </string>
 
     <string name="extend_fg_title">扩展前台识别 ⓘ</string>
     <string name="extend_fg_tips">
-        Thanox(灭霸)的后台保护功能以及部分系统(COS11)会修改应用前、后台状态机制，导致应用无法识别为前台而被冻结。\n
-        如果你遇到过这种情况，则需要打开，重启生效。若一切正常则建议关闭</string>
+Thanox(灭霸)的后台保护功能以及部分系统(COS11)会修改应用前、后台状态机制，导致应用无法识别为前台而被冻结。\n
+如果你遇到过这种情况，则需要打开，重启生效。若一切正常则建议关闭</string>
 
     <string name="doze_debug_title">Doze调试日志 ⓘ</string>
     <string name="doze_debug_tips">如果无法进入Doze，开启该选项则启用Doze调试日志，助于分析原因。</string>
 
     <string name="more_whitelist_title">内置更多自由后台 ⓘ</string>
     <string name="more_whitelist_tips">把第三方应用里与系统深度关联的应用内置为自由后台，防止被冻结而影响系统运行，重启生效</string>
+    <string name="config_help_text">
+【杀死后台】:该应用进入后台超时就直接杀死，而不是冻结。该选项适合那些用完就丢、不用留后台的应用。\n
+【SIGSTOP冻结】:使用SIGSTOP信号进行冻结，该方式不考虑进程状态而强制冻结，有概率破坏应用的正常运行。\n
+【Freezer冻结】:使用cgroup的Freezer子系统进行冻结，该方式会根据进程状态是否合适而冻结，可能会延迟冻结，甚至无限延迟。\n
+【后台自由】:该应用不会冻结，可在后台自由运行。\n\n
+
+【严格前台】:当应用Activity显示在顶层(TOP)或绑定到顶层(BOUND_TOP)应用时，才算在前台，也是旧版冻它(v2.2.18及以下)的前台判断条件。\n
+【宽松前台】:若符合严格前台的条件，或存在悬浮窗、常驻通知栏、音频播放服务等前台服务时，则判为前台状态，不会被冻结。
+    </string>
+
+    <string name="help_logcat_update">更新应用名称\n不再使用包名</string>
+    <string name="help_logcat_check">查看冻结状态、内存占用</string>
+    <string name="help_logcat_clear">清空日志</string>
+    <string name="app_time_help_text">
+统计开机至今，应用运行时CPU使用时间，分为用户态和内核态，运行过的应用才会统计，累计时长可以近似理解为该应用的耗电量。\n\n
+应用正在运行时，并非一直在使用CPU资源运算，而是在其需要处理数据的时候才会使用，而大多数时间会在“休眠”状态。\n\n
+注:以上统计数据属于系统默认行为，冻它只是读取出来进行可视化，冻它不会主动去统计这类信息，不会有额外资源消耗。
+    </string>
+    <string name="save">保存</string>
+    <string name="convert_freezer_sigstop">反转 Freezer / SIGSTOP</string>
+    <string name="convert_strict">反转 严格 / 宽松</string>
+    <string name="switch_sys_user">切换系统、三方应用</string>
 </resources>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,28 +13,51 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/width_margin">
 
             <TextView
-                android:paddingHorizontal="12dp"
                 android:id="@+id/logView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scrollbars="vertical"
-                android:typeface="monospace"
                 android:textSize="12sp"
-                android:text="" />
+                android:typeface="monospace" />
 
-            <LinearLayout
+            <View
                 android:id="@+id/forBottom"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
+                android:contentDescription="@string/number"
                 android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:orientation="horizontal"
-                tools:ignore="SpeakableTextPresentCheck" />
+                android:focusableInTouchMode="true" />
         </LinearLayout>
     </ScrollView>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabCheck"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginBottom="@dimen/fab_margin"
+        android:alpha="0.75"
+        android:contentDescription="@string/icon"
+        app:backgroundTint="@color/float_button"
+        app:layout_constraintBottom_toTopOf="@+id/fabClear"
+        app:layout_constraintRight_toRightOf="parent"
+        app:srcCompat="@drawable/ic_check_freezer_24dp" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabClear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginBottom="@dimen/fab_margin"
+        android:alpha="0.75"
+        android:contentDescription="@string/icon"
+        app:backgroundTint="@color/float_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:srcCompat="@drawable/ic_clear_log_24dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

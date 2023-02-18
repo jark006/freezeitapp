@@ -7,7 +7,6 @@
     <string name="title_other">Other</string>
     <string name="icon">Icon</string>
     <string name="supportTitle">Support</string>
-    <string name="supportDescriptionText">Modules are completely free to use, donate developers to get more development momentum.</string>
     <string name="changelogTitle">Changelog</string>
     <string name="changelogText">Freezeit module changelog</string>
     <string name="communityTitle">Community</string>
@@ -25,7 +24,6 @@
     <string name="update_success">Update success</string>
     <string name="update_fail">Update fail</string>
     <string name="update_start">Updating AppLabel</string>
-    <string name="lanzou_text">LanzouUpdate Password: dy6i</string>
     <string name="clear_log_text">Clear</string>
     <string name="clear_log_tips">Cleared</string>
     <string name="freezeit_app_name">FreezeitApp</string>
@@ -37,11 +35,11 @@
     <string name="xposed_offline">LSPosed Inactivated</string>
     <string name="title_activity_setting">Settings</string>
     <string name="title_activity_task_manager">APP CPU Time</string>
-    <string name="cluster_title">ClusterBind ⓘ</string>
-    <string name="freeze_timeout_title">FreezeTimeout ⓘ</string>
-    <string name="wakeup_timeout_title">ScheduledWakeup ⓘ</string>
-    <string name="terminate_timeout_title">TerminateTimeout ⓘ</string>
-    <string name="freeze_mode_title">FreezerType ⓘ</string>
+    <string name="cluster_title">Cluster Bind ⓘ</string>
+    <string name="freeze_timeout_title">Freeze Timeout ⓘ</string>
+    <string name="wakeup_timeout_title">Regular Wakeup ⓘ</string>
+    <string name="terminate_timeout_title">Terminate Timeout ⓘ</string>
+    <string name="freeze_mode_title">Freezer Type ⓘ</string>
     <string name="slowly_tips">Be Slowly</string>
     <string name="help">Help</string>
     <string name="check_freezer">check_freezer_status</string>
@@ -55,7 +53,7 @@
     <string name="download">Download</string>
     <string name="second">sec</string>
     <string name="minute">min</string>
-    <string name="lanzou_password">Lanzou password: dy6i</string>
+    <string name="lanzou_password">Lanzou Password: dy6i</string>
     <string name="donate_wechat">Donate Wechat</string>
     <string name="donate_alipay">Donate Alipay</string>
     <string name="github_publish">Github Publish</string>
@@ -97,7 +95,34 @@ Reboot takes effect</string>
     <string name="title_activity_about">About</string>
     <string name="doze_debug_title">Doze Debug ⓘ</string>
     <string name="doze_debug_tips">If you cannot enter , turning this option on enables debug logging and helps to analyze the cause.</string>
-    <string name="github_open_source">"APP open "</string>
+    <string name="github_open_source">APP OpenSource</string>
     <string name="more_whitelist_title">More WhiteList ⓘ</string>
     <string name="more_whitelist_tips">Add those third-party applications that are deeply associated with the system to an immutable whitelist to prevent them from being frozen, which would otherwise affect the system. Reboot takes effect</string>
+    <string name="config_help_text">
+[Terminate]:Use SIGKILL signal to terminate app, instead of freezing. \n
+[SIGSTOP]:Use SIGSTOP signal to freeze.\n
+[Freezer]:Use cgroup\'s Freezer subsystem to freeze. \n
+[Free]:The application will not freeze and can run freely in the background. \n\n
+[Strictly]:The application Activity is considered to be in the foreground when it is displayed in the top level (TOP) or bound to the top level (BOUND_TOP) app.\n
+[Lenient]:If it meets the conditions of strict foreground, or when there are foreground services such as floatingView, resident notification bar, audio playback service, it is judged as foreground and will not be frozen.
+    </string>
+    <string name="help_logcat_update">Update the app label, no longer use the package name to log.</string>
+    <string name="help_logcat_check">Check freeze status, memory usage</string>
+    <string name="help_logcat_clear">Clear log</string>
+    <string name="app_time_help_text">
+Statistics of CPU usage time when the application is running since boot, divided into user state and kernel state, only the running application will be counted, and the accumulated time can be approximated as the power consumption of the application. \n\n
+When the application is running, it does not use CPU resources all the time, but only when it needs to process data, and most of the time it is in the "sleep" state. \n\n
+Note:The above statistics are the default behavior of the system, Freezeit only reads them out for visualization, and will not actively count such information, so there will be no additional resource consumption.
+    </string>
+    <string name="save">Save</string>
+    <string name="convert_freezer_sigstop">Convert Freezer / SIGSTOP</string>
+    <string name="convert_strict">Convert Strict / Lenient</string>
+    <string name="switch_sys_user">Switch sys/third App</string>
+
+    <string name="refreeze_timeout_title">Regular Refreeze ⓘ</string>
+    <string name="refreeze_timeout_tips">
+        Regularly check background activity, refreeze background processes woken by association, and suppress background processes that start on boot. \n
+    Applications with "background protection" set in Thanox will be frozen as "background state", which is a mechanism conflict, just turn on extended foreground recognition. \n
+    If the extended foreground is invalid, please check and turn off other "background protection" mechanisms that may conflict. \n
+    If the "frozen foreground" error persists, turn off this.</string>
 </resources>

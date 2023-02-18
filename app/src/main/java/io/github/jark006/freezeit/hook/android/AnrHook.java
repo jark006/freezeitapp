@@ -66,10 +66,12 @@ public class AnrHook {
             ApplicationInfo aInfo = (ApplicationInfo) param.args[1];
             if (aInfo == null) return;
             int uid = aInfo.uid;
-            if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid)) return;
+            if (uid < 10000 || !config.managedApp.contains(uid) || config.whitelist.contains(uid))
+                return;
 
             param.setResult(null);
-            XpUtils.log(TAG, "跳过ANR ErrorState:" + aInfo.packageName + " " + param.args[0] + " " + param.args[2]);
+//            XpUtils.log(TAG, "跳过ANR ErrorState:" + aInfo.packageName + " " +
+//            param.args[0] + " " + param.args[2]);
         }
     };
 
@@ -80,7 +82,8 @@ public class AnrHook {
             Object processRecord = param.args[0];
             if (processRecord == null) return;
             int uid = XposedHelpers.getIntField(processRecord, Enum.Field.uid);
-            if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid)) return;
+            if (uid < 10000 || !config.managedApp.contains(uid) || config.whitelist.contains(uid))
+                return;
 
             param.setResult(null);
 //            XpUtils.log(TAG, "跳过ANR AnrHelper:" +
@@ -96,7 +99,8 @@ public class AnrHook {
             Object processRecord = param.args[0];
             if (processRecord == null) return;
             int uid = XposedHelpers.getIntField(processRecord, Enum.Field.uid);
-            if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid)) return;
+            if (uid < 10000 || !config.managedApp.contains(uid) || config.whitelist.contains(uid))
+                return;
 
             param.setResult(null);
 //            XpUtils.log(TAG, "跳过 ServiceTimeout: " +
@@ -111,7 +115,8 @@ public class AnrHook {
             Object serviceRecord = param.args[0];
             if (serviceRecord == null) return;
             int uid = XposedHelpers.getIntField(serviceRecord, Enum.Field.definingUid);
-            if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid)) return;
+            if (uid < 10000 || !config.managedApp.contains(uid) || config.whitelist.contains(uid))
+                return;
 
             param.setResult(null);
 //            XpUtils.log(TAG, "跳过 ServiceForegroundTimeout: " +

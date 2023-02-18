@@ -262,7 +262,7 @@ public class AndroidService {
                 if (processRecord == null) continue;
 
                 int uid = XposedHelpers.getIntField(processRecord, "uid");
-                if (uid < 10000 || !config.thirdApp.contains(uid) || config.whitelist.contains(uid))
+                if (uid < 10000 || !config.managedApp.contains(uid) || config.whitelist.contains(uid))
                     continue;
 
                 int mCurProcState;
@@ -301,7 +301,7 @@ public class AndroidService {
                                 ApplicationInfo applicationInfo = (ApplicationInfo) XposedHelpers.getObjectField(
                                         XposedHelpers.getObjectField(info, "topActivityInfo"), "applicationInfo");
                                 int uid = applicationInfo.uid;
-                                if (uid < 10000 || !config.thirdApp.contains(uid) || config.whitelist.contains(uid))
+                                if (uid < 10000 || !config.managedApp.contains(uid) || config.whitelist.contains(uid))
                                     continue;
                                 config.foregroundUid.add(uid);
                             }
@@ -317,8 +317,8 @@ public class AndroidService {
                                 if (!visible) continue;
 
                                 ComponentName topActivity = (ComponentName) XposedHelpers.getObjectField(info, "topActivity");
-                                Integer uid = config.uidIndex.get(topActivity.getPackageName());
-                                if (uid == null || uid < 10000 || !config.thirdApp.contains(uid) || config.whitelist.contains(uid))
+                                int uid = config.uidIndex.getOrDefault(topActivity.getPackageName(), 0);
+                                if (uid < 10000 || !config.managedApp.contains(uid) || config.whitelist.contains(uid))
                                     continue;
                                 config.foregroundUid.add(uid);
                             }
@@ -334,7 +334,8 @@ public class AndroidService {
         // 开头的4字节放置UID的个数，往后每4个字节放一个UID  [小端]
         int payloadBytes = (config.foregroundUid.size() + 1) * 4;
         Utils.Int2Byte(config.foregroundUid.size(), replyBuff, 0);
-        Utils.HashSet2Byte(config.foregroundUid, replyBuff, 4);
+//        Utils.HashSet2Byte(config.foregroundUid, replyBuff, 4);
+        config.foregroundUid.toBytes(replyBuff, 4);
 
 //        Utils.Int2Byte(config.cacheEmptyPid.size(), replyBuff, payloadBytes);
 //        Utils.HashSet2Byte(config.cacheEmptyPid, replyBuff, payloadBytes + 4);
@@ -384,7 +385,7 @@ public class AndroidService {
             return;
         }
 
-        config.thirdApp.clear();
+        config.managedApp.clear();
         config.uidIndex.clear();
         config.pkgIndex.clear();
         config.whitelist.clear();
@@ -405,12 +406,12 @@ public class AndroidService {
                             var tmp = element.split("####"); // element: "uid####package"
                             if (tmp.length == 2) {
                                 int uid = Integer.parseInt(tmp[0]);
-                                config.thirdApp.add(uid);
+                                config.managedApp.add(uid);
                                 config.uidIndex.put(tmp[1], uid);
                                 config.pkgIndex.put(uid, tmp[1]);
                             }
                         }
-                        sb.append("thirdApp: ").append(config.thirdApp.size()).append(' ');
+                        sb.append("managedApp: ").append(config.managedApp.size()).append(' ');
                         sb.append("uidIndex: ").append(config.uidIndex.size()).append(' ');
                         sb.append("pkgIndex: ").append(config.pkgIndex.size()).append(' ');
                         break;
@@ -461,7 +462,7 @@ public class AndroidService {
             }
 
             int uid = Utils.Byte2Int(buff, 0);
-            if (!config.thirdApp.contains(uid)) {
+            if (!config.managedApp.contains(uid)) {
                 log(WAK_TAG, "非法UID" + uid);
                 throw null;
             }
@@ -495,7 +496,7 @@ public class AndroidService {
             }
 
             int uid = Utils.Byte2Int(buff, 0);
-            if (!config.thirdApp.contains(uid)) {
+            if (!config.managedApp.contains(uid)) {
                 log(NMS_TAG, "非法UID" + uid);
                 throw null;
             }

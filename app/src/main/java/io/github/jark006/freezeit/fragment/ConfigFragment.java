@@ -53,6 +53,7 @@ public class ConfigFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
 
         binding = FragmentConfigBinding.inflate(inflater, container, false);
+        binding.swipeRefreshLayout.setRefreshing(true);
 
         // 下拉刷新时，先更新应用缓存
         binding.swipeRefreshLayout.setOnRefreshListener(() -> new Thread(() -> {
@@ -60,8 +61,6 @@ public class ConfigFragment extends Fragment {
             AppInfoCache.getUidList(uidList);
             Utils.freezeitTask(Utils.getAppCfg, null, getAppCfgHandler);
         }).start());
-
-        AppInfoCache.getUidList(uidList);
 
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
@@ -92,7 +91,7 @@ public class ConfigFragment extends Fragment {
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
                 int id = menuItem.getItemId();
                 if (id == R.id.help_config) {
-                    Utils.imgDialog(requireContext(), R.drawable.help_config);
+                    Utils.layoutDialog(requireContext(), R.layout.help_dialog_config);
                 }
                 return true;
             }
@@ -153,7 +152,10 @@ public class ConfigFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        new Thread(() -> Utils.freezeitTask(Utils.getAppCfg, null, getAppCfgHandler)).start();
+        new Thread(() -> {
+            AppInfoCache.getUidList(uidList);
+            Utils.freezeitTask(Utils.getAppCfg, null, getAppCfgHandler);
+        }).start();
     }
 
     private final Handler getAppCfgHandler = new Handler(Looper.getMainLooper()) {
@@ -192,7 +194,6 @@ public class ConfigFragment extends Fragment {
                     appCfg.put(uid, new Pair<>(Utils.CFG_FREEZER, cfg.second));
             });
 
-            // [10]:杀死后台 [20]:SIGSTOP [30]:Freezer [40]:自由 [50]:内置
             ArrayList<Integer> uidListSort = new ArrayList<>();
 
             // 先排 自由

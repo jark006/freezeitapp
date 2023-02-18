@@ -34,6 +34,7 @@ public class LogcatFragment extends Fragment {
     Timer timer;
 
     int lastLogLen = 0;
+    long lastTimestamp = 0;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -48,20 +49,45 @@ public class LogcatFragment extends Fragment {
 
             @Override
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                if ((System.currentTimeMillis() - lastTimestamp) < 500) {
+                    Toast.makeText(requireContext(), getString(R.string.slowly_tips), Toast.LENGTH_LONG).show();
+                    return true;
+                }
+                lastTimestamp = System.currentTimeMillis();
+
                 int id = menuItem.getItemId();
-                if (id == R.id.clear_log) {
-                    new Thread(() -> Utils.freezeitTask(Utils.clearLog, null, handler)).start();
-                } else if (id == R.id.printf_freeze) {
-                    new Thread(() -> Utils.freezeitTask(Utils.printFreezerProc, null, handler)).start();
-                } else if (id == R.id.help_log) {
-                    Utils.imgDialog(requireContext(), R.drawable.help_logcat);
-                } else if (id == R.id.update_label) {
+                if (id == R.id.help_log)
+                    Utils.layoutDialog(requireContext(), R.layout.help_dialog_logcat);
+                else if (id == R.id.update_label) {
                     Toast.makeText(requireContext(), R.string.update_start, Toast.LENGTH_SHORT).show();
-                    new Thread(updateAppLabelTask).start();
+                    new Thread(() -> {
+                        AppInfoCache.refreshCache(requireContext());
+                        Utils.freezeitTask(Utils.setAppLabel, AppInfoCache.getAppLabelBytes(), appLabelHandler);
+                    }).start();
                 }
                 return true;
             }
         }, this.getViewLifecycleOwner());
+
+        binding.fabCheck.setOnClickListener(view -> {
+            if ((System.currentTimeMillis() - lastTimestamp) < 500) {
+                Toast.makeText(requireContext(), getString(R.string.slowly_tips), Toast.LENGTH_LONG).show();
+                return;
+            }
+            lastTimestamp = System.currentTimeMillis();
+
+            new Thread(() -> Utils.freezeitTask(Utils.printFreezerProc, null, handler)).start();
+        });
+
+        binding.fabClear.setOnClickListener(view -> {
+            if ((System.currentTimeMillis() - lastTimestamp) < 500) {
+                Toast.makeText(requireContext(), getString(R.string.slowly_tips), Toast.LENGTH_LONG).show();
+                return;
+            }
+            lastTimestamp = System.currentTimeMillis();
+
+            new Thread(() -> Utils.freezeitTask(Utils.clearLog, null, handler)).start();
+        });
 
         return binding.getRoot();
     }
@@ -87,12 +113,6 @@ public class LogcatFragment extends Fragment {
                 Log.e(TAG, errorTips);
             }
         }
-    };
-
-    Runnable updateAppLabelTask = () -> {
-        AppInfoCache.refreshCache(requireContext());
-        String appLabel = AppInfoCache.getAppLabelString();
-        Utils.freezeitTask(Utils.setAppLabel, appLabel.getBytes(), appLabelHandler);
     };
 
     @Override

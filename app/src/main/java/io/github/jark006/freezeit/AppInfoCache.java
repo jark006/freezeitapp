@@ -73,11 +73,14 @@ public class AppInfoCache {
         }
     }
 
-    public static String getAppLabelString() {
+    public static byte[] getAppLabelBytes() {
         StringBuilder appLabel = new StringBuilder();
         synchronized (cacheInfo) {
-            cacheInfo.forEach((uid, info) -> appLabel.append(uid).append(" ").append(info.label).append('\n'));
+            cacheInfo.forEach((uid, info) -> {
+                if (!info.packName.equals(info.label))
+                    appLabel.append(uid).append(" ").append(info.label).append('\n');
+            });
         }
-        return appLabel.toString();
+        return appLabel.toString().getBytes();
     }
 }

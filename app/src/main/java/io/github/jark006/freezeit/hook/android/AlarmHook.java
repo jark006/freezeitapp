@@ -46,7 +46,7 @@ public class AlarmHook {
             while (iterator.hasNext()) {
                 Object Alarm = iterator.next(); //迭代器后移，再返回新位置的元素
                 int uid = XposedHelpers.getIntField(Alarm, Enum.Field.uid);
-                if (!config.thirdApp.contains(uid) || config.whitelist.contains(uid))
+                if (uid < 10000 || !config.managedApp.contains(uid) || config.whitelist.contains(uid))
                     continue;
 
                 iterator.remove();

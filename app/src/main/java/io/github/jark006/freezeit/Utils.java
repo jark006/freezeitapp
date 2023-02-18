@@ -16,6 +16,9 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.ImageView;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.LayoutRes;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,13 +43,11 @@ public class Utils {
     private static final String TAG = "Freezeit[Utils]";
 
     // 获取信息 无附加数据 No additional data required
-    public final static byte getStatus = 1;       // return string: "Freezeit is running"
     public final static byte getPropInfo = 2;     // return string: "ID\nName\nVersion\nVersionCode\nAuthor\nClusterNum"
     public final static byte getChangelog = 3;    // return string: "changelog"
     public final static byte getLog = 4;          // return string: "log"
     public final static byte getAppCfg = 5;       // return string: "uid cfg isTolerant\n..."   "包名 配置 宽松\n..." <uid, <cfg, isTolerant>>
     public final static byte getRealTimeInfo = 6; // return bytes[rawBitmap+String]: (rawBitmap+内存 频率 使用率 电流)
-    public final static byte getProcessInfo = 7;  // return string: "process cpu(%) mem(MB)\nprocess cpu(%) mem(MB)\nprocess cpu(%) mem(MB)\n..."
     public final static byte getSettings = 8;     // return bytes[256]: all settings parameter
     public final static byte getUidTime = 9;      // return "uid x x x x\n..."
 
@@ -54,11 +55,6 @@ public class Utils {
     public final static byte setAppCfg = 21;      // send "uid cfg isTolerant\n..." see CMD:getAppCfg
     public final static byte setAppLabel = 22;    // send "uid label\n..."
     public final static byte setSettingsVar = 23; // send bytes[2]: [0]index [1]value
-
-    // 进程管理 需附加数据
-    public final static byte killPid = 41;        // send string: "1234"  //pid num
-    public final static byte killApp = 42;        // send string: "packageName"
-    public final static byte discharged = 43;     // send string: "packageName"  //临时放行后台
 
     // 其他命令 无附加数据 No additional data required
     public final static byte clearLog = 61;         // return string: "log" //清理并返回log
@@ -69,7 +65,6 @@ public class Utils {
         // dataHeader[4]: 命令(可参考上面)
         // dataHeader[5]: 附带数据的异或校验值
         byte[] dataHeader = {0, 0, 0, 0, command, 0};
-        byte[] responseBuf = null;
         try {
             var socket = new Socket();
             socket.connect(new InetSocketAddress("127.0.0.1", 60613), 3000);
@@ -97,41 +92,42 @@ public class Utils {
 
             os.flush();
 
-            if (handler != null) {
-                int receiveLen = is.read(dataHeader, 0, 6);
-                if (receiveLen != 6) {
-                    Log.e(TAG, "Receive dataHeader Fail, receiveLen:" + receiveLen);
+            if (handler == null) {
+                socket.close();
+                return;
+            }
+
+            int receiveLen = is.read(dataHeader, 0, 6);
+            if (receiveLen != 6) {
+                Log.e(TAG, "Receive dataHeader Fail, receiveLen:" + receiveLen);
+                socket.close();
+                handler.sendMessage(new Message());
+                return;
+            }
+
+            int payloadLen = Byte2Int(dataHeader, 0);
+            var responseBuf = new byte[payloadLen];
+            int readCnt = 0;
+            while (readCnt < payloadLen) { //欲求不满
+                int cnt = is.read(responseBuf, readCnt, payloadLen - readCnt);
+                if (cnt < 0) {
+                    Log.e(TAG, "Get payload Fail");
                     socket.close();
+                    handler.sendMessage(new Message());
                     return;
                 }
-
-                int payloadLen = Byte2Int(dataHeader, 0);
-
-                responseBuf = new byte[payloadLen];
-
-                int readCnt = 0;
-                while (readCnt < payloadLen) { //欲求不满
-                    int cnt = is.read(responseBuf, readCnt, payloadLen - readCnt);
-                    if (cnt < 0) {
-                        Log.e(TAG, "Get payload Fail");
-                        socket.close();
-                        return;
-                    }
-                    readCnt += cnt;
-                }
+                readCnt += cnt;
             }
             socket.close();
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if (handler != null) {
             Message msg = new Message();
             Bundle data = new Bundle();
             data.putByteArray("response", responseBuf);
             msg.setData(data);
             handler.sendMessage(msg);
+        } catch (IOException e) {
+            if (handler != null)
+                handler.sendMessage(new Message());
         }
     }
 
@@ -183,10 +179,16 @@ public class Utils {
         handler.sendMessage(msg);
     }
 
-    public static void imgDialog(Context context, int drawableID) {
+    public static void imgDialog(Context context, @DrawableRes int drawableID) {
         Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.img_dialog);
         ((ImageView) dialog.findViewById(R.id.img)).setImageResource(drawableID);
+        dialog.show();
+    }
+
+    public static void layoutDialog(Context context, @LayoutRes int layoutId) {
+        Dialog dialog = new Dialog(context);
+        dialog.setContentView(layoutId);
         dialog.show();
     }
 
