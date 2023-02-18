@@ -1,66 +1,70 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="320dp"
     android:layout_height="wrap_content"
-    android:padding="20dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="20dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        tools:ignore="UseCompoundDrawables">
 
         <ImageView
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:padding="15dp"
             android:background="@drawable/ic_circle_24dp"
-            android:src="@drawable/ic_update_label_24dp"
-            android:contentDescription="@string/icon" />
+            android:contentDescription="@string/icon"
+            android:padding="15dp"
+            android:src="@drawable/ic_update_label_24dp" />
 
         <TextView
-            android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="@string/help_logcat_update"/>
+            android:gravity="center"
+            android:text="@string/help_logcat_update" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        tools:ignore="UseCompoundDrawables">
 
         <ImageView
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:padding="15dp"
             android:background="@drawable/ic_circle_24dp"
-            android:src="@drawable/ic_check_freezer_24dp"
-            android:contentDescription="@string/icon" />
+            android:contentDescription="@string/icon"
+            android:padding="15dp"
+            android:src="@drawable/ic_check_freezer_24dp" />
 
         <TextView
-            android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="@string/help_logcat_check"/>
+            android:gravity="center"
+            android:text="@string/help_logcat_check" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        tools:ignore="UseCompoundDrawables">
 
         <ImageView
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:padding="15dp"
             android:background="@drawable/ic_circle_24dp"
-            android:src="@drawable/ic_clear_log_24dp"
-            android:contentDescription="@string/icon" />
+            android:contentDescription="@string/icon"
+            android:padding="15dp"
+            android:src="@drawable/ic_clear_log_24dp" />
 
         <TextView
-            android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="@string/help_logcat_clear"/>
+            android:gravity="center"
+            android:text="@string/help_logcat_clear" />
     </LinearLayout>
 </LinearLayout>

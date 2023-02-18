@@ -4,12 +4,12 @@
 
     <item
         android:id="@+id/update_label"
+        android:icon="@drawable/ic_update_label_24dp"
         android:title="@string/update_app_label"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_update_label_24dp"/>
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/help_log"
+        android:icon="@drawable/ic_help_24dp"
         android:title="@string/help"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_help_24dp"/>
+        app:showAsAction="always" />
 </menu>

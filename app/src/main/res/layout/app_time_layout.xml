@@ -8,9 +8,9 @@
         android:id="@+id/app_icon"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        android:padding="10dp"
         android:layout_gravity="center"
-        android:contentDescription="@string/icon"/>
+        android:contentDescription="@string/icon"
+        android:padding="10dp" />
 
     <TextView
         android:id="@+id/app_label"
@@ -41,9 +41,9 @@
                 android:layout_height="wrap_content"
                 android:gravity="end"
                 android:singleLine="true"
-                android:typeface="monospace"
+                android:text="@string/todo"
                 android:textColor="?attr/colorSecondary"
-                android:text="@string/todo" />
+                android:typeface="monospace" />
 
             <TextView
                 android:id="@+id/sysTimeDelta"
@@ -51,18 +51,18 @@
                 android:layout_height="wrap_content"
                 android:gravity="end"
                 android:singleLine="true"
-                android:typeface="monospace"
+                android:text="@string/todo"
                 android:textColor="?attr/colorSecondary"
-                android:text="@string/todo" />
+                android:typeface="monospace" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:paddingHorizontal="10dp"
             android:gravity="center_vertical"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingHorizontal="10dp">
 
             <TextView
                 android:id="@+id/userTimeSum"
@@ -70,8 +70,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="end"
                 android:singleLine="true"
-                android:typeface="monospace"
-                android:text="@string/todo" />
+                android:text="@string/todo"
+                android:typeface="monospace" />
 
             <TextView
                 android:id="@+id/sysTimeSum"
@@ -79,8 +79,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:singleLine="true"
-                android:typeface="monospace"
-                android:text="@string/todo" />
+                android:text="@string/todo"
+                android:typeface="monospace" />
 
         </LinearLayout>
 

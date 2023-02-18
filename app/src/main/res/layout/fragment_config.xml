@@ -15,7 +15,7 @@
             android:id="@+id/recyclerviewApp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingHorizontal="@dimen/width_margin"/>
+            android:paddingHorizontal="@dimen/width_margin" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -25,8 +25,8 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="@dimen/fab_margin"
-        android:contentDescription="@string/icon"
         android:alpha="0.75"
+        android:contentDescription="@string/icon"
         app:backgroundTint="@color/float_button"
         app:layout_constraintBottom_toTopOf="@+id/fabConvertTolerant"
         app:layout_constraintRight_toRightOf="parent"
@@ -38,8 +38,8 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="@dimen/fab_margin"
-        android:contentDescription="@string/icon"
         android:alpha="0.75"
+        android:contentDescription="@string/icon"
         app:backgroundTint="@color/float_button"
         app:layout_constraintBottom_toTopOf="@+id/fabConvertCfg"
         app:layout_constraintRight_toRightOf="parent"
@@ -51,8 +51,8 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="@dimen/fab_margin"
-        android:contentDescription="@string/icon"
         android:alpha="0.75"
+        android:contentDescription="@string/icon"
         app:backgroundTint="@color/float_button"
         app:layout_constraintBottom_toTopOf="@+id/fabSave"
         app:layout_constraintRight_toRightOf="parent"
@@ -64,8 +64,8 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="@dimen/fab_margin"
-        android:contentDescription="@string/icon"
         android:alpha="0.75"
+        android:contentDescription="@string/icon"
         app:backgroundTint="@color/float_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"

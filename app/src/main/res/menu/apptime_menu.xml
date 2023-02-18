@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/help_task"
+        android:icon="@drawable/ic_help_24dp"
         android:title="@string/help"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_help_24dp"/>
+        app:showAsAction="ifRoom" />
 </menu>
