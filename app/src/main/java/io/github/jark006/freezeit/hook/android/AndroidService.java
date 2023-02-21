@@ -2,9 +2,7 @@ package io.github.jark006.freezeit.hook.android;
 
 import static io.github.jark006.freezeit.hook.XpUtils.log;
 
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
 import android.net.LocalServerSocket;
 import android.os.Build;
 import android.os.Handler;
@@ -54,11 +52,10 @@ public class AndroidService {
     // 实为 WindowManagerService 的 mRoot
     // 引用到 ActivityTaskManagerService 的 mRootWindowContainer
     Object mRootWindowContainer;
-    //A12+ https://cs.android.com/android/platform/superproject/+/android-mainline-12.0.0_r100:frameworks/base/services/core/java/com/android/server/wm/RootWindowContainer.java;drc=8b7e0c52e883475bd78a4bd1e0ad05c2f3941704;l=2522
-    Method getAllRootTaskInfosMethod; // ArrayList<RootTaskInfo> getAllRootTaskInfos(int displayId) {}
 
-    //A11 https://cs.android.com/android/platform/superproject/+/android-mainline-11.0.0_r19:frameworks/base/services/core/java/com/android/server/wm/RootWindowContainer.java;drc=35cd1a6a87f9f8000f6167da9432a2a1132d29c5;l=2501
-    Method getAllStackInfosMethod;    // ArrayList<ActivityManager.StackInfo> getAllStackInfos(int displayId){}
+    //A12+ https://cs.android.com/android/platform/superproject/+/android-mainline-12.0.0_r100:frameworks/base/services/core/java/com/android/server/wm/RootWindowContainer.java;l=2522
+    //A11- https://cs.android.com/android/platform/superproject/+/android-mainline-11.0.0_r19:frameworks/base/services/core/java/com/android/server/wm/RootWindowContainer.java;l=2501
+    Method windowsStackMethod;
 
     Object mNetdService;
     Class<?> UidRangeParcelClazz;
@@ -80,16 +77,13 @@ public class AndroidService {
         }, Enum.Class.ActivityManagerService, Context.class, Enum.Class.ActivityTaskManagerService);
 
 
-        // A12-A13
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            getAllRootTaskInfosMethod = XposedHelpers.findMethodExactIfExists(
-                    Enum.Class.RootWindowContainer, lpParam.classLoader, Enum.Method.getAllRootTaskInfos, int.class);
-            log(WIN_TAG, "Init getAllRootTaskInfosMethod " + ((getAllRootTaskInfosMethod == null ? "fail" : "success")));
-        } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) {
-            getAllStackInfosMethod = XposedHelpers.findMethodExactIfExists(
-                    Enum.Class.RootWindowContainer, lpParam.classLoader, Enum.Method.getAllStackInfos, int.class);
-            log(WIN_TAG, "Init getAllStackInfosMethod " + ((getAllStackInfosMethod == null ? "fail" : "success")));
-        }
+        windowsStackMethod = XposedHelpers.findMethodExactIfExists(
+                Enum.Class.RootWindowContainer, lpParam.classLoader,
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ?
+                        Enum.Method.getAllRootTaskInfos : Enum.Method.getAllStackInfos,
+                int.class);
+        log(WIN_TAG, "Init windowsStackMethod " + ((windowsStackMethod == null ? "fail" : "success")));
+
         // A13 RootWindowContainer
         // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/wm/RootWindowContainer.java
         XpUtils.hookConstructor(WIN_TAG, lpParam.classLoader, new XC_MethodHook() {
@@ -180,7 +174,7 @@ public class AndroidService {
                     client.setSoTimeout(100);
                     var is = client.getInputStream();
 
-                    int recvLen = is.read(buff, 0, 8);
+                    final int recvLen = is.read(buff, 0, 8);
                     if (recvLen != 8) {
                         log(TAG, "非法连接 接收长度 " + recvLen);
                         is.close();
@@ -189,7 +183,7 @@ public class AndroidService {
                     }
 
                     // 前4字节是请求码，后4字节是附加数据长度
-                    int requestCode = Utils.Byte2Int(buff, 0);
+                    final int requestCode = Utils.Byte2Int(buff, 0);
                     if (!requestCodeSet.contains(requestCode)) {
                         log(TAG, "非法请求码 " + requestCode);
                         is.close();
@@ -197,7 +191,7 @@ public class AndroidService {
                         continue;
                     }
 
-                    int payloadLen = Utils.Byte2Int(buff, 4);
+                    final int payloadLen = Utils.Byte2Int(buff, 4);
                     if (payloadLen > 0) {
                         if (buff.length <= payloadLen) {
                             log(TAG, "数据量超过承载范围 " + payloadLen);
@@ -261,8 +255,8 @@ public class AndroidService {
                 var processRecord = mLruProcesses.get(i);
                 if (processRecord == null) continue;
 
-                int uid = XposedHelpers.getIntField(processRecord, "uid");
-                if (uid < 10000 || !config.managedApp.contains(uid) || config.whitelist.contains(uid))
+                final int uid = XposedHelpers.getIntField(processRecord, "uid");
+                if (!config.managedApp.contains(uid) || config.whitelist.contains(uid))
                     continue;
 
                 int mCurProcState;
@@ -279,54 +273,36 @@ public class AndroidService {
                 if (mCurProcState == 2 || mCurProcState == 3 ||
                         (4 <= mCurProcState && mCurProcState <= 6 && config.tolerant.contains(uid)))
                     config.foregroundUid.add(uid);
-//                else if (mCurProcState == 19) {  // CacheEmpty
-//                    String processName = (String) XposedHelpers.getObjectField(processRecord, "processName");
-//                    if (processName != null && processName.contains(":")) {
-//                        int mPid = XposedHelpers.getIntField(processRecord, "mPid");
-//                        config.cacheEmptyPid.add(mPid);
-//                    }
-//                }
             }
 
-            if (config.isExtendFg()) {
-                // 某些系统(COS11/12)有特殊白名单，会把QQ或某些游戏的 mCurProcState 设为 0(系统常驻进程专有状态)，无论该应用在前/后台
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    if (getAllRootTaskInfosMethod != null && mRootWindowContainer != null) {
-                        List<?> tasks = (List<?>) getAllRootTaskInfosMethod.invoke(mRootWindowContainer, -1);
-                        if (tasks != null) {
-                            for (Object info : tasks) { // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/app/ActivityTaskManager.java;l=503
-                                boolean visible = XposedHelpers.getBooleanField(info, "visible");
-                                if (!visible) continue;
+            // 某些系统(COS11/12)及Thanox的后台保护机制，会把某些应用或游戏的 mCurProcState 设为 0(系统常驻进程专有状态)
+            if (config.isExtendFg() && windowsStackMethod != null && mRootWindowContainer != null) {
+                var rootTaskInfoList = (List<?>) windowsStackMethod.invoke(mRootWindowContainer, -1);
+                if (rootTaskInfoList != null) {
+                    // A12 https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/app/ActivityTaskManager.java;l=503
+                    // A11 https://cs.android.com/android/platform/superproject/+/android-mainline-11.0.0_r13:frameworks/base/core/java/android/app/ActivityManager.java;l=2816
+                    for (Object info : rootTaskInfoList) {
+                        boolean visible = XposedHelpers.getBooleanField(info, "visible");
+                        if (!visible) continue;
 
-                                ApplicationInfo applicationInfo = (ApplicationInfo) XposedHelpers.getObjectField(
-                                        XposedHelpers.getObjectField(info, "topActivityInfo"), "applicationInfo");
-                                int uid = applicationInfo.uid;
-                                if (uid < 10000 || !config.managedApp.contains(uid) || config.whitelist.contains(uid))
-                                    continue;
-                                config.foregroundUid.add(uid);
+                        int uid = 0;
+                        var childTaskNames = (String[]) XposedHelpers.getObjectField(info,
+                                Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? "childTaskNames" : "taskNames");
+                        if (childTaskNames != null && childTaskNames.length > 0) {
+                            int pkgEndIdx = childTaskNames[0].indexOf('/'); // 只取首个 taskId
+                            if (pkgEndIdx > 0) {
+                                final String pkg = childTaskNames[0].substring(0, pkgEndIdx);
+                                uid = config.uidIndex.getOrDefault(pkg, 0);
                             }
                         }
-                    }
-                } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) {
-                    if (getAllStackInfosMethod != null && mRootWindowContainer != null) {
-                        //https://cs.android.com/android/platform/superproject/+/android-mainline-11.0.0_r13:frameworks/base/core/java/android/app/ActivityManager.java;l=2816
-                        List<?> tasks = (List<?>) getAllStackInfosMethod.invoke(mRootWindowContainer, -1);
-                        if (tasks != null) {
-                            for (Object info : tasks) {
-                                boolean visible = XposedHelpers.getBooleanField(info, "visible");
-                                if (!visible) continue;
 
-                                ComponentName topActivity = (ComponentName) XposedHelpers.getObjectField(info, "topActivity");
-                                int uid = config.uidIndex.getOrDefault(topActivity.getPackageName(), 0);
-                                if (uid < 10000 || !config.managedApp.contains(uid) || config.whitelist.contains(uid))
-                                    continue;
-                                config.foregroundUid.add(uid);
-                            }
-                        }
+                        if (!config.managedApp.contains(uid) || config.whitelist.contains(uid))
+                            continue;
+
+                        config.foregroundUid.add(uid);
                     }
                 }
             }
-
         } catch (Exception e) {
             log(FGD_TAG, "前台服务错误:" + e);
         }
@@ -334,12 +310,7 @@ public class AndroidService {
         // 开头的4字节放置UID的个数，往后每4个字节放一个UID  [小端]
         int payloadBytes = (config.foregroundUid.size() + 1) * 4;
         Utils.Int2Byte(config.foregroundUid.size(), replyBuff, 0);
-//        Utils.HashSet2Byte(config.foregroundUid, replyBuff, 4);
         config.foregroundUid.toBytes(replyBuff, 4);
-
-//        Utils.Int2Byte(config.cacheEmptyPid.size(), replyBuff, payloadBytes);
-//        Utils.HashSet2Byte(config.cacheEmptyPid, replyBuff, payloadBytes + 4);
-//        payloadBytes += (config.cacheEmptyPid.size() + 1) * 4;
 
         os.write(replyBuff, 0, payloadBytes);
         os.close();
@@ -349,7 +320,7 @@ public class AndroidService {
     // 0未知 1息屏 2亮屏 3Doze...
     void handleScreen(OutputStream os, byte[] replyBuff) throws Exception {
 /*
-        https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/view/Display.java;drc=fc06fc5cb18df9fa16b7a34bb0a8e6749d2e0bca;l=387
+        https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/view/Display.java;l=387
         enum DisplayStateEnum
         public static final int DISPLAY_STATE_UNKNOWN = 0;
         public static final int DISPLAY_STATE_OFF = 1;
@@ -461,13 +432,13 @@ public class AndroidService {
                 throw null;
             }
 
-            int uid = Utils.Byte2Int(buff, 0);
+            final int uid = Utils.Byte2Int(buff, 0);
             if (!config.managedApp.contains(uid)) {
                 log(WAK_TAG, "非法UID" + uid);
                 throw null;
             }
 
-            int mode = Utils.Byte2Int(buff, 4); // 1:ignore  3:default
+            final int mode = Utils.Byte2Int(buff, 4); // 1:ignore  3:default
             if (mode != WAKEUP_LOCK_IGNORE && mode != WAKEUP_LOCK_DEFAULT) {
                 log(WAK_TAG, "非法mode" + mode);
                 throw null;
@@ -495,7 +466,7 @@ public class AndroidService {
                 throw null;
             }
 
-            int uid = Utils.Byte2Int(buff, 0);
+            final int uid = Utils.Byte2Int(buff, 0);
             if (!config.managedApp.contains(uid)) {
                 log(NMS_TAG, "非法UID" + uid);
                 throw null;

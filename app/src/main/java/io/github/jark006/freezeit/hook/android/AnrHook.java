@@ -56,22 +56,23 @@ public class AnrHook {
         XpUtils.hookMethod(TAG, lpParam.classLoader, callbackServiceForegroundTimeout,
                 Enum.Class.ActiveServices, Enum.Method.serviceForegroundTimeout, Enum.Class.ServiceRecord);
 
-        // TODO 暂时忽略 ContentProvider Timeout 和 InputDispatching Timeout
+        // 忽略 ContentProvider Timeout 和 InputDispatching Timeout
     }
 
     // A12+ ProcessErrorStateRecord
     XC_MethodHook callbackErrorState = new XC_MethodHook() {
         @Override
         protected void beforeHookedMethod(MethodHookParam param) {
-            ApplicationInfo aInfo = (ApplicationInfo) param.args[1];
+            var aInfo = (ApplicationInfo) param.args[1];
             if (aInfo == null) return;
-            int uid = aInfo.uid;
-            if (uid < 10000 || !config.managedApp.contains(uid) || config.whitelist.contains(uid))
+            final int uid = aInfo.uid;
+            if (!config.managedApp.contains(uid) || config.whitelist.contains(uid))
                 return;
 
             param.setResult(null);
-//            XpUtils.log(TAG, "跳过ANR ErrorState:" + aInfo.packageName + " " +
-//            param.args[0] + " " + param.args[2]);
+            if (XpUtils.DEBUG_XPOSED)
+                XpUtils.log(TAG, "跳过ANR ErrorState:" + aInfo.packageName + " " +
+                        param.args[0] + " " + param.args[2]);
         }
     };
 
@@ -79,32 +80,33 @@ public class AnrHook {
     XC_MethodHook callbackAnrHelper = new XC_MethodHook() {
         @Override
         protected void beforeHookedMethod(MethodHookParam param) {
-            Object processRecord = param.args[0];
+            var processRecord = param.args[0];
             if (processRecord == null) return;
-            int uid = XposedHelpers.getIntField(processRecord, Enum.Field.uid);
-            if (uid < 10000 || !config.managedApp.contains(uid) || config.whitelist.contains(uid))
+            final int uid = XposedHelpers.getIntField(processRecord, Enum.Field.uid);
+            if (!config.managedApp.contains(uid) || config.whitelist.contains(uid))
                 return;
 
             param.setResult(null);
-//            XpUtils.log(TAG, "跳过ANR AnrHelper:" +
-//                    XposedHelpers.getObjectField(processRecord, Enum.Field.processName));
+            if (XpUtils.DEBUG_XPOSED)
+                XpUtils.log(TAG, "跳过ANR AnrHelper:" +
+                        XposedHelpers.getObjectField(processRecord, Enum.Field.processName));
         }
     };
-
 
     // A10-A13
     XC_MethodHook callbackServiceTimeout = new XC_MethodHook() {
         @Override
         protected void beforeHookedMethod(MethodHookParam param) {
-            Object processRecord = param.args[0];
+            var processRecord = param.args[0];
             if (processRecord == null) return;
-            int uid = XposedHelpers.getIntField(processRecord, Enum.Field.uid);
-            if (uid < 10000 || !config.managedApp.contains(uid) || config.whitelist.contains(uid))
+            final int uid = XposedHelpers.getIntField(processRecord, Enum.Field.uid);
+            if (!config.managedApp.contains(uid) || config.whitelist.contains(uid))
                 return;
 
             param.setResult(null);
-//            XpUtils.log(TAG, "跳过 ServiceTimeout: " +
-//                    XposedHelpers.getObjectField(processRecord, Enum.Field.processName));
+            if (XpUtils.DEBUG_XPOSED)
+                XpUtils.log(TAG, "跳过 ServiceTimeout: " +
+                        XposedHelpers.getObjectField(processRecord, Enum.Field.processName));
         }
     };
 
@@ -112,15 +114,16 @@ public class AnrHook {
     XC_MethodHook callbackServiceForegroundTimeout = new XC_MethodHook() {
         @Override
         protected void beforeHookedMethod(MethodHookParam param) {
-            Object serviceRecord = param.args[0];
+            var serviceRecord = param.args[0];
             if (serviceRecord == null) return;
-            int uid = XposedHelpers.getIntField(serviceRecord, Enum.Field.definingUid);
-            if (uid < 10000 || !config.managedApp.contains(uid) || config.whitelist.contains(uid))
+            final int uid = XposedHelpers.getIntField(serviceRecord, Enum.Field.definingUid);
+            if (!config.managedApp.contains(uid) || config.whitelist.contains(uid))
                 return;
 
             param.setResult(null);
-//            XpUtils.log(TAG, "跳过 ServiceForegroundTimeout: " +
-//                    XposedHelpers.getObjectField(serviceRecord, Enum.Field.packageName));
+            if (XpUtils.DEBUG_XPOSED)
+                XpUtils.log(TAG, "跳过 ServiceForegroundTimeout: " +
+                        XposedHelpers.getObjectField(serviceRecord, Enum.Field.packageName));
         }
     };
 }

@@ -49,11 +49,12 @@ public class LogcatFragment extends Fragment {
 
             @Override
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-                if ((System.currentTimeMillis() - lastTimestamp) < 500) {
+                var now = System.currentTimeMillis();
+                if ((now - lastTimestamp) < 1000) {
                     Toast.makeText(requireContext(), getString(R.string.slowly_tips), Toast.LENGTH_LONG).show();
                     return true;
                 }
-                lastTimestamp = System.currentTimeMillis();
+                lastTimestamp = now;
 
                 int id = menuItem.getItemId();
                 if (id == R.id.help_log)
@@ -70,21 +71,23 @@ public class LogcatFragment extends Fragment {
         }, this.getViewLifecycleOwner());
 
         binding.fabCheck.setOnClickListener(view -> {
-            if ((System.currentTimeMillis() - lastTimestamp) < 500) {
+            var now = System.currentTimeMillis();
+            if ((now - lastTimestamp) < 1000) {
                 Toast.makeText(requireContext(), getString(R.string.slowly_tips), Toast.LENGTH_LONG).show();
                 return;
             }
-            lastTimestamp = System.currentTimeMillis();
+            lastTimestamp = now;
 
             new Thread(() -> Utils.freezeitTask(Utils.printFreezerProc, null, handler)).start();
         });
 
         binding.fabClear.setOnClickListener(view -> {
-            if ((System.currentTimeMillis() - lastTimestamp) < 500) {
+            var now = System.currentTimeMillis();
+            if ((now - lastTimestamp) < 1000) {
                 Toast.makeText(requireContext(), getString(R.string.slowly_tips), Toast.LENGTH_LONG).show();
                 return;
             }
-            lastTimestamp = System.currentTimeMillis();
+            lastTimestamp = now;
 
             new Thread(() -> Utils.freezeitTask(Utils.clearLog, null, handler)).start();
         });
@@ -135,7 +138,7 @@ public class LogcatFragment extends Fragment {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                new Thread(() -> Utils.freezeitTask(Utils.getLog, null, handler)).start();
+                Utils.freezeitTask(Utils.getLog, null, handler);
             }
         }, 0, 3000);
     }

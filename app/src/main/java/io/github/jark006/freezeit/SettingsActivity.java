@@ -23,7 +23,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     TextView freezeTimeoutText, wakeupTimeoutText, terminateTimeoutText;
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")
-    Switch radicalFgSwitch, batterySwitch, currentSwitch, breakNetworkSwitch,
+    Switch batterySwitch, currentSwitch, breakNetworkSwitch,
             lmkSwitch, dozeSwitch, extendFgSwitch, moreWhitelistSwitch, dozeDebugSwitch;
 
     final int clusterBindIdx = 1;
@@ -32,8 +32,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     final int terminateTimeoutIdx = 4;
     final int freezeModeIdx = 5;
     final int reFreezeTimeoutIdx = 6;
-
-    final int radicalFgIdx = 10;
 
     final int batteryIdx = 13;
     final int currentIdx = 14;
@@ -46,7 +44,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     final int dozeDebugIdx = 30;
 
     byte[] settingsVar = new byte[256];
-    long lastTimestamp = System.currentTimeMillis();
+    long lastTimestamp = 0;
 
     int varIndexForHandle = 0;
     int newValueForHandle = 0;
@@ -62,7 +60,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         findViewById(R.id.refreeze_timeout_title).setOnClickListener(this);
         findViewById(R.id.terminate_timeout_title).setOnClickListener(this);
         findViewById(R.id.wakeup_timeout_title).setOnClickListener(this);
-        findViewById(R.id.radical_fg_title).setOnClickListener(this);
         findViewById(R.id.battery_title).setOnClickListener(this);
         findViewById(R.id.current_title).setOnClickListener(this);
         findViewById(R.id.break_network_title).setOnClickListener(this);
@@ -85,7 +82,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         wakeupTimeoutSeekbar = findViewById(R.id.seekBarWakeup);
         terminateTimeoutSeekbar = findViewById(R.id.seekBarTerminate);
 
-        radicalFgSwitch = findViewById(R.id.switch_radical_fg);
         batterySwitch = findViewById(R.id.switch_battery);
         currentSwitch = findViewById(R.id.switch_current);
         breakNetworkSwitch = findViewById(R.id.switch_break_network);
@@ -113,12 +109,13 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 if (settingsVar[idx] == spinnerPosition)
                     return;
 
-                if ((System.currentTimeMillis() - lastTimestamp) < 1000) {
+                var now = System.currentTimeMillis();
+                if ((now - lastTimestamp) < 1000) {
                     Toast.makeText(getBaseContext(), getString(R.string.slowly_tips), Toast.LENGTH_LONG).show();
                     spinner.setSelection(settingsVar[idx]);
                     return;
                 }
-                lastTimestamp = System.currentTimeMillis();
+                lastTimestamp = now;
 
                 varIndexForHandle = idx;
                 newValueForHandle = spinnerPosition;
@@ -154,13 +151,14 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 if (settingsVar[idx] == seekBar.getProgress())
                     return;
 
-                if ((System.currentTimeMillis() - lastTimestamp) < 1000) {
+                var now = System.currentTimeMillis();
+                if ((now - lastTimestamp) < 1000) {
                     Toast.makeText(getBaseContext(), getString(R.string.slowly_tips), Toast.LENGTH_SHORT).show();
                     seekBar.setProgress(settingsVar[idx]);//进度条，文字 恢复原值
                     textView.setText(String.valueOf(settingsVar[idx]));
                     return;
                 }
-                lastTimestamp = System.currentTimeMillis();
+                lastTimestamp = now;
 
                 varIndexForHandle = idx;
                 newValueForHandle = seekBar.getProgress();
@@ -180,12 +178,13 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             if (settingsVar[idx] == (isChecked ? 1 : 0))
                 return;
 
-            if ((System.currentTimeMillis() - lastTimestamp) < 1000) {
+            var now = System.currentTimeMillis();
+            if ((now - lastTimestamp) < 1000) {
                 Toast.makeText(getBaseContext(), getString(R.string.slowly_tips), Toast.LENGTH_LONG).show();
                 sw.setChecked(settingsVar[idx] != 0);
                 return;
             }
-            lastTimestamp = System.currentTimeMillis();
+            lastTimestamp = now;
 
             varIndexForHandle = idx;
             newValueForHandle = isChecked ? 1 : 0;
@@ -243,7 +242,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             InitSeekbar(wakeupTimeoutSeekbar, wakeupTimeoutText, wakeupTimeoutIdx);
             InitSeekbar(terminateTimeoutSeekbar, terminateTimeoutText, terminateTimeoutIdx);
 
-            InitSwitch(radicalFgSwitch, radicalFgIdx);
             InitSwitch(batterySwitch, batteryIdx);
             InitSwitch(currentSwitch, currentIdx);
             InitSwitch(breakNetworkSwitch, breakNetworkIdx);
@@ -271,8 +269,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             Utils.textDialog(this, R.string.terminate_timeout_title, R.string.terminate_timeout_tips);
         } else if (id == R.id.wakeup_timeout_title) {
             Utils.textDialog(this, R.string.wakeup_timeout_title, R.string.wakeup_timeout_tips);
-        } else if (id == R.id.radical_fg_title) {
-            Utils.textDialog(this, R.string.radical_fg_title, R.string.radical_fg_tips);
         } else if (id == R.id.battery_title) {
             Utils.textDialog(this, R.string.battery_title, R.string.battery_tips);
         } else if (id == R.id.current_title) {

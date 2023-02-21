@@ -31,6 +31,10 @@ public class AppInfoCache {
             this.forSearch = label.toLowerCase() + packName.toLowerCase() + uid;
             this.isSystemApp = isSystemApp;
         }
+
+        public boolean contains(final String keyWord){
+            return forSearch.contains(keyWord);
+        }
     }
 
     private final static HashMap<Integer, Info> cacheInfo = new HashMap<>();

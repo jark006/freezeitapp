@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.os.Build;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedHelpers;
@@ -38,19 +37,20 @@ public class AlarmHook {
             // Alarm
             // SDK31 https://cs.android.com/android/platform/superproject/+/android-12.0.0_r34:frameworks/base/apex/jobscheduler/service/java/com/android/server/alarm/Alarm.java
             // SDK30 https://cs.android.com/android/platform/superproject/+/android-11.0.0_r48:frameworks/base/services/core/java/com/android/server/AlarmManagerService.java;l=3636
-            ArrayList<?> triggerList = (ArrayList<?>) param.args[0];
+            var triggerList = (ArrayList<?>) param.args[0];
 
             // 注意：JAVA迭代器与C++不同，C++ item.begin() 指向首个元素
             // JAVA的迭代器初始状：指向首个元素的前一个位置
-            Iterator<?> iterator = triggerList.iterator();
+            var iterator = triggerList.iterator();
             while (iterator.hasNext()) {
-                Object Alarm = iterator.next(); //迭代器后移，再返回新位置的元素
-                int uid = XposedHelpers.getIntField(Alarm, Enum.Field.uid);
-                if (uid < 10000 || !config.managedApp.contains(uid) || config.whitelist.contains(uid))
+                var Alarm = iterator.next(); //迭代器后移，再返回新位置的元素
+                final int uid = XposedHelpers.getIntField(Alarm, Enum.Field.uid);
+                if (!config.managedApp.contains(uid) || config.whitelist.contains(uid))
                     continue;
 
                 iterator.remove();
-//                XpUtils.log(TAG, "清理Alarm: " + XposedHelpers.getObjectField(Alarm, Enum.Field.packageName));
+                if(XpUtils.DEBUG_XPOSED)
+                    XpUtils.log(TAG, "清理Alarm: " + XposedHelpers.getObjectField(Alarm, Enum.Field.packageName));
             }
         }
     };

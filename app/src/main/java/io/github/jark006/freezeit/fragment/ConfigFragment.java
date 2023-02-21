@@ -98,11 +98,13 @@ public class ConfigFragment extends Fragment {
         }, this.getViewLifecycleOwner());
 
         binding.fabSave.setOnClickListener(view -> {
-            if ((System.currentTimeMillis() - lastTimestamp) < 500) {
+            var now = System.currentTimeMillis();
+            if ((now - lastTimestamp) < 1000) {
                 Toast.makeText(requireContext(), getString(R.string.slowly_tips), Toast.LENGTH_LONG).show();
                 return;
             }
-            lastTimestamp = System.currentTimeMillis();
+            lastTimestamp = now;
+
             if (recycleAdapter != null) {
                 byte[] newConf = recycleAdapter.getCfgBytes();
                 new Thread(() -> Utils.freezeitTask(Utils.setAppCfg, newConf, setAppCfgHandler)).start();
@@ -110,11 +112,12 @@ public class ConfigFragment extends Fragment {
         });
 
         binding.fabConvertCfg.setOnClickListener(view -> {
-            if ((System.currentTimeMillis() - lastTimestamp) < 500) {
+            var now = System.currentTimeMillis();
+            if ((now - lastTimestamp) < 1000) {
                 Toast.makeText(requireContext(), getString(R.string.slowly_tips), Toast.LENGTH_LONG).show();
                 return;
             }
-            lastTimestamp = System.currentTimeMillis();
+            lastTimestamp = now;
 
             if (recycleAdapter != null) {
                 recycleAdapter.convertCfg();
@@ -122,11 +125,12 @@ public class ConfigFragment extends Fragment {
         });
 
         binding.fabConvertTolerant.setOnClickListener(view -> {
-            if ((System.currentTimeMillis() - lastTimestamp) < 500) {
+            var now = System.currentTimeMillis();
+            if ((now - lastTimestamp) < 1000) {
                 Toast.makeText(requireContext(), getString(R.string.slowly_tips), Toast.LENGTH_LONG).show();
                 return;
             }
-            lastTimestamp = System.currentTimeMillis();
+            lastTimestamp = now;
 
             if (recycleAdapter != null) {
                 recycleAdapter.convertTolerant();
@@ -134,11 +138,12 @@ public class ConfigFragment extends Fragment {
         });
 
         binding.fabSwitchSys.setOnClickListener(view -> {
-            if ((System.currentTimeMillis() - lastTimestamp) < 500) {
+            var now = System.currentTimeMillis();
+            if ((now - lastTimestamp) < 1000) {
                 Toast.makeText(requireContext(), getString(R.string.slowly_tips), Toast.LENGTH_LONG).show();
                 return;
             }
-            lastTimestamp = System.currentTimeMillis();
+            lastTimestamp = now;
 
             if (recycleAdapter != null) {
                 recycleAdapter.switchAppType();
@@ -286,23 +291,18 @@ public class ConfigFragment extends Fragment {
 
     public static class AppCfgAdapter extends RecyclerView.Adapter<AppCfgAdapter.MyViewHolder> {
         private final ArrayList<Integer> uidList;
-        private ArrayList<Integer> uidListFilter;
+        private final ArrayList<Integer> uidListFilter = new ArrayList<>(200);
         private final HashMap<Integer, Pair<Integer, Integer>> appCfg; //<uid, <freezeMode, tolerant>>
         boolean showSystemApp = false;
-        int userAppSize;
-        int sysAppSize;
 
         public AppCfgAdapter(ArrayList<Integer> uidList, HashMap<Integer, Pair<Integer, Integer>> appCfg) {
             this.uidList = uidList;
             this.appCfg = appCfg;
 
-            uidListFilter = new ArrayList<>(200);
             for (int uid : uidList) {
-                if (AppInfoCache.get(uid).isSystemApp == showSystemApp)
+                if (!AppInfoCache.get(uid).isSystemApp == showSystemApp)
                     uidListFilter.add(uid);
             }
-            userAppSize = uidListFilter.size();
-            sysAppSize = uidList.size() - userAppSize;
         }
 
         @NonNull
@@ -406,19 +406,11 @@ public class ConfigFragment extends Fragment {
 
         @SuppressLint("NotifyDataSetChanged")
         public void filter(@NonNull final String keyWord) {
-            if (keyWord.length() == 0) {
-                uidListFilter = new ArrayList<>(100);
-                for (int uid : uidList) {
-                    if (AppInfoCache.get(uid).isSystemApp == showSystemApp)
-                        uidListFilter.add(uid);
-                }
-            } else {
-                uidListFilter = new ArrayList<>(100);
-                for (int uid : uidList) {
-                    if (AppInfoCache.get(uid).isSystemApp == showSystemApp &&
-                            AppInfoCache.get(uid).forSearch.contains(keyWord))
-                        uidListFilter.add(uid);
-                }
+            uidListFilter.clear();
+            for (int uid : uidList) {
+                if (AppInfoCache.get(uid).isSystemApp == showSystemApp &&
+                        (keyWord.length() == 0 || AppInfoCache.get(uid).contains(keyWord)))
+                    uidListFilter.add(uid);
             }
             notifyDataSetChanged();
         }
@@ -480,7 +472,7 @@ public class ConfigFragment extends Fragment {
         public void switchAppType() {
             showSystemApp = !showSystemApp;
 
-            uidListFilter = new ArrayList<>(showSystemApp ? sysAppSize : userAppSize);
+            uidListFilter.clear();
             for (int uid : uidList) {
                 if (AppInfoCache.get(uid).isSystemApp == showSystemApp)
                     uidListFilter.add(uid);

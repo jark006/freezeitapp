@@ -48,16 +48,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     Timer timer;
     ActivityManager am;
-    ActivityManager.MemoryInfo memoryInfo;
+    ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
 
     final int realTimeInfoIntLen = 23;
     int[] realTimeInfo = new int[realTimeInfoIntLen]; //ARM64和X64  Native层均为小端
+    byte[] realTimeRequest = new byte[12];
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         am = (ActivityManager) requireActivity().getSystemService(ACTIVITY_SERVICE);
-        memoryInfo = new ActivityManager.MemoryInfo();
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
 
@@ -86,39 +86,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
         }, this.getViewLifecycleOwner());
 
-        if (StaticData.imgWidth == 0 || StaticData.imgHeight == 0) {
-            binding.cpuImg.getViewTreeObserver().addOnGlobalLayoutListener(
-                    new ViewTreeObserver.OnGlobalLayoutListener() {
-                        @Override
-                        public void onGlobalLayout() {
-                            int width, height;
-                            width = binding.cpuImg.getWidth() / StaticData.imgScale;
-                            height = binding.cpuImg.getHeight() / StaticData.imgScale;
-
-                            while (width * height > 1024 * 1024) { // RGBA 最多预留 4MiB 用于绘图
-                                StaticData.imgScale++;
-                                width = binding.cpuImg.getWidth() / StaticData.imgScale;
-                                height = binding.cpuImg.getHeight() / StaticData.imgScale;
-                            }
-                            StaticData.imgWidth = width;
-                            StaticData.imgHeight = height;
-
-                            binding.cpuImg.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                            new Thread(realTimeTask).start();
-                        }
-                    });
-        } else {
-            new Thread(realTimeTask).start();
-        }
-
-        if (StaticData.hasGetPropInfo) statusHandler.sendMessage(new Message());
-        else new Thread(() -> Utils.freezeitTask(Utils.getPropInfo, null,
-                statusHandler)).start();
-
-        if (StaticData.hasGetUpdateInfo) checkUpdateHandler.sendMessage(new Message());
-        else new Thread(() -> Utils.getData(getString(R.string.update_json_link),
-                checkUpdateHandler)).start();
-
         binding.swipeRefreshLayout.setOnRefreshListener(() -> new Thread(() -> {
             StaticData.hasGetUpdateInfo = false;
             StaticData.onlineChangelog = "";
@@ -131,22 +98,21 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onPause() {
         super.onPause();
-        timer.cancel();
+        if (timer != null)
+            timer.cancel();
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (StaticData.imgHeight == 0 || StaticData.imgWidth == 0)
-                    return;
-                new Thread(realTimeTask).start();
-            }
-        }, 2000, 3000);
+        if (StaticData.hasGetPropInfo) statusHandler.sendMessage(new Message());
+        else new Thread(() -> Utils.freezeitTask(Utils.getPropInfo, null,
+                statusHandler)).start();
+
+        if (StaticData.hasGetUpdateInfo) checkUpdateHandler.sendMessage(new Message());
+        else new Thread(() -> Utils.getData(getString(R.string.update_json_link),
+                checkUpdateHandler)).start();
     }
 
     @Override
@@ -229,17 +195,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
     };
 
-    Runnable realTimeTask = () -> {
-        byte[] payload = new byte[12];
-        Utils.Int2Byte(StaticData.imgHeight, payload, 0);
-        Utils.Int2Byte(StaticData.imgWidth, payload, 4);
-
-        am.getMemoryInfo(memoryInfo); // 底层 /proc/meminfo 的 MemAvailable 不可靠
-        Utils.Int2Byte((int) (memoryInfo.availMem >> 20), payload, 8); //Unit: MiB
-
-        Utils.freezeitTask(Utils.getRealTimeInfo, payload, realTimeHandler);
-    };
-
     private final Handler statusHandler = new Handler(Looper.getMainLooper()) {
         @SuppressLint({"SetTextI18n", "DefaultLocale"})
         @Override
@@ -275,6 +230,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 StaticData.hasGetPropInfo = true;
             }
 
+            binding.realtimeLayout.setVisibility(View.VISIBLE);
+            binding.freezeitLogo.setVisibility(View.VISIBLE);
+
             switch (StaticData.clusterNum) {
                 case 3: // 4+3+1
                     binding.cpu4.setTextColor(getColor(requireContext(), R.color.cpu_mid));
@@ -302,9 +260,56 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             if (!xposedState) statusStr.append(' ').append(getString(R.string.xposed_warn));
 
             binding.statusText.setText(statusStr);
+
+            InitRealTimeTask();
         }
     };
 
+    void InitRealTimeTask() {
+        if (StaticData.imgWidth != 0 && StaticData.imgHeight != 0) {
+            InitTimer();
+            return;
+        }
+
+        var listener = new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                int width = binding.cpuImg.getWidth() / StaticData.imgScale;
+                int height = binding.cpuImg.getHeight() / StaticData.imgScale;
+
+                while (width * height > 1024 * 1024) { // RGBA 最多预留 4MiB 用于绘图
+                    StaticData.imgScale++;
+                    width = binding.cpuImg.getWidth() / StaticData.imgScale;
+                    height = binding.cpuImg.getHeight() / StaticData.imgScale;
+                }
+                StaticData.imgWidth = width;
+                StaticData.imgHeight = height;
+
+                binding.cpuImg.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                InitTimer();
+            }
+        };
+        binding.cpuImg.getViewTreeObserver().addOnGlobalLayoutListener(listener);
+    }
+
+    void InitTimer() {
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (StaticData.imgHeight == 0 || StaticData.imgWidth == 0)
+                    return;
+
+                Utils.Int2Byte(StaticData.imgHeight, realTimeRequest, 0);
+                Utils.Int2Byte(StaticData.imgWidth, realTimeRequest, 4);
+
+                am.getMemoryInfo(memoryInfo); // 底层 /proc/meminfo 的 MemAvailable 不可靠
+                Utils.Int2Byte((int) (memoryInfo.availMem >> 20), realTimeRequest, 8); //Unit: MiB
+
+                Utils.freezeitTask(Utils.getRealTimeInfo, realTimeRequest, realTimeHandler);
+            }
+        }, 0, 3000);
+    }
 
     private final Handler checkUpdateHandler = new Handler(Looper.getMainLooper()) {
         @SuppressLint({"SetTextI18n", "DefaultLocale"})
@@ -334,6 +339,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
 
             if (StaticData.onlineVersionCode > StaticData.moduleVersionCode) {
+                binding.downloadButton.setVisibility(View.VISIBLE);
                 binding.changelogLayout.setVisibility(View.VISIBLE);
                 String tmp = requireContext().getString(StaticData.moduleVersionCode == 0 ?
                         R.string.online_version : R.string.new_version) + " " + StaticData.onlineVersion;
@@ -359,6 +365,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     binding.changelogText.setText(StaticData.localChangelog);
                 else
                     new Thread(() -> Utils.freezeitTask(Utils.getChangelog, null, localChangelogHandler)).start();
+            } else {
+                if (StaticData.moduleVersionCode != 0)
+                    binding.changelogLayout.setVisibility(View.GONE);
             }
         }
     };

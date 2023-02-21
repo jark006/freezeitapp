@@ -35,26 +35,28 @@ public class BroadCastHook {
         public void beforeHookedMethod(MethodHookParam param) {
 
             // BroadcastFilter https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/am/BroadcastFilter.java
-            int uid = XposedHelpers.getIntField(param.args[1], Enum.Field.owningUid); // receiverUid
+            final int uid = XposedHelpers.getIntField(param.args[1], Enum.Field.owningUid); // receiverUid
 
             // 若是 [系统应用] [自由后台] [在顶层前台] 则不清理广播
-            if (uid < 10000 || !config.managedApp.contains(uid) || config.whitelist.contains(uid) || config.foregroundUid.contains(uid))
+            if (!config.managedApp.contains(uid) || config.whitelist.contains(uid) || config.foregroundUid.contains(uid))
                 return;
 
-            // BroadcastRecord https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/am/BroadcastRecord.java
-//            Object broadcastRecord = param.args[0];
-//            int callerUid = (int) XposedHelpers.getObjectField(broadcastRecord, Enum.Field.callingUid);
-
             final int DELIVERY_SKIPPED = 2;  // BroadcastRecord.DELIVERY_SKIPPED == 2;
-            int index = (int) param.args[3];
+            final int index = (int) param.args[3];
             int[] delivery = (int[]) XposedHelpers.getObjectField(param.args[0], "delivery");
             delivery[index] = DELIVERY_SKIPPED;
+
             param.setResult(null);
-//            XpUtils.log(TAG, "跳过广播: " +
-//                    config.pkgIndex.getOrDefault(callerUid, String.valueOf(callerUid)) +
-//                    " 发往 " +
-//                    config.pkgIndex.getOrDefault(receiverUid, String.valueOf(receiverUid))
-//            );
+            if (XpUtils.DEBUG_XPOSED) {
+                // BroadcastRecord https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/am/BroadcastRecord.java
+                Object broadcastRecord = param.args[0];
+                int callerUid = (int) XposedHelpers.getObjectField(broadcastRecord, Enum.Field.callingUid);
+                XpUtils.log(TAG, "跳过广播: " +
+                        config.pkgIndex.getOrDefault(callerUid, String.valueOf(callerUid)) +
+                        " 发往 " +
+                        config.pkgIndex.getOrDefault(uid, String.valueOf(uid))
+                );
+            }
         }
     };
 }

@@ -30,10 +30,10 @@
 
     <string-array name="work_mode">
         <item>全局SIGSTOP</item>
-        <item>V1(uid)</item>
-        <item>V1(frozen)</item>
-        <item>V2(uid)</item>
-        <item>V2(frozen)</item>
+        <item>V1(FROZEN)</item>
+        <item>V1(FRZ+ST)</item>
+        <item>V2(UID)</item>
+        <item>V2(FROZEN)</item>
         <item>自动选择</item>
     </string-array>
 

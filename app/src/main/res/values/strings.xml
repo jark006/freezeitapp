@@ -30,9 +30,9 @@
     <string name="github_rel_link" translatable="false">https://github.com/jark006/freezeitRelease</string>
     <string name="github_app_link" translatable="false">https://github.com/jark006/freezeitapp</string>
     <string name="lanzou_link" translatable="false">https://jark006.lanzout.com/b017oz9if</string>
-    <string name="tutorial_link" translatable="false">https://jark006.gitee.io/FreezeitIntroduction/</string>
-    <string name="update_json_link" translatable="false">https://raw.fastgit.org/jark006/freezeitRelease/master/update.json</string>
-    <string name="online_changelog_link" translatable="false">https://raw.fastgit.org/jark006/freezeitRelease/main/changelogFull.txt</string>
+    <string name="tutorial_link">https://jark006.gitee.io/FreezeitIntroduction/</string>
+    <string name="update_json_link">https://raw.fastgit.org/jark006/freezeitRelease/master/update.json</string>
+    <string name="online_changelog_link">https://raw.fastgit.org/jark006/freezeitRelease/main/changelogFull.txt</string>
 
     <string name="communityTitle">社区交流</string>
     <string name="coolapk_text">酷安 @JARK006</string>
@@ -49,7 +49,7 @@
     <string name="magisk_offline">Magisk 未安装或未运行</string>
     <string name="xposed_online">LSPosed</string>
     <string name="xposed_offline">LSPosed未激活</string>
-    <string name="xposed_warn">未激活\n警告：不激活则无法工作</string>
+    <string name="xposed_warn">未激活,无法工作</string>
     <string name="freezeit_offline">冻它未启用或工作异常</string>
     <string name="freezeit_error_tips">
 1.进入桌面1分钟后才启动，请稍后再打开。\n
@@ -109,7 +109,9 @@
         内核4.9及以下仅支持V1。\n
         内核4.14~4.19支持V1和不完整V2(默认不开启，可尝试使用模块进行挂载)。\n
         内核5.4起支持完整版V2。\n
-        frozen和uid模式仅路径不同，差别不大，建议优先使用frozen。设置重启生效</string>
+        V1(FRZ+ST)为FreezerV1和SIGSTOP双重冻结(实验性)，用于解决V1冻结延迟或失效问题。
+        V2(FROZEN)相对稳定，而V2(UID)有概率因cgroup/Freezer子系统反应不及时导致冻结失效。
+        一般自动选择即可，设置重启生效</string>
 
     <string name="refreeze_timeout_title">定时压制 ⓘ</string>
     <string name="refreeze_timeout_tips">
