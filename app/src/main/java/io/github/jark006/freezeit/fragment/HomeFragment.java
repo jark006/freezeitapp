@@ -384,7 +384,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
             var split = new String(response).split("###");
             if (split.length > 1 && split[1].length() > 2)
-                StaticData.onlineChangelog = split[1];
+                StaticData.onlineChangelog = split[1].trim();
 
             binding.changelogText.setText(StaticData.onlineChangelog);
         }
@@ -402,7 +402,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
             var split = new String(response).split("###");
             if (split.length > 2 && split[1].length() > 2)
-                StaticData.localChangelog = split[1];
+                StaticData.localChangelog = split[1].trim();
 
             binding.changelogText.setText(StaticData.localChangelog);
         }

@@ -17,7 +17,7 @@ android {
         applicationId "io.github.jark006.freezeit"
         minSdk 29
         targetSdk 33
-        versionCode 203000 // v2.3.0起，版本代号不再更新，开放随意升、降级
+        versionCode 205020
         versionName "2.5.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

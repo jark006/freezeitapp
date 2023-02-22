@@ -129,5 +129,6 @@ Note:The above statistics are the default behavior of the system, Freezeit only 
     <string name="tutorial_link">https://jark006.github.io/FreezeitIntroduction/</string>
     <string name="update_json_link">https://raw.githubusercontent.com/jark006/freezeitRelease/main/update.json</string>
     <string name="online_changelog_link">https://raw.githubusercontent.com/jark006/freezeitRelease/main/changelogFull.txt</string>
+    <string name="privacy_title">Privacy</string>
 
 </resources>

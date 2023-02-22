@@ -338,6 +338,31 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/privacy_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:contentDescription="@string/icon"
+                    android:padding="10dp"
+                    app:srcCompat="@drawable/logo_privacy" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:padding="10dp"
+                    android:text="@string/privacy_title"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/alipay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

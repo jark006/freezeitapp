@@ -26,6 +26,7 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.telegram_link).setOnClickListener(this);
         findViewById(R.id.tutorial_link).setOnClickListener(this);
         findViewById(R.id.changelog_text).setOnClickListener(this);
+        findViewById(R.id.privacy_text).setOnClickListener(this);
 
         findViewById(R.id.wechat_pay).setOnClickListener(this);
         findViewById(R.id.alipay).setOnClickListener(this);
@@ -76,6 +77,8 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.tutorial_link))));
         } else if (id == R.id.changelog_text) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.online_changelog_link))));
+        } else if (id == R.id.privacy_text) {
+            Utils.textDialog(this, R.string.privacy_title, R.string.privacy_content);
         } else if (id == R.id.wechat_pay) {
             Utils.imgDialog(this, R.drawable.img_wechatpay);
         } else if (id == R.id.alipay) {

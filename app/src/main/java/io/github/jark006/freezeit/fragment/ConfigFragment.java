@@ -300,7 +300,7 @@ public class ConfigFragment extends Fragment {
             this.appCfg = appCfg;
 
             for (int uid : uidList) {
-                if (!AppInfoCache.get(uid).isSystemApp == showSystemApp)
+                if (AppInfoCache.get(uid).isSystemApp == showSystemApp)
                     uidListFilter.add(uid);
             }
         }

@@ -191,4 +191,33 @@ Thanox(灭霸)的后台保护功能以及部分系统(COS11)会修改应用前�
     <string name="convert_freezer_sigstop">反转 Freezer / SIGSTOP</string>
     <string name="convert_strict">反转 严格 / 宽松</string>
     <string name="switch_sys_user">切换系统、三方应用</string>
+
+    <string name="privacy_title">隐私协议</string>
+    <string name="privacy_content" translatable="false">
+更新日期：2023/02/22\n\n
+导言\n\n
+冻它 是一款由 JARK006 （以下简称“我们”）提供的在安卓平台实现部分墓碑机制的软件，以下协议是本软件相关的具体协议内容，如对本《隐私政策》或相关事宜有任何问题，请通过 jark006@qq.com 与我们联系。\n\n
+
+一、 我们收集的信息\n\n
+我们仅收集用户设备上的”应用列表及相关信息“、”实时进程信息“及“设备硬件相关信息”，这些信息全部保存再设备本地，不会以任何形式上传或转移到设备外部。也不会收集任何关于个人的隐私信息。\n\n
+
+二、 我们如何使用这些信息\n\n
+1.我们使用“应用列表”提供给用户进行配置哪些应用切到后台时以哪种方式冻结。\n
+2.我们使用进程信息进行具体的冻结、解冻操作，同时提供进程内存占用，运行状态等类似进程管理的可视化页面。\n\n
+
+三、 权限使用\n\n
+我们将使用以下权限确保各项功能正常，不会干扰设备正常运作，更不会用于读取或分析您的私密信息。\n
+1. 获取应用列表权限\n
+android.permission.QUERY_ALL_PACKAGES\n\n
+2. 网络状态及联网权限，仅用于获取版本更新信息和更新日志\n
+android.permission.ACCESS_NETWORK_STATE\n
+android.permission.INTERNET\n\n
+
+四、 我们如何更新隐私政策\n\n
+1. 我们保留不时更新或修订本政策的权利。这些更新与修订将构成本政策的一部分并具有等同于本政策的效力，未经您明确同意，我们不会削减您依据当前生效的本政策所应享受的权利。\n
+2. 如遇本政策更新，新的政策信息将内置到新版应用，跟随应用一起发布。\n\n
+
+五、 如何联系我们\n\n
+如果您对我们的应用权限和安全策略有任何顾虑和疑惑，可随时通过邮箱 jark006@qq.com 向我们反馈以及获得帮助。\n\n
+    </string>
 </resources>
