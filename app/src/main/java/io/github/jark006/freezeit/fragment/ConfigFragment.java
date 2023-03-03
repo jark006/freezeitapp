@@ -409,7 +409,7 @@ public class ConfigFragment extends Fragment {
             uidListFilter.clear();
             for (int uid : uidList) {
                 if (AppInfoCache.get(uid).isSystemApp == showSystemApp &&
-                        (keyWord.length() == 0 || AppInfoCache.get(uid).contains(keyWord)))
+                        (keyWord.isEmpty() || AppInfoCache.get(uid).contains(keyWord)))
                     uidListFilter.add(uid);
             }
             notifyDataSetChanged();
@@ -431,21 +431,25 @@ public class ConfigFragment extends Fragment {
         }
 
         public void convertCfg() {
-            appCfg.forEach((key, value) -> {
-                if (value.first == CFG_FREEZER)
-                    appCfg.put(key, new Pair<>(CFG_SIGSTOP, value.second));
-                else if (value.first == CFG_SIGSTOP)
-                    appCfg.put(key, new Pair<>(CFG_FREEZER, value.second));
+            appCfg.forEach((uid, cfg) -> {
+                if (AppInfoCache.get(uid).isSystemApp == showSystemApp) {
+                    if (cfg.first == CFG_FREEZER)
+                        appCfg.put(uid, new Pair<>(CFG_SIGSTOP, cfg.second));
+                    else if (cfg.first == CFG_SIGSTOP)
+                        appCfg.put(uid, new Pair<>(CFG_FREEZER, cfg.second));
+                }
             });
             notifyItemRangeChanged(0, uidListFilter.size());
         }
 
         public void convertTolerant() {
-            appCfg.forEach((key, value) -> {
-                if (value.second == 0)
-                    appCfg.put(key, new Pair<>(value.first, 1));
-                else
-                    appCfg.put(key, new Pair<>(value.first, 0));
+            appCfg.forEach((uid, cfg) -> {
+                if (AppInfoCache.get(uid).isSystemApp == showSystemApp) {
+                    if (cfg.second == 0)
+                        appCfg.put(uid, new Pair<>(cfg.first, 1));
+                    else
+                        appCfg.put(uid, new Pair<>(cfg.first, 0));
+                }
             });
             notifyItemRangeChanged(0, uidListFilter.size());
         }
@@ -453,7 +457,7 @@ public class ConfigFragment extends Fragment {
 
         public byte[] getCfgBytes() {
 
-            if (appCfg.size() == 0) return null;
+            if (appCfg.isEmpty()) return null;
 
             byte[] tmp = new byte[appCfg.size() * 12];
             final int[] idx = {0};

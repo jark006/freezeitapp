@@ -1,6 +1,7 @@
 package io.github.jark006.freezeit.hook;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
@@ -10,7 +11,10 @@ import de.robv.android.xposed.XposedHelpers;
 import io.github.jark006.freezeit.Utils;
 
 public class XpUtils {
-    public final static boolean DEBUG_XPOSED = false;
+    public final static boolean DEBUG_WAKEUP_LOCK = false;
+    public final static boolean DEBUG_BROADCAST = false;
+    public final static boolean DEBUG_ALARM = false;
+    public final static boolean DEBUG_ANR = false;
 
     public static void hookMethod(String TAG, ClassLoader classLoader, XC_MethodHook callback,
                                   String className, String methodName, Object... parameterTypes) {
@@ -36,6 +40,61 @@ public class XpUtils {
         }
         XposedBridge.hookMethod(constructor, callback);
         log(TAG, "HookConstructor success: " + className);
+    }
+
+    public static Field getField(final Object obj, final String fieldName) {
+        try {
+            Field field = obj.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return field;
+        } catch (Exception e) {
+            XpUtils.log("Freezeit[getInt]", "获取失败 " + obj.getClass().getName() + "#" + fieldName + ": " + e);
+            return null;
+        }
+    }
+
+    public static int getInt(final Object obj, final String fieldName) {
+        try {
+            Field field = obj.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return field.getInt(obj);
+        } catch (Exception e) {
+            XpUtils.log("Freezeit[getInt]", "获取失败 " + obj.getClass().getName() + "#" + fieldName + ": " + e);
+            return -1;
+        }
+    }
+
+    public static boolean getBoolean(final Object obj, final String fieldName) {
+        try {
+            Field field = obj.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return field.getBoolean(obj);
+        } catch (Exception e) {
+            XpUtils.log("Freezeit[getBoolean]", "获取失败 " + obj.getClass().getName() + "#" + fieldName + ": " + e);
+            return false;
+        }
+    }
+
+    public static String getString(final Object obj, final String fieldName) {
+        try {
+            Field field = obj.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return (String) field.get(obj);
+        } catch (Exception e) {
+            XpUtils.log("Freezeit[getString]", "获取失败 " + obj.getClass().getName() + "#" + fieldName + ": " + e);
+            return "null";
+        }
+    }
+
+    public static Object getObject(final Object obj, final String fieldName) {
+        try {
+            Field field = obj.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return field.get(obj);
+        } catch (Exception e) {
+            XpUtils.log("Freezeit[getObject]", "获取失败 " + obj.getClass().getName() + "#" + fieldName + ": " + e);
+            return null;
+        }
     }
 
     public static void log(String TAG, String content) {
@@ -83,6 +142,7 @@ public class XpUtils {
 
         // 顺序查找
         public boolean contains(final int n) {
+            if (n < 10000) return false;
             for (int i = 0; i < size; i++) {
                 if (number[i] == n)
                     return true;
@@ -101,8 +161,7 @@ public class XpUtils {
     public static class BucketSet {
 
         int size = 0;
-        final int maxSize = 2000; // 默认最多两千个应用
-        byte[] bucket = new byte[maxSize];
+        byte[] bucket = new byte[2000];// 默认最多两千个应用
 
         public BucketSet() {
             clear();
@@ -150,9 +209,8 @@ public class XpUtils {
     public static class BucketBitSet {
 
         int size = 0;
-        final int maxSize = 2000; // 默认最多两千个应用
         final int[] bitMask = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
-        byte[] bucketBit = new byte[maxSize / 8];
+        byte[] bucketBit = new byte[250]; // 默认最多两千个应用 250 * 8 Bit
 
         public BucketBitSet() {
             clear();
@@ -200,7 +258,7 @@ public class XpUtils {
                 return false;
 
             final int byteIdx = (n - 10000) >> 3;
-            final int mask = bitMask[(n - 10000) & 0b0111];
+            final int mask = bitMask[(n - 10000) & 0b111];
             return (bucketBit[byteIdx] & mask) != 0;
         }
     }

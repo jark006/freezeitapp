@@ -61,12 +61,12 @@ public class WakeLockHook {
             // dumpsys power|grep 10xxx
 
             // android S+ 12+:[7]    X~11:[6]
-            int uid = (int) param.args[Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? 7 : 6];
-            if (!config.managedApp.contains(uid) || config.whitelist.contains(uid)) return;
+            final int uid = (int) param.args[Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? 7 : 6];
+            if (!config.managedApp.contains(uid)) return;
 
             param.setResult(null);
-            if (XpUtils.DEBUG_XPOSED)
-                XpUtils.log(TAG, "阻止唤醒锁: " + config.pkgIndex.getOrDefault(uid, "UID:" + uid));
+            if (XpUtils.DEBUG_WAKEUP_LOCK)
+                XpUtils.log(TAG, "阻止 WakeLock: " + config.pkgIndex.getOrDefault(uid, "UID:" + uid));
         }
     };
 }

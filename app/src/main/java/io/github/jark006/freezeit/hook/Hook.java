@@ -34,7 +34,7 @@ public class Hook implements IXposedHookLoadPackage {
     }
 
     public void hookAndroid(LoadPackageParam lpParam) {
-        XposedBridge.log("Freezeit: " + BuildConfig.VERSION_NAME + " running");
+        XposedBridge.log("Freezeit[" + BuildConfig.VERSION_NAME + "] Xposed running");
 
         Config config = new Config();
 
@@ -42,6 +42,6 @@ public class Hook implements IXposedHookLoadPackage {
         new AlarmHook(config, lpParam);
         new AnrHook(config, lpParam);
         new BroadCastHook(config, lpParam);
-        new WakeLockHook(config, lpParam);
+//        new WakeLockHook(config, lpParam); // 改到 AndroidService
     }
 }

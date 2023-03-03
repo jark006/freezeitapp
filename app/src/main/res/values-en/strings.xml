@@ -103,8 +103,11 @@ Reboot takes effect</string>
 [SIGSTOP]:Use SIGSTOP signal to freeze.\n
 [Freezer]:Use cgroup\'s Freezer subsystem to freeze. \n
 [Free]:The application will not freeze and can run freely in the background. \n\n
+
 [Strictly]:The application Activity is considered to be in the foreground when it is displayed in the top level (TOP) or bound to the top level (BOUND_TOP) app.\n
-[Lenient]:If it meets the conditions of strict foreground, or when there are foreground services such as floatingView, resident notification bar, audio playback service, it is judged as foreground and will not be frozen.
+[Lenient]:If it meets the conditions of strict foreground, or when there are foreground services such as floatingView, resident notification bar, audio playback service, it is judged as foreground and will not be frozen.\n\n
+
+Some special applications (input method, launcher, Magisk, etc.) will force whitelist.
     </string>
     <string name="help_logcat_update">Update the app label, no longer use the package name to log.</string>
     <string name="help_logcat_check">Check freeze status, memory usage</string>

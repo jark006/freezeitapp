@@ -97,6 +97,7 @@ public class Enum {
         public final static String getAllStackInfos = "getAllStackInfos";
         public final static String serviceTimeout = "serviceTimeout";
         public final static String serviceForegroundTimeout = "serviceForegroundTimeout";
+        public final static String skipReceiverLocked = "skipReceiverLocked";
     }
 
     public final static class Field {
@@ -123,6 +124,9 @@ public class Enum {
         public final static String mActivityTaskManager = "mActivityTaskManager";
         public final static String definingUid = "definingUid";
         public final static String processName = "processName";
+        public final static String mCurProcState = "mCurProcState";
+        public final static String mState = "mState";
+        public final static String delivery = "delivery";
     }
 
 }

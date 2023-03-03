@@ -5,7 +5,6 @@ import android.os.Build;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
-import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 import io.github.jark006.freezeit.hook.Config;
 import io.github.jark006.freezeit.hook.Enum;
@@ -20,7 +19,7 @@ public class AnrHook {
         this.config = config;
         this.lpParam = lpParam;
 
-        // https://cs.android.com/android/platform/superproject/+/android-mainline-12.0.0_r126:frameworks/base/services/core/java/com/android/server/am/ProcessErrorStateRecord.java;l=219
+        // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/am/ProcessErrorStateRecord.java;l=255
         // void appNotResponding(String activityShortComponentName, ApplicationInfo aInfo,
         //            String parentShortComponentName, WindowProcessController parentProcess,
         //            boolean aboveSystem, String annotation, boolean onlyDumpSelf)
@@ -33,6 +32,10 @@ public class AnrHook {
                     boolean.class, String.class, boolean.class);
         }
 
+        // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/am/AnrHelper.java;l=77
+        // void appNotResponding(ProcessRecord anrProcess, String activityShortComponentName,
+        //            ApplicationInfo aInfo, String parentShortComponentName,
+        //            WindowProcessController parentProcess, boolean aboveSystem, String annotation)
         // AnrHelper A11-13
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             XpUtils.hookMethod(TAG, lpParam.classLoader, callbackAnrHelper,
@@ -65,14 +68,21 @@ public class AnrHook {
         protected void beforeHookedMethod(MethodHookParam param) {
             var aInfo = (ApplicationInfo) param.args[1];
             if (aInfo == null) return;
+
+            if (XpUtils.DEBUG_ANR)
+                XpUtils.log(TAG, "触发 ErrorState:" + aInfo.packageName + " " +
+                        param.args[0] + " " + param.args[2] +
+                        " Annotation:" + param.args[5]);
+
             final int uid = aInfo.uid;
-            if (!config.managedApp.contains(uid) || config.whitelist.contains(uid))
+            if (!config.managedApp.contains(uid))
                 return;
 
             param.setResult(null);
-            if (XpUtils.DEBUG_XPOSED)
-                XpUtils.log(TAG, "跳过ANR ErrorState:" + aInfo.packageName + " " +
-                        param.args[0] + " " + param.args[2]);
+            if (XpUtils.DEBUG_ANR)
+                XpUtils.log(TAG, "跳过 ErrorState:" + aInfo.packageName + " " +
+                        param.args[0] + " " + param.args[2] +
+                        " Annotation:" + param.args[5]);
         }
     };
 
@@ -81,15 +91,21 @@ public class AnrHook {
         @Override
         protected void beforeHookedMethod(MethodHookParam param) {
             var processRecord = param.args[0];
-            if (processRecord == null) return;
-            final int uid = XposedHelpers.getIntField(processRecord, Enum.Field.uid);
-            if (!config.managedApp.contains(uid) || config.whitelist.contains(uid))
+
+            if (XpUtils.DEBUG_ANR)
+                XpUtils.log(TAG, "触发 AnrHelper:" +
+                        XpUtils.getString(processRecord, Enum.Field.processName) +
+                        " Annotation:" + param.args[6]);
+
+            final int uid = XpUtils.getInt(processRecord, Enum.Field.uid);
+            if (!config.managedApp.contains(uid))
                 return;
 
             param.setResult(null);
-            if (XpUtils.DEBUG_XPOSED)
-                XpUtils.log(TAG, "跳过ANR AnrHelper:" +
-                        XposedHelpers.getObjectField(processRecord, Enum.Field.processName));
+            if (XpUtils.DEBUG_ANR)
+                XpUtils.log(TAG, "跳过 AnrHelper:" +
+                        XpUtils.getString(processRecord, Enum.Field.processName) +
+                        " Annotation:" + param.args[6]);
         }
     };
 
@@ -97,16 +113,16 @@ public class AnrHook {
     XC_MethodHook callbackServiceTimeout = new XC_MethodHook() {
         @Override
         protected void beforeHookedMethod(MethodHookParam param) {
-            var processRecord = param.args[0];
-            if (processRecord == null) return;
-            final int uid = XposedHelpers.getIntField(processRecord, Enum.Field.uid);
-            if (!config.managedApp.contains(uid) || config.whitelist.contains(uid))
+            // var processRecord = param.args[0];
+
+            final int uid = XpUtils.getInt(param.args[0], Enum.Field.uid);
+            if (!config.managedApp.contains(uid))
                 return;
 
             param.setResult(null);
-            if (XpUtils.DEBUG_XPOSED)
+            if (XpUtils.DEBUG_ANR)
                 XpUtils.log(TAG, "跳过 ServiceTimeout: " +
-                        XposedHelpers.getObjectField(processRecord, Enum.Field.processName));
+                        XpUtils.getString(param.args[0], Enum.Field.processName));
         }
     };
 
@@ -114,16 +130,16 @@ public class AnrHook {
     XC_MethodHook callbackServiceForegroundTimeout = new XC_MethodHook() {
         @Override
         protected void beforeHookedMethod(MethodHookParam param) {
-            var serviceRecord = param.args[0];
-            if (serviceRecord == null) return;
-            final int uid = XposedHelpers.getIntField(serviceRecord, Enum.Field.definingUid);
-            if (!config.managedApp.contains(uid) || config.whitelist.contains(uid))
+            // var serviceRecord = param.args[0];
+
+            final int uid = XpUtils.getInt(param.args[0], Enum.Field.definingUid);
+            if (!config.managedApp.contains(uid))
                 return;
 
             param.setResult(null);
-            if (XpUtils.DEBUG_XPOSED)
+            if (XpUtils.DEBUG_ANR)
                 XpUtils.log(TAG, "跳过 ServiceForegroundTimeout: " +
-                        XposedHelpers.getObjectField(serviceRecord, Enum.Field.packageName));
+                        XpUtils.getString(param.args[0], Enum.Field.packageName));
         }
     };
 }

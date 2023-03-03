@@ -29,8 +29,6 @@ public class AndroidService {
     final static String TAG = "Freezeit[AndroidService]:";
 
     final static String CFG_TAG = "Freezeit[CFG]:";
-    final static String FGD_TAG = "Freezeit[FGD]:";
-
     final static String AMS_TAG = "Freezeit[AMS]:";
     final static String WIN_TAG = "Freezeit[WIN]:";
     final static String NMS_TAG = "Freezeit[NMS]:";
@@ -70,8 +68,8 @@ public class AndroidService {
         XpUtils.hookConstructor(AMS_TAG, lpParam.classLoader, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) {
-                Object mProcessList = XposedHelpers.getObjectField(param.thisObject, Enum.Field.mProcessList);
-                mLruProcesses = (ArrayList<?>) XposedHelpers.getObjectField(mProcessList, Enum.Field.mLruProcesses);
+                Object mProcessList = XpUtils.getObject(param.thisObject, Enum.Field.mProcessList);
+                mLruProcesses = (ArrayList<?>) XpUtils.getObject(mProcessList, Enum.Field.mLruProcesses);
                 log(AMS_TAG, "Init mLruProcesses");
             }
         }, Enum.Class.ActivityManagerService, Context.class, Enum.Class.ActivityTaskManagerService);
@@ -102,7 +100,7 @@ public class AndroidService {
         XpUtils.hookMethod(NMS_TAG, lpParam.classLoader, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) {
-                mNetdService = XposedHelpers.getObjectField(param.thisObject, Enum.Field.mNetdService);
+                mNetdService = XpUtils.getObject(param.thisObject, Enum.Field.mNetdService);
                 log(NMS_TAG, "Init mNetdService " + ((mNetdService == null ? "fail" : "success")));
             }
         }, Enum.Class.NetworkManagementService, Enum.Method.connectNativeNetdService);
@@ -249,62 +247,57 @@ public class AndroidService {
 
     void handleForeground(OutputStream os, byte[] replyBuff) throws Exception {
         config.foregroundUid.clear();
-//        config.cacheEmptyPid.clear();
-        try {
-            for (int i = mLruProcesses.size() - 1; i > 10; i--) { //逆序, 最近活跃应用在最后
-                var processRecord = mLruProcesses.get(i);
-                if (processRecord == null) continue;
+        for (int i = mLruProcesses.size() - 1; i > 10; i--) { //逆序, 最近活跃应用在最后
+            var processRecord = mLruProcesses.get(i);
+            if (processRecord == null) continue;
 
-                final int uid = XposedHelpers.getIntField(processRecord, "uid");
-                if (!config.managedApp.contains(uid) || config.whitelist.contains(uid))
-                    continue;
+            final int uid = XpUtils.getInt(processRecord, Enum.Field.uid);
+            if (!config.managedApp.contains(uid))
+                continue;
 
-                int mCurProcState;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    var mState = XposedHelpers.getObjectField(processRecord, "mState");
-                    if (mState == null) continue;
-                    mCurProcState = XposedHelpers.getIntField(mState, "mCurProcState");
-                } else {
-                    mCurProcState = XposedHelpers.getIntField(processRecord, "mCurProcState");
-                }
-
-                // 2在顶层 3绑定了顶层应用, 有前台服务:4常驻状态栏 6悬浮窗
-                // ProcessStateEnum: https://cs.android.com/android/platform/superproject/+/master:out/soong/.intermediates/frameworks/base/framework-minus-apex/android_common/xref35/srcjars.xref/android/app/ProcessStateEnum.java;l=10
-                if (mCurProcState == 2 || mCurProcState == 3 ||
-                        (4 <= mCurProcState && mCurProcState <= 6 && config.tolerant.contains(uid)))
-                    config.foregroundUid.add(uid);
+            int mCurProcState;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                var mState = XpUtils.getObject(processRecord, Enum.Field.mState);
+                if (mState == null) continue;
+                mCurProcState = XpUtils.getInt(mState, Enum.Field.mCurProcState);
+            } else {
+                mCurProcState = XpUtils.getInt(processRecord, Enum.Field.mCurProcState);
             }
 
-            // 某些系统(COS11/12)及Thanox的后台保护机制，会把某些应用或游戏的 mCurProcState 设为 0(系统常驻进程专有状态)
-            if (config.isExtendFg() && windowsStackMethod != null && mRootWindowContainer != null) {
-                var rootTaskInfoList = (List<?>) windowsStackMethod.invoke(mRootWindowContainer, -1);
-                if (rootTaskInfoList != null) {
-                    // A12 https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/app/ActivityTaskManager.java;l=503
-                    // A11 https://cs.android.com/android/platform/superproject/+/android-mainline-11.0.0_r13:frameworks/base/core/java/android/app/ActivityManager.java;l=2816
-                    for (Object info : rootTaskInfoList) {
-                        boolean visible = XposedHelpers.getBooleanField(info, "visible");
-                        if (!visible) continue;
+            // 2在顶层 3绑定了顶层应用, 有前台服务:4常驻状态栏 6悬浮窗
+            // ProcessStateEnum: https://cs.android.com/android/platform/superproject/+/master:out/soong/.intermediates/frameworks/base/framework-minus-apex/android_common/xref35/srcjars.xref/android/app/ProcessStateEnum.java;l=10
+            if (mCurProcState == 2 || mCurProcState == 3 ||
+                    (4 <= mCurProcState && mCurProcState <= 6 && config.tolerant.contains(uid)))
+                config.foregroundUid.add(uid);
+        }
 
-                        int uid = 0;
-                        var childTaskNames = (String[]) XposedHelpers.getObjectField(info,
-                                Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? "childTaskNames" : "taskNames");
-                        if (childTaskNames != null && childTaskNames.length > 0) {
-                            int pkgEndIdx = childTaskNames[0].indexOf('/'); // 只取首个 taskId
-                            if (pkgEndIdx > 0) {
-                                final String pkg = childTaskNames[0].substring(0, pkgEndIdx);
-                                uid = config.uidIndex.getOrDefault(pkg, 0);
-                            }
+        // 某些系统(COS11/12)及Thanox的后台保护机制，会把某些应用或游戏的 mCurProcState 设为 0(系统常驻进程专有状态)
+        // 此时只能到窗口管理器获取有前台窗口的应用
+        if (config.isExtendFg() && windowsStackMethod != null && mRootWindowContainer != null) {
+            var rootTaskInfoList = (List<?>) windowsStackMethod.invoke(mRootWindowContainer, -1);
+            if (rootTaskInfoList != null) {
+                // A12 https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/app/ActivityTaskManager.java;l=503
+                // A11 https://cs.android.com/android/platform/superproject/+/android-mainline-11.0.0_r13:frameworks/base/core/java/android/app/ActivityManager.java;l=2816
+                for (Object info : rootTaskInfoList) {
+                    boolean visible = XpUtils.getBoolean(info, "visible");
+                    if (!visible) continue;
+
+                    int uid = -1;
+                    var childTaskNames = (String[]) XpUtils.getObject(info,
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? "childTaskNames" : "taskNames");
+                    if (childTaskNames != null && childTaskNames.length > 0) {
+                        int pkgEndIdx = childTaskNames[0].indexOf('/'); // 只取首个 taskId
+                        if (pkgEndIdx > 0) {
+                            final String pkg = childTaskNames[0].substring(0, pkgEndIdx);
+                            var value = config.uidIndex.get(pkg);
+                            if (value != null) uid = value;
                         }
-
-                        if (!config.managedApp.contains(uid) || config.whitelist.contains(uid))
-                            continue;
-
-                        config.foregroundUid.add(uid);
                     }
+
+                    if (config.managedApp.contains(uid))
+                        config.foregroundUid.add(uid);
                 }
             }
-        } catch (Exception e) {
-            log(FGD_TAG, "前台服务错误:" + e);
         }
 
         // 开头的4字节放置UID的个数，往后每4个字节放一个UID  [小端]
@@ -337,15 +330,14 @@ public class AndroidService {
     }
 
     /**
-     * 总共4行内容 第四行可能为空
+     * 总共 2或3 行内容
      * 第一行：冻它设置数据
-     * 第二行：第三方应用UID列表
-     * 第三行：自由后台(含内置)UID列表
-     * 第四行：宽松前台UID列表 (此行可能为空)
+     * 第二行：受冻它管控的应用 只含杀死后台和冻结配置， 不含自由后台、白名单
+     * 第三行：宽松前台UID列表 只含杀死后台和冻结配置， 不含自由后台、白名单 (此行可能为空)
      */
     void handleConfig(OutputStream os, byte[] buff, int recvLen) throws Exception {
         var splitLine = new String(buff, 0, recvLen).split("\n");
-        if (splitLine.length < 3 || splitLine.length > 4) {
+        if (splitLine.length != 2 && splitLine.length != 3) {
             log(CFG_TAG, "Fail splitLine.length:" + splitLine.length);
             for (String line : splitLine)
                 log(CFG_TAG, "START:" + line);
@@ -359,46 +351,41 @@ public class AndroidService {
         config.managedApp.clear();
         config.uidIndex.clear();
         config.pkgIndex.clear();
-        config.whitelist.clear();
         config.tolerant.clear();
 
         try {
-            StringBuilder sb = new StringBuilder("Parse: ");
-            for (int lineIdx = 0; lineIdx < splitLine.length; lineIdx++) {
-                var elementList = splitLine[lineIdx].split(" ");
-                switch (lineIdx) {
-                    case 0:
-                        for (int i = 0; i < elementList.length; i++)
-                            config.settings[i] = Integer.parseInt(elementList[i]);
-                        sb.append("settings: ").append(elementList.length).append(' ');
-                        break;
-                    case 1:
-                        for (String element : elementList) {
-                            var tmp = element.split("####"); // element: "uid####package"
-                            if (tmp.length == 2) {
-                                int uid = Integer.parseInt(tmp[0]);
-                                config.managedApp.add(uid);
-                                config.uidIndex.put(tmp[1], uid);
-                                config.pkgIndex.put(uid, tmp[1]);
-                            }
-                        }
-                        sb.append("managedApp: ").append(config.managedApp.size()).append(' ');
-                        sb.append("uidIndex: ").append(config.uidIndex.size()).append(' ');
-                        sb.append("pkgIndex: ").append(config.pkgIndex.size()).append(' ');
-                        break;
-                    case 2:
-                        for (String uidStr : elementList)
-                            config.whitelist.add(Integer.parseInt(uidStr));
-                        sb.append("whitelist:").append(config.whitelist.size()).append(' ');
-                        break;
-                    case 3:
-                        for (String uidStr : elementList)
-                            config.tolerant.add(Integer.parseInt(uidStr));
-                        sb.append("tolerant: ").append(config.tolerant.size()).append(' ');
-                        break;
-                }
+            StringBuilder tmp = new StringBuilder("Parse:");
+
+            String[] elementList = splitLine[0].split(" ");
+            for (int i = 0; i < elementList.length; i++)
+                config.settings[i] = Integer.parseInt(elementList[i]);
+            tmp.append(" settings:").append(elementList.length);
+
+            elementList = splitLine[1].split(" ");
+            for (String element : elementList) {
+                if (element.length() <= 5)
+                    continue;
+                // element: "10xxxpackName"
+                final int uid = Integer.parseInt(element.substring(0, 5));
+                final String packName = element.substring(5);
+                config.managedApp.add(uid);
+                config.uidIndex.put(packName, uid);
+                config.pkgIndex.put(uid, packName);
             }
-            log(CFG_TAG, sb.toString());
+            tmp.append(" managedApp:").append(config.managedApp.size());
+            tmp.append(" uidIndex:").append(config.uidIndex.size());
+            tmp.append(" pkgIndex:").append(config.pkgIndex.size());
+            config.pkgIndex.put(1000, "AndroidSystem");
+            config.pkgIndex.put(-1, "Unknown");
+
+            if (splitLine.length == 3) {
+                elementList = splitLine[2].split(" ");
+                for (String uidStr : elementList)
+                    config.tolerant.add(Integer.parseInt(uidStr));
+            }
+            tmp.append(" tolerant:").append(config.tolerant.size());
+
+            log(CFG_TAG, tmp.toString());
             Utils.Int2Byte(REPLY_SUCCESS, buff, 0);
         } catch (Exception e) {
             log(CFG_TAG, "Exception: [" + Arrays.toString(splitLine) + "]: \n" + e);
@@ -427,29 +414,47 @@ public class AndroidService {
         final int WAKEUP_LOCK_CODE = 40;
 
         try {
-            if (recvLen != 8) {
-                log(WAK_TAG, "非法数据长度" + recvLen);
-                throw null;
-            }
-
-            final int uid = Utils.Byte2Int(buff, 0);
-            if (!config.managedApp.contains(uid)) {
-                log(WAK_TAG, "非法UID" + uid);
-                throw null;
-            }
-
-            final int mode = Utils.Byte2Int(buff, 4); // 1:ignore  3:default
-            if (mode != WAKEUP_LOCK_IGNORE && mode != WAKEUP_LOCK_DEFAULT) {
-                log(WAK_TAG, "非法mode" + mode);
-                throw null;
-            }
             if (setUidModeMethod == null) {
                 log(WAK_TAG, "未初始化 setUidModeMethod");
                 throw null;
             }
 
-            setUidModeMethod.invoke(appOps, WAKEUP_LOCK_CODE, uid, mode);
-//            XposedHelpers.callMethod(appOps, Enum.Method.setUidMode, WAKEUP_LOCK_CODE, uid, mode);
+            if (recvLen <= 8 || recvLen % 4 != 0) {
+                log(WAK_TAG, "非法recvLen " + recvLen);
+                throw null;
+            }
+
+            final int uidLen = Utils.Byte2Int(buff, 0);
+            if (recvLen != (uidLen + 2) * 4) {
+                log(WAK_TAG, "非法recvLen " + recvLen + " uidLen " + uidLen);
+                throw null;
+            }
+
+            final int mode = Utils.Byte2Int(buff, 4); // 1:ignore  3:default
+            if (mode != WAKEUP_LOCK_IGNORE && mode != WAKEUP_LOCK_DEFAULT) {
+                log(WAK_TAG, "非法mode:" + mode);
+                throw null;
+            }
+
+            int[] uidList = new int[uidLen];
+            Utils.Byte2Int(buff, 8, recvLen - 8, uidList, 0);
+            for (int uid : uidList) {
+                if (config.managedApp.contains(uid))
+                    setUidModeMethod.invoke(appOps, WAKEUP_LOCK_CODE, uid, mode);
+                else
+                    log(WAK_TAG, "非法UID:" + uid);
+            }
+
+            if (XpUtils.DEBUG_WAKEUP_LOCK) {
+                var tmp = new StringBuilder(mode == WAKEUP_LOCK_IGNORE ? "禁止 WakeLock: " : "恢复 WakeLock: ");
+                for (int uid : uidList)
+                    tmp.append(config.pkgIndex.getOrDefault(uid, String.valueOf(uid))).append(", ");
+                XpUtils.log(TAG, tmp.toString());
+            }
+
+            if (mode == WAKEUP_LOCK_IGNORE) // 此操作会在息屏超时后触发
+                config.foregroundUid.clear();
+
             Utils.Int2Byte(REPLY_SUCCESS, buff, 0);
         } catch (Exception e) {
             Utils.Int2Byte(REPLY_FAILURE, buff, 0);

@@ -18,7 +18,7 @@ android {
         minSdk 29
         targetSdk 33
         versionCode 205020
-        versionName "2.5.2"
+        versionName "2.5.3Alpha"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resValue "string", "versionName", "${versionName}"
