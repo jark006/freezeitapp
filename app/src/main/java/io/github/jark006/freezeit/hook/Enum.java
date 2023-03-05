@@ -34,7 +34,7 @@ public class Enum {
         public final static String PowerManagerService = "com.android.server.power.PowerManagerService";
         public final static String AlarmManagerServiceR = "com.android.server.AlarmManagerService"; //SDK x ~ 30
         public final static String AlarmManagerServiceS = "com.android.server.alarm.AlarmManagerService"; // SDK 31+
-        public final static String AlarmR = "com.android.server.AlarmManagerService#Alarm"; //SDK x ~ 30
+        public final static String AlarmR = "com.android.server.AlarmManagerService$Alarm"; //SDK x ~ 30
         public final static String AlarmS = "com.android.server.alarm.Alarm"; // SDK 31+
         public final static String NetworkManagementService = "com.android.server.NetworkManagementService";
         public final static String Dependencies = "com.android.server.NetworkManagementService$Dependencies";

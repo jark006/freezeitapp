@@ -185,7 +185,7 @@ public class AppTimeActivity extends AppCompatActivity {
             timeStr.append("s.");
 
             if (ms >= 100) timeStr.append(ms);
-            else if (ms > 10) timeStr.append('0').append(ms);
+            else if (ms >= 10) timeStr.append('0').append(ms);
             else timeStr.append("00").append(ms);
 
             timeStr.append("ms");

@@ -84,11 +84,11 @@ public class XpUtils {
     // 少量元素(0-10)时，clear,add,contain 性能均优于 HashSet, TreeSet
     public static class VectorSet {
         int size = 0, maxSize;
-        int[] number;
+        int[] vector;
 
         public VectorSet(int maxSize) {
             this.maxSize = maxSize;
-            number = new int[maxSize];
+            vector = new int[maxSize];
         }
 
         public int size() {
@@ -105,16 +105,16 @@ public class XpUtils {
 
         public void add(final int n) {
             for (int i = 0; i < size; i++) {
-                if (number[i] == n) return;
+                if (vector[i] == n) return;
             }
             if (size < maxSize)
-                number[size++] = n;
+                vector[size++] = n;
         }
 
         public void erase(final int n) {
             for (int i = 0; i < size; i++) {
-                if (number[i] == n) {
-                    number[i] = number[--size];
+                if (vector[i] == n) {
+                    vector[i] = vector[--size];
                     return;
                 }
             }
@@ -124,7 +124,7 @@ public class XpUtils {
         public boolean contains(final int n) {
             if (n < 10000) return false;
             for (int i = 0; i < size; i++) {
-                if (number[i] == n)
+                if (vector[i] == n)
                     return true;
             }
             return false;
@@ -132,7 +132,7 @@ public class XpUtils {
 
         public void toBytes(byte[] bytes, int byteOffset) {
             if (size > 0)
-                Utils.Int2Byte(number, 0, size, bytes, byteOffset);
+                Utils.Int2Byte(vector, 0, size, bytes, byteOffset);
         }
     }
 
@@ -182,64 +182,6 @@ public class XpUtils {
             if (n < 10000 || 12000 <= n)
                 return false;
             return bucket[n - 10000] != 0;
-        }
-    }
-
-    // bitmap
-    public static class BucketBitSet {
-
-        int size = 0;
-        final int[] bitMask = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
-        byte[] bucketBit = new byte[250]; // 默认最多两千个应用 250 * 8 Bit
-
-        public BucketBitSet() {
-            clear();
-        }
-
-        public int size() {
-            return size;
-        }
-
-        public boolean isEmpty() {
-            return size == 0;
-        }
-
-        public void clear() {
-            size = 0;
-            Arrays.fill(bucketBit, (byte) 0);
-        }
-
-        public void add(final int n) {
-            if (n < 10000 || 12000 <= n)
-                return;
-
-            final int byteIdx = (n - 10000) >> 3;
-            final int mask = bitMask[(n - 10000) & 0b111];
-            if ((bucketBit[byteIdx] & mask) == 0) {
-                bucketBit[byteIdx] |= mask;
-                size++;
-            }
-        }
-
-        public void erase(final int n) {
-            if (n < 10000 || 12000 <= n)
-                return;
-
-            final int byteIdx = (n - 10000) >> 3;
-            final int mask = bitMask[(n - 10000) & 0b111];
-            if ((bucketBit[byteIdx] & mask) != 0) {
-                bucketBit[byteIdx] &= ~mask;
-                size--;
-            }
-        }
-
-        public boolean contains(final int n) {
-            if (n < 10000 || 12000 <= n)
-                return false;
-
-            final int byteIdx = (n - 10000) >> 3;
-            final int mask = bitMask[(n - 10000) & 0b111];
-            return (bucketBit[byteIdx] & mask) != 0;
         }
     }
 }

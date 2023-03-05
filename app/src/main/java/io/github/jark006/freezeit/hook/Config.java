@@ -36,8 +36,8 @@ public class Config {
         return settings[18] != 0 && taskInfoVisibleField != null && taskInfoTaskNamesField != null;
     }
 
-    public final boolean isCurProcStateNull() {
-        return mCurProcStateField == null;
+    public final boolean isCurProcStateInitialized() {
+        return mCurProcStateField != null && (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R || processRecordStateField != null);
     }
 
     @SuppressLint("PrivateApi")
@@ -110,7 +110,7 @@ public class Config {
 
     public final Object getProcessRecordState(@NonNull Object obj) {
         try {
-            return processRecordStateField == null ? -1 : processRecordStateField.get(obj);
+            return processRecordStateField.get(obj); // isCurProcStateInitialized() 已判空
         } catch (Exception e) {
             return null;
         }
@@ -118,7 +118,7 @@ public class Config {
 
     public final int getCurProcState(@NonNull Object obj) {
         try {
-            return mCurProcStateField.getInt(obj);
+            return mCurProcStateField.getInt(obj); // isCurProcStateInitialized() 已判空
         } catch (Exception e) {
             return -1;
         }
@@ -166,7 +166,7 @@ public class Config {
 
     public final boolean getTaskInfoVisible(@NonNull Object obj) {
         try {
-            return taskInfoVisibleField.getBoolean(obj);
+            return taskInfoVisibleField.getBoolean(obj); // isExtendFg() 已判空
         } catch (Exception e) {
             return false;
         }
@@ -174,7 +174,7 @@ public class Config {
 
     public final String[] getTaskInfoTaskNames(@NonNull Object obj) {
         try {
-            return (String[]) taskInfoTaskNamesField.get(obj);
+            return (String[]) taskInfoTaskNamesField.get(obj); // isExtendFg() 已判空
         } catch (Exception e) {
             return null;
         }

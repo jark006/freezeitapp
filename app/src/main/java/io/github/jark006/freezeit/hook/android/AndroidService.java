@@ -253,13 +253,16 @@ public class AndroidService {
         }
     }
 
+    boolean isInitWindows() {
+        return windowsStackMethod != null && mRootWindowContainer != null;
+    }
 
     void handleForeground(OutputStream os, byte[] replyBuff) throws Exception {
         config.foregroundUid.clear();
         try {
-            for (int i = (mLruProcesses == null || config.isCurProcStateNull()) ?
+            for (int i = (mLruProcesses == null || !config.isCurProcStateInitialized()) ?
                     0 : mLruProcesses.size() - 1; i > 10; i--) { //逆序, 最近活跃应用在最后
-                var processRecord = mLruProcesses.get(i);
+                var processRecord = mLruProcesses.get(i); // IndexOutOfBoundsException
                 if (processRecord == null) continue;
 
                 final int uid = config.getProcessRecordUid(processRecord);// processRecord
@@ -286,7 +289,7 @@ public class AndroidService {
 
         // 某些系统(COS11/12)及Thanox的后台保护机制，会把某些应用或游戏的 mCurProcState 设为 0(系统常驻进程专有状态)
         // 此时只能到窗口管理器获取有前台窗口的应用
-        if (config.isExtendFg() && windowsStackMethod != null && mRootWindowContainer != null) {
+        if (config.isExtendFg() && isInitWindows()) {
             List<?> rootTaskInfoList;
             try {
                 rootTaskInfoList = (List<?>) windowsStackMethod.invoke(mRootWindowContainer, -1);
