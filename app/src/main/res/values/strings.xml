@@ -51,11 +51,12 @@
     <string name="xposed_offline">LSPosed未激活</string>
     <string name="xposed_warn">未激活,无法工作</string>
     <string name="freezeit_offline">冻它未启用或工作异常</string>
-    <string name="freezeit_error_tips">
-1.进入桌面1分钟后才启动，请稍后再打开。\n
+    <string name="freezeit_error_tips">1.进入桌面1分钟后才启动，请稍后再打开。\n
 2.请检查面具模块是否已启用。\n
 3.请检查冻它APP的网络权限。\n
-4.请检查异常日志:\n/sdcard/Android/freezeit_crash_log.txt
+4.请检查异常日志:/sdcard/Android/freezeit_crash_log.txt\n
+5.如果设备还没安装冻它的面具模块(MagiskModule)，请通过以下跳转按钮下载并安装。\n
+6.如果设备还没有获取Root权限，将无法使用冻它。
     </string>
     <string name="get_log_fail_tips">工作日志获取失败</string>
     <string name="get_changelog_fail_tips">更新日志获取失败</string>
@@ -196,7 +197,7 @@ Thanox(灭霸)的后台保护功能以及部分系统(COS11)会修改应用前�
 
     <string name="privacy_title">隐私协议</string>
     <string name="privacy_content" translatable="false">
-更新日期：2023/02/22\n\n
+更新日期：2023/03/04\n\n
 导言\n\n
 冻它 是一款由 JARK006 （以下简称“我们”）提供的在安卓平台实现部分墓碑机制的软件，以下协议是本软件相关的具体协议内容，如对本《隐私政策》或相关事宜有任何问题，请通过 jark006@qq.com 与我们联系。\n\n
 
@@ -205,15 +206,15 @@ Thanox(灭霸)的后台保护功能以及部分系统(COS11)会修改应用前�
 
 二、 我们如何使用这些信息\n\n
 1.我们使用“应用列表”提供给用户进行配置哪些应用切到后台时以哪种方式冻结。\n
-2.我们使用进程信息进行具体的冻结、解冻操作，同时提供进程内存占用，运行状态等类似进程管理的可视化页面。\n\n
+2.我们使用实时进程信息进行具体的冻结、解冻操作，同时提供进程内存占用，运行状态等类似进程管理的可视化页面。\n\n
 
 三、 权限使用\n\n
 我们将使用以下权限确保各项功能正常，不会干扰设备正常运作，更不会用于读取或分析您的私密信息。\n
 1. 获取应用列表权限\n
-android.permission.QUERY_ALL_PACKAGES\n\n
-2. 网络状态及联网权限，仅用于获取版本更新信息和更新日志\n
-android.permission.ACCESS_NETWORK_STATE\n
-android.permission.INTERNET\n\n
+(1) android.permission.QUERY_ALL_PACKAGES\n\n
+2. 查看网络状态及网络权限，仅用于获取版本更新信息和更新日志\n
+(1) android.permission.ACCESS_NETWORK_STATE\n
+(2) android.permission.INTERNET\n\n
 
 四、 我们如何更新隐私政策\n\n
 1. 我们保留不时更新或修订本政策的权利。这些更新与修订将构成本政策的一部分并具有等同于本政策的效力，未经您明确同意，我们不会削减您依据当前生效的本政策所应享受的权利。\n
@@ -222,4 +223,12 @@ android.permission.INTERNET\n\n
 五、 如何联系我们\n\n
 如果您对我们的应用权限和安全策略有任何顾虑和疑惑，可随时通过邮箱 jark006@qq.com 向我们反馈以及获得帮助。\n\n
     </string>
+    <string name="reject">拒绝</string>
+    <string name="accept">接受</string>
+    <string name="thanks_title">捐赠感谢名单</string>
+    <string name="thanks_list" translatable="false">
+        感谢以下小伙伴对冻它的捐赠支持，截止至2023年3月4日，大致以时间从最近到最久排序：
+        \n\n微信：凡梦/*惠，*花X4，*林X2，*🌈，*长，*彬，*寒，*宾，*叁，*爸，*(加油!)，*包，*彭，*阳，*。，*我，*G，*行，*勾，g*d，*！，*子，P*e,*月，*名，*0，*邻，*，G*t，*夏，*岸，*骞，*春，*棋，*酸，*猫，A*3，*谏。
+        \n\n支付宝：**鑫X2，卡卡罗宾，*静，*郎，*炀，**豪，**鹏，**昕，**泽，**国，**晖，**秀，**民，**超，*金阳，*宽，*森，*锋，**良，**义。
+        </string>
 </resources>

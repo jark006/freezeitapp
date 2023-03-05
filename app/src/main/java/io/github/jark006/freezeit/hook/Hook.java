@@ -24,24 +24,24 @@ public class Hook implements IXposedHookLoadPackage {
                         Enum.Class.self, Enum.Method.isXposedActive);
                 return;
             case Enum.Package.android:
-                hookAndroid(lpParam);
+                hookAndroid(lpParam.classLoader);
                 return;
             case Enum.Package.powerkeeper:
-                PowerKeeper.Hook(lpParam);
+                PowerKeeper.Hook(lpParam.classLoader);
                 return;
             default:
         }
     }
 
-    public void hookAndroid(LoadPackageParam lpParam) {
+    public void hookAndroid(ClassLoader classLoader) {
         XposedBridge.log("Freezeit[" + BuildConfig.VERSION_NAME + "] Xposed running");
 
         Config config = new Config();
 
-        new AndroidService(config, lpParam);
-        new AlarmHook(config, lpParam);
-        new AnrHook(config, lpParam);
-        new BroadCastHook(config, lpParam);
-//        new WakeLockHook(config, lpParam); // 改到 AndroidService
+        new AndroidService(config, classLoader);
+        new AlarmHook(config, classLoader);
+        new AnrHook(config, classLoader);
+        new BroadCastHook(config, classLoader);
+//        new WakeLockHook(config, classLoader); // 改到 AndroidService
     }
 }

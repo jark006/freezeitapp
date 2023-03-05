@@ -4,6 +4,12 @@ plugins {
 
 android {
     signingConfigs {
+        debug {
+            storeFile file('D:\\Project-github\\freezeitapp\\freezeitapp_key.jks')
+            storePassword 'freezeit'
+            keyAlias 'freezeit'
+            keyPassword 'freezeit'
+        }
         release {
             storeFile file('D:\\Project-github\\freezeitapp\\freezeitapp_key.jks')
             storePassword 'freezeit'
@@ -17,8 +23,8 @@ android {
         applicationId "io.github.jark006.freezeit"
         minSdk 29
         targetSdk 33
-        versionCode 205020
-        versionName "2.5.3Alpha"
+        versionCode 206000
+        versionName "2.6.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resValue "string", "versionName", "${versionName}"

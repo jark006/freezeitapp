@@ -118,6 +118,7 @@ public class AppTimeActivity extends AppCompatActivity {
 
     public static class AppTimeAdapter extends RecyclerView.Adapter<AppTimeAdapter.MyViewHolder> {
         int[] uidTime;
+        StringBuilder timeStr = new StringBuilder(32);
 
         public AppTimeAdapter(int[] newUidTime) {
             uidTime = newUidTime;
@@ -157,25 +158,38 @@ public class AppTimeActivity extends AppCompatActivity {
         }
 
         @SuppressLint("DefaultLocale")
-        String getTimeStr(int time) {
-            if (time <= 0) return "";
-            else if (time <= 1000) return time + "ms";
+        StringBuilder getTimeStr(int time) {
+            timeStr.setLength(0);
 
-            StringBuilder res = new StringBuilder();
+            if (time <= 0) return timeStr;
+            else if (time <= 1000) {
+                timeStr.append(time).append("ms");
+                return timeStr;
+            }
+
             int ms = time % 1000;
             time /= 1000; // now Unit is second
 
             if (time >= 3600) {
-                res.append(time / 3600).append('h');
+                timeStr.append(time / 3600).append('h');
                 time %= 3600;
             }
             if (time >= 60) {
-                res.append(time / 60).append('m');
+                timeStr.append(time / 60).append('m');
                 time %= 60;
             }
-            res.append(String.format("%02d.%03ds", time, ms));
 
-            return res.toString();
+            if (time >= 10) timeStr.append(time);
+            else timeStr.append('0').append(time);
+
+            timeStr.append("s.");
+
+            if (ms >= 100) timeStr.append(ms);
+            else if (ms > 10) timeStr.append('0').append(ms);
+            else timeStr.append("00").append(ms);
+
+            timeStr.append("ms");
+            return timeStr;
         }
 
         @Override

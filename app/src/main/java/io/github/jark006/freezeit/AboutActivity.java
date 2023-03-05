@@ -29,7 +29,7 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.privacy_text).setOnClickListener(this);
 
         findViewById(R.id.wechat_pay).setOnClickListener(this);
-        findViewById(R.id.alipay).setOnClickListener(this);
+        findViewById(R.id.thanks).setOnClickListener(this);
     }
 
 
@@ -81,8 +81,8 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
             Utils.textDialog(this, R.string.privacy_title, R.string.privacy_content);
         } else if (id == R.id.wechat_pay) {
             Utils.imgDialog(this, R.drawable.img_wechatpay);
-        } else if (id == R.id.alipay) {
-            Utils.imgDialog(this, R.drawable.img_alipay);
+        } else if (id == R.id.thanks) {
+            Utils.textDialog(this, R.string.thanks_title, R.string.thanks_list);
         }
     }
 }

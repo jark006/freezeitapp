@@ -6,10 +6,7 @@ import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -131,15 +128,6 @@ public class Utils {
         }
     }
 
-    public static Drawable convertToGrayscale(Drawable drawable) {
-        Drawable newDrawable = drawable.getConstantState().newDrawable().mutate();
-        ColorMatrix matrix = new ColorMatrix();
-        matrix.setSaturation(0);
-        ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
-        newDrawable.setColorFilter(filter);
-        return newDrawable;
-    }
-
     public static void getData(String link, Handler handler) {
         byte[] res = null;
         if (handler == null)
@@ -197,9 +185,9 @@ public class Utils {
         builder.setTitle(titleResID).setMessage(contentResID).create().show();
     }
 
-    public static Bitmap resize(Bitmap bitmap, float scaleX, float scaleY) {
+    public static Bitmap resize(Bitmap bitmap, float scale) {
         Matrix matrix = new Matrix();
-        matrix.postScale(scaleX, scaleY);
+        matrix.postScale(scale, scale);
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, false);
     }
 

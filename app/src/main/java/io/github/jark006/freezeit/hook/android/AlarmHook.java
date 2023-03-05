@@ -6,7 +6,6 @@ import android.os.Build;
 import java.util.ArrayList;
 
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 import io.github.jark006.freezeit.hook.Config;
 import io.github.jark006.freezeit.hook.Enum;
 import io.github.jark006.freezeit.hook.XpUtils;
@@ -15,10 +14,10 @@ public class AlarmHook {
     final static String TAG = "Freezeit[AlarmHook]:";
     Config config;
 
-    public AlarmHook(Config config, LoadPackageParam lpParam) {
+    public AlarmHook(Config config, ClassLoader classLoader) {
         this.config = config;
 
-        XpUtils.hookMethod(TAG, lpParam.classLoader, callback,
+        XpUtils.hookMethod(TAG, classLoader, callback,
                 Build.VERSION.SDK_INT >= 31 ? Enum.Class.AlarmManagerServiceS : Enum.Class.AlarmManagerServiceR,
                 Enum.Method.triggerAlarmsLocked, ArrayList.class, long.class);
     }
@@ -39,7 +38,7 @@ public class AlarmHook {
             var iterator = ((ArrayList<?>) param.args[0]).iterator(); //triggerList
             while (iterator.hasNext()) {
                 final var Alarm = iterator.next(); //迭代器后移，再返回新位置的元素
-                final int uid = XpUtils.getInt(Alarm, Enum.Field.uid);
+                final int uid = config.getAlarmUid(Alarm);
                 if (!config.managedApp.contains(uid) || config.foregroundUid.contains(uid))
                     continue;
 

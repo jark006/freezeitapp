@@ -4,7 +4,6 @@ import android.content.Context;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
-import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import io.github.jark006.freezeit.hook.Enum;
 import io.github.jark006.freezeit.hook.XpUtils;
 
@@ -12,11 +11,10 @@ import io.github.jark006.freezeit.hook.XpUtils;
 public class PowerKeeper {
     final static String TAG = "Freezeit[PowerKeeper]:";
 
-    public static void Hook(XC_LoadPackage.LoadPackageParam lpParam) {
+    public static void Hook(ClassLoader classLoader) {
 
-        ClassLoader classLoader = lpParam.classLoader;
-        XC_MethodHook doNothing = XC_MethodReplacement.DO_NOTHING;
-        XC_MethodHook returnTrue = XC_MethodReplacement.returnConstant(true);
+        final XC_MethodHook doNothing = XC_MethodReplacement.DO_NOTHING;
+        final XC_MethodHook returnTrue = XC_MethodReplacement.returnConstant(true);
 
         XpUtils.hookMethod(TAG, classLoader, returnTrue, Enum.Class.ProcessManager, Enum.Method.kill, Enum.Class.ProcessConfig);
         XpUtils.hookMethod(TAG, classLoader, doNothing, Enum.Class.SleepModeControllerNew, Enum.Method.clearApp);
@@ -27,6 +25,9 @@ public class PowerKeeper {
         XpUtils.hookMethod(TAG, classLoader, returnTrue, Enum.Class.PowerCheckerController, Enum.Method.autoKillApp, int.class, String.class);
         XpUtils.hookMethod(TAG, classLoader, doNothing, Enum.Class.DynamicTurboPowerHandler, Enum.Method.clearApp);
         XpUtils.hookMethod(TAG, classLoader, doNothing, Enum.Class.SleepProcessHelper, Enum.Method.killAppsInSleep);
+
+        XpUtils.hookMethod(TAG, classLoader, doNothing, Enum.Class.ForceDozeController, Enum.Method.removeWhiteListAppsIfEnterForceIdle);
+        XpUtils.hookMethod(TAG, classLoader, doNothing, Enum.Class.ForceDozeController, Enum.Method.restoreWhiteListAppsIfQuitForceIdle);
 
     }
 }

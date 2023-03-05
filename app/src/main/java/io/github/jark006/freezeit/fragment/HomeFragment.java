@@ -89,7 +89,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         binding.swipeRefreshLayout.setOnRefreshListener(() -> new Thread(() -> {
             StaticData.hasGetUpdateInfo = false;
             StaticData.onlineChangelog = "";
-            Utils.getData(getString(R.string.update_json_link), checkUpdateHandler);
+
+            if (StaticData.hasGetPropInfo) statusHandler.sendMessage(new Message());
+            else new Thread(() -> Utils.freezeitTask(Utils.getPropInfo, null,
+                    statusHandler)).start();
+
         }).start());
 
         return binding.getRoot();
@@ -109,10 +113,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         if (StaticData.hasGetPropInfo) statusHandler.sendMessage(new Message());
         else new Thread(() -> Utils.freezeitTask(Utils.getPropInfo, null,
                 statusHandler)).start();
-
-        if (StaticData.hasGetUpdateInfo) checkUpdateHandler.sendMessage(new Message());
-        else new Thread(() -> Utils.getData(getString(R.string.update_json_link),
-                checkUpdateHandler)).start();
     }
 
     @Override
@@ -144,10 +144,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 return;
             }
 
-            var bitmap = Bitmap.createBitmap(StaticData.imgWidth, StaticData.imgHeight, Bitmap.Config.ARGB_8888);
-            bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(response, 0, imgBuffBytes));
-            bitmap = Utils.resize(bitmap, StaticData.imgScale, StaticData.imgScale);
-            binding.cpuImg.setImageBitmap(bitmap);
+            if (StaticData.bitmap == null || StaticData.bitmap.getHeight() != StaticData.imgHeight ||
+                    StaticData.bitmap.getWidth() != StaticData.imgWidth)
+                StaticData.bitmap = Bitmap.createBitmap(StaticData.imgWidth, StaticData.imgHeight, Bitmap.Config.ARGB_8888);
+
+            StaticData.bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(response, 0, imgBuffBytes));
+            binding.cpuImg.setImageBitmap(Utils.resize(StaticData.bitmap, StaticData.imgScale));
 
             int realTimeInfoByteLen = response.length - imgBuffBytes;
             if (realTimeInfoByteLen != 4 * realTimeInfoIntLen) {
@@ -217,6 +219,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     binding.statusText.setText(R.string.freezeit_error_tips);
                     binding.realtimeLayout.setVisibility(View.GONE);
                     binding.freezeitLogo.setVisibility(View.GONE);
+
+                    if (StaticData.hasGetUpdateInfo) checkUpdateHandler.sendMessage(new Message());
+                    else new Thread(() -> Utils.getData(getString(R.string.update_json_link),
+                            checkUpdateHandler)).start();
                     return;
                 }
 
@@ -229,6 +235,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 StaticData.moduleEnv = info.length >= 7 ? info[6] : "Unknown";
                 StaticData.hasGetPropInfo = true;
             }
+
+            if (StaticData.hasGetUpdateInfo) checkUpdateHandler.sendMessage(new Message());
+            else new Thread(() -> Utils.getData(getString(R.string.update_json_link),
+                    checkUpdateHandler)).start();
 
             binding.realtimeLayout.setVisibility(View.VISIBLE);
             binding.freezeitLogo.setVisibility(View.VISIBLE);
@@ -401,7 +411,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 return;
 
             var split = new String(response).split("###");
-            if (split.length > 2 && split[1].length() > 2)
+            if (split.length > 1 && split[1].length() > 2)
                 StaticData.localChangelog = split[1].trim();
 
             binding.changelogText.setText(StaticData.localChangelog);

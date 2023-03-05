@@ -1,5 +1,7 @@
 package io.github.jark006.freezeit;
 
+import android.graphics.Bitmap;
+
 public class StaticData {
 
     public static boolean hasGetUpdateInfo = false;
@@ -8,9 +10,6 @@ public class StaticData {
     public static String onlineChangelog = "";
     public static String zipUrl = "";
     public static String changelogUrl = "";
-
-    public static String onlineTipsTitle = "";
-    public static String onlineTipsContent = "";
     public static boolean hasGetPropInfo = false;
     public static int clusterNum = 0;
     public static int moduleVersionCode = 0;
@@ -23,4 +22,5 @@ public class StaticData {
     public static int imgScale = 3;
     public static int imgWidth = 0;
     public static int imgHeight = 0;
+    public static Bitmap bitmap = null;
 }

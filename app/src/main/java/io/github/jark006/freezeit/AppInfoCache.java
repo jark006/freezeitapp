@@ -32,7 +32,7 @@ public class AppInfoCache {
             this.isSystemApp = isSystemApp;
         }
 
-        public boolean contains(final String keyWord){
+        public boolean contains(final String keyWord) {
             return forSearch.contains(keyWord);
         }
     }
@@ -64,6 +64,12 @@ public class AppInfoCache {
         }
     }
 
+    public static boolean contains(int uid) {
+        synchronized (cacheInfo) {
+            return cacheInfo.containsKey(uid);
+        }
+    }
+
     public static Info get(int uid) {
         synchronized (cacheInfo) {
             return cacheInfo.get(uid);
@@ -78,7 +84,7 @@ public class AppInfoCache {
     }
 
     public static byte[] getAppLabelBytes() {
-        StringBuilder appLabel = new StringBuilder();
+        StringBuilder appLabel = new StringBuilder(1024 * 16);
         synchronized (cacheInfo) {
             cacheInfo.forEach((uid, info) -> {
                 if (!info.packName.equals(info.label))

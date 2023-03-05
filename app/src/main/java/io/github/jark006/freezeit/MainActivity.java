@@ -1,5 +1,8 @@
 package io.github.jark006.freezeit;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +19,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        checkPrivacy(this);
+
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -31,4 +36,24 @@ public class MainActivity extends AppCompatActivity {
 
         new Thread(() -> AppInfoCache.refreshCache(this)).start();
     }
+
+    public static void checkPrivacy(Context context) {
+        SharedPreferences sf = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        final String key = BuildConfig.VERSION_NAME + "isAccept";
+        var isAccept = sf.getBoolean(key, false);
+        if (isAccept) return;
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(R.string.privacy_title).setMessage(R.string.privacy_content)
+                .setNegativeButton(R.string.reject, (dialog, which) -> System.exit(0))
+                .setPositiveButton(R.string.accept, (dialog, which) -> {
+                    var edit = sf.edit();
+                    edit.putBoolean(key, true);
+                    edit.apply();
+                })
+                .setCancelable(false)
+                .create()
+                .show();
+    }
+
 }

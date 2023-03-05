@@ -48,6 +48,7 @@ public class ConfigFragment extends Fragment {
     AppCfgAdapter recycleAdapter;
     final ArrayList<Integer> uidList = new ArrayList<>();
     long lastTimestamp = 0;
+    static String keyWord = "";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -58,7 +59,6 @@ public class ConfigFragment extends Fragment {
         // 下拉刷新时，先更新应用缓存
         binding.swipeRefreshLayout.setOnRefreshListener(() -> new Thread(() -> {
             AppInfoCache.refreshCache(requireContext());
-            AppInfoCache.getUidList(uidList);
             Utils.freezeitTask(Utils.getAppCfg, null, getAppCfgHandler);
         }).start());
 
@@ -157,10 +157,7 @@ public class ConfigFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        new Thread(() -> {
-            AppInfoCache.getUidList(uidList);
-            Utils.freezeitTask(Utils.getAppCfg, null, getAppCfgHandler);
-        }).start();
+        new Thread(() -> Utils.freezeitTask(Utils.getAppCfg, null, getAppCfgHandler)).start();
     }
 
     private final Handler getAppCfgHandler = new Handler(Looper.getMainLooper()) {
@@ -185,10 +182,12 @@ public class ConfigFragment extends Fragment {
                 int uid = Utils.Byte2Int(response, i);
                 int freezeMode = Utils.Byte2Int(response, i + 4);
                 int isTolerant = Utils.Byte2Int(response, i + 8);
-                appCfg.put(uid, new Pair<>(freezeMode, isTolerant));
+                if (AppInfoCache.contains(uid)) // 冻它底层可以获取全部应用，但应用层获取的 AppInfoCache 可能会缺一些特殊应用
+                    appCfg.put(uid, new Pair<>(freezeMode, isTolerant));
             }
 
-            // 补全
+            AppInfoCache.getUidList(uidList);
+            // 补全  此时 uidList 可能包含一些刚刚安装的应用，而底层还没更新全部应用列表
             uidList.forEach(uid -> {
                 if (!appCfg.containsKey(uid))
                     appCfg.put(uid, new Pair<>(Utils.CFG_FREEZER, 1)); // 默认Freezer 宽松
@@ -404,17 +403,6 @@ public class ConfigFragment extends Fragment {
             return uidListFilter.size();
         }
 
-        @SuppressLint("NotifyDataSetChanged")
-        public void filter(@NonNull final String keyWord) {
-            uidListFilter.clear();
-            for (int uid : uidList) {
-                if (AppInfoCache.get(uid).isSystemApp == showSystemApp &&
-                        (keyWord.isEmpty() || AppInfoCache.get(uid).contains(keyWord)))
-                    uidListFilter.add(uid);
-            }
-            notifyDataSetChanged();
-        }
-
         static class MyViewHolder extends RecyclerView.ViewHolder {
 
             ImageView app_icon;
@@ -472,13 +460,22 @@ public class ConfigFragment extends Fragment {
             return tmp;
         }
 
-        @SuppressLint("NotifyDataSetChanged")
         public void switchAppType() {
             showSystemApp = !showSystemApp;
+            updateDataset();
+        }
 
+        public void filter(@NonNull final String _keyWord) {
+            keyWord = _keyWord;
+            updateDataset();
+        }
+
+        @SuppressLint("NotifyDataSetChanged")
+        void updateDataset() {
             uidListFilter.clear();
             for (int uid : uidList) {
-                if (AppInfoCache.get(uid).isSystemApp == showSystemApp)
+                if (AppInfoCache.get(uid).isSystemApp == showSystemApp &&
+                        (keyWord.isEmpty() || AppInfoCache.get(uid).contains(keyWord)))
                     uidListFilter.add(uid);
             }
             notifyDataSetChanged();

@@ -16,17 +16,18 @@ public class XpUtils {
     public final static boolean DEBUG_ALARM = false;
     public final static boolean DEBUG_ANR = false;
 
-    public static void hookMethod(String TAG, ClassLoader classLoader, XC_MethodHook callback,
-                                  String className, String methodName, Object... parameterTypes) {
+    public static boolean hookMethod(String TAG, ClassLoader classLoader, XC_MethodHook callback,
+                                     String className, String methodName, Object... parameterTypes) {
         Class<?> clazz = XposedHelpers.findClassIfExists(className, classLoader);
         Method method = clazz == null ? null :
                 XposedHelpers.findMethodExactIfExists(clazz, methodName, parameterTypes);
         if (method == null) {
             log(TAG, "HookMethod Not support: " + methodName);
-            return;
+            return false;
         }
         XposedBridge.hookMethod(method, callback);
         log(TAG, "HookMethod success: " + methodName);
+        return true;
     }
 
     public static void hookConstructor(String TAG, ClassLoader classLoader, XC_MethodHook callback,
@@ -40,17 +41,6 @@ public class XpUtils {
         }
         XposedBridge.hookMethod(constructor, callback);
         log(TAG, "HookConstructor success: " + className);
-    }
-
-    public static Field getField(final Object obj, final String fieldName) {
-        try {
-            Field field = obj.getClass().getDeclaredField(fieldName);
-            field.setAccessible(true);
-            return field;
-        } catch (Exception e) {
-            XpUtils.log("Freezeit[getInt]", "获取失败 " + obj.getClass().getName() + "#" + fieldName + ": " + e);
-            return null;
-        }
     }
 
     public static int getInt(final Object obj, final String fieldName) {
@@ -86,16 +76,6 @@ public class XpUtils {
         }
     }
 
-    public static Object getObject(final Object obj, final String fieldName) {
-        try {
-            Field field = obj.getClass().getDeclaredField(fieldName);
-            field.setAccessible(true);
-            return field.get(obj);
-        } catch (Exception e) {
-            XpUtils.log("Freezeit[getObject]", "获取失败 " + obj.getClass().getName() + "#" + fieldName + ": " + e);
-            return null;
-        }
-    }
 
     public static void log(String TAG, String content) {
         XposedBridge.log(TAG + content);

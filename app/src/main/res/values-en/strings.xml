@@ -45,11 +45,13 @@
     <string name="check_freezer">check_freezer_status</string>
     <string name="freezeit_tutorial_text">Freezeit tutorial</string>
     <string name="xposed_warn">UnActive, stop working</string>
-    <string name="freezeit_error_tips">
-        1. It takes 1 minute to init after first unlock, please open it again later.\n
-        2. Please check if the Freezeit module is enabled or not. \n
-        3. Please check the network permissions of Freezeit APP. \n
-        4. Check the exception log [ /sdcard/Android/freezeit_crash_log.txt ]</string>
+    <string name="freezeit_error_tips">1. It takes 1 minute to init after first unlock, please open it again later.\n
+2. Please check if the Freezeit module is enabled or not. \n
+3. Please check the network permissions of Freezeit APP. \n
+4. Check the exception log [ /sdcard/Android/freezeit_crash_log.txt ]\n
+5. If the device has not yet installed the Freezeit(MagiskModule), please download and install it via the jump button below. \n
+6. If the device has not yet acquired Root permission, it will not be able to use Freezeit.
+    </string>
     <string name="download">Download</string>
     <string name="second">sec</string>
     <string name="minute">min</string>
@@ -133,5 +135,8 @@ Note:The above statistics are the default behavior of the system, Freezeit only 
     <string name="update_json_link">https://raw.githubusercontent.com/jark006/freezeitRelease/main/update.json</string>
     <string name="online_changelog_link">https://raw.githubusercontent.com/jark006/freezeitRelease/main/changelogFull.txt</string>
     <string name="privacy_title">Privacy</string>
+    <string name="reject">Reject</string>
+    <string name="accept">Accept</string>
+    <string name="thanks_title">Thanks List</string>
 
 </resources>

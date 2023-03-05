@@ -6,7 +6,6 @@ import android.os.IBinder;
 import android.os.WorkSource;
 
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 import io.github.jark006.freezeit.hook.Config;
 import io.github.jark006.freezeit.hook.Enum;
 import io.github.jark006.freezeit.hook.XpUtils;
@@ -15,7 +14,7 @@ public class WakeLockHook {
     final static String TAG = "Freezeit[WakeLockHook]:";
     Config config;
 
-    public WakeLockHook(Config config, LoadPackageParam lpParam) {
+    public WakeLockHook(Config config, ClassLoader classLoader) {
         this.config = config;
 
         // A13 SDK T+ 33+
@@ -35,18 +34,18 @@ public class WakeLockHook {
         //            WorkSource ws, String historyTag, int uid, int pid)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            XpUtils.hookMethod(TAG, lpParam.classLoader, callback,
+            XpUtils.hookMethod(TAG, classLoader, callback,
                     Enum.Class.PowerManagerService, Enum.Method.acquireWakeLockInternal,
                     IBinder.class, int.class, int.class, String.class,
                     String.class, WorkSource.class, String.class, int.class, int.class,
                     Enum.Class.IWakeLockCallback);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            XpUtils.hookMethod(TAG, lpParam.classLoader, callback,
+            XpUtils.hookMethod(TAG, classLoader, callback,
                     Enum.Class.PowerManagerService, Enum.Method.acquireWakeLockInternal,
                     IBinder.class, int.class, int.class, String.class,
                     String.class, WorkSource.class, String.class, int.class, int.class);
         } else {
-            XpUtils.hookMethod(TAG, lpParam.classLoader, callback,
+            XpUtils.hookMethod(TAG, classLoader, callback,
                     Enum.Class.PowerManagerService, Enum.Method.acquireWakeLockInternal,
                     IBinder.class, int.class, String.class,
                     String.class, WorkSource.class, String.class, int.class, int.class);

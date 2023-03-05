@@ -363,7 +363,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/alipay"
+                android:id="@+id/thanks"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -374,14 +374,14 @@
                     android:layout_height="60dp"
                     android:contentDescription="@string/icon"
                     android:padding="10dp"
-                    app:srcCompat="@drawable/logo_alipay" />
+                    app:srcCompat="@drawable/logo_thanks" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
                     android:padding="10dp"
-                    android:text="@string/donate_alipay"
+                    android:text="@string/thanks_title"
                     android:textSize="16sp" />
             </LinearLayout>
 

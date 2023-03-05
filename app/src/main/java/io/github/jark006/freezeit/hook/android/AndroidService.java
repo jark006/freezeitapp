@@ -19,7 +19,6 @@ import java.util.Set;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedHelpers;
-import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import io.github.jark006.freezeit.Utils;
 import io.github.jark006.freezeit.hook.Config;
 import io.github.jark006.freezeit.hook.Enum;
@@ -60,31 +59,39 @@ public class AndroidService {
 
     LocalSocketServer serverThread = new LocalSocketServer();
 
-    public AndroidService(Config config, XC_LoadPackage.LoadPackageParam lpParam) {
+    ClassLoader classLoader;
+
+    public AndroidService(Config config, ClassLoader classLoader) {
         this.config = config;
+        this.classLoader = classLoader;
 
         // A10-13 ActivityManagerService
         // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java
-        XpUtils.hookConstructor(AMS_TAG, lpParam.classLoader, new XC_MethodHook() {
+        XpUtils.hookConstructor(AMS_TAG, classLoader, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) {
-                Object mProcessList = XpUtils.getObject(param.thisObject, Enum.Field.mProcessList);
-                mLruProcesses = (ArrayList<?>) XpUtils.getObject(mProcessList, Enum.Field.mLruProcesses);
-                log(AMS_TAG, "Init mLruProcesses");
+//                Object mProcessList = XpUtils.getObject(param.thisObject, Enum.Field.mProcessList);
+                Object mProcessList = XposedHelpers.getObjectField(param.thisObject, Enum.Field.mProcessList);
+                mLruProcesses = mProcessList == null ? null :
+                        (ArrayList<?>) XposedHelpers.getObjectField(mProcessList, Enum.Field.mLruProcesses);
+                log(AMS_TAG, "Init mLruProcesses " + ((mLruProcesses == null ? "fail" : "success")));
             }
         }, Enum.Class.ActivityManagerService, Context.class, Enum.Class.ActivityTaskManagerService);
 
-
         windowsStackMethod = XposedHelpers.findMethodExactIfExists(
-                Enum.Class.RootWindowContainer, lpParam.classLoader,
+                Enum.Class.RootWindowContainer, classLoader,
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ?
-                        Enum.Method.getAllRootTaskInfos : Enum.Method.getAllStackInfos,
-                int.class);
-        log(WIN_TAG, "Init windowsStackMethod " + ((windowsStackMethod == null ? "fail" : "success")));
+                        Enum.Method.getAllRootTaskInfos : Enum.Method.getAllStackInfos, int.class);
+        if (windowsStackMethod == null) {
+            log(WIN_TAG, "Init windowsStackMethod fail");
+        } else {
+            windowsStackMethod.setAccessible(true);
+            log(WIN_TAG, "Init windowsStackMethod success");
+        }
 
         // A13 RootWindowContainer
         // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/wm/RootWindowContainer.java
-        XpUtils.hookConstructor(WIN_TAG, lpParam.classLoader, new XC_MethodHook() {
+        XpUtils.hookConstructor(WIN_TAG, classLoader, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) {
                 mRootWindowContainer = param.thisObject;
@@ -95,12 +102,12 @@ public class AndroidService {
 
         // A10-A13 NetworkManagementService
         // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/NetworkManagementService.java
-        UidRangeParcelClazz = XposedHelpers.findClassIfExists(Enum.Class.UidRangeParcel, lpParam.classLoader);
+        UidRangeParcelClazz = XposedHelpers.findClassIfExists(Enum.Class.UidRangeParcel, classLoader);
         log(NMS_TAG, "Init UidRangeParcel " + ((UidRangeParcelClazz == null ? "fail" : "success")));
-        XpUtils.hookMethod(NMS_TAG, lpParam.classLoader, new XC_MethodHook() {
+        XpUtils.hookMethod(NMS_TAG, classLoader, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) {
-                mNetdService = XpUtils.getObject(param.thisObject, Enum.Field.mNetdService);
+                mNetdService = XposedHelpers.getObjectField(param.thisObject, Enum.Field.mNetdService);
                 log(NMS_TAG, "Init mNetdService " + ((mNetdService == null ? "fail" : "success")));
             }
         }, Enum.Class.NetworkManagementService, Enum.Method.connectNativeNetdService);
@@ -109,28 +116,30 @@ public class AndroidService {
         // AppOpsService
         // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/appop/AppOpsService.java;l=1776
         setUidModeMethod = XposedHelpers.findMethodExactIfExists(
-                Enum.Class.AppOpsService, lpParam.classLoader, Enum.Method.setUidMode,
+                Enum.Class.AppOpsService, classLoader, Enum.Method.setUidMode,
                 int.class, int.class, int.class);
         log(WAK_TAG, "Init setUidModeMethod " + ((setUidModeMethod == null ? "fail" : "success")));
         XC_MethodHook AppOpsHook = new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) {
                 appOps = param.thisObject;
+                log(WAK_TAG, "Init appOps " + ((appOps == null ? "fail" : "success")));
             }
         };
+
         // A11-13
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            XpUtils.hookConstructor(WAK_TAG, lpParam.classLoader, AppOpsHook, Enum.Class.AppOpsService,
+            XpUtils.hookConstructor(WAK_TAG, classLoader, AppOpsHook, Enum.Class.AppOpsService,
                     File.class, Handler.class, Context.class);
         } else { // A10
-            XpUtils.hookConstructor(WAK_TAG, lpParam.classLoader, AppOpsHook, Enum.Class.AppOpsService,
+            XpUtils.hookConstructor(WAK_TAG, classLoader, AppOpsHook, Enum.Class.AppOpsService,
                     File.class, Handler.class);
         }
 
 
         // A10-A13 DisplayPowerController
         // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/display/DisplayPowerController.java;l=1927
-        XpUtils.hookMethod(DPC_TAG, lpParam.classLoader, new XC_MethodHook() {
+        XpUtils.hookMethod(DPC_TAG, classLoader, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) {
                 mScreenState = (int) param.args[0];
@@ -146,7 +155,7 @@ public class AndroidService {
         final int GET_FOREGROUND = baseCode + 1;
         final int GET_SCREEN_STATE = baseCode + 2;
         final int SET_CONFIG = baseCode + 20;
-        final int SET_WAKEUP_LOCK = baseCode + 21; // 设置唤醒锁权限，针对[宽松]应用，[严格]应用已禁止申请唤醒锁
+        final int SET_WAKEUP_LOCK = baseCode + 21; // 设置唤醒锁权限
         final int BREAK_NETWORK = baseCode + 41;
 
         // 有效命令集
@@ -247,55 +256,65 @@ public class AndroidService {
 
     void handleForeground(OutputStream os, byte[] replyBuff) throws Exception {
         config.foregroundUid.clear();
-        for (int i = mLruProcesses.size() - 1; i > 10; i--) { //逆序, 最近活跃应用在最后
-            var processRecord = mLruProcesses.get(i);
-            if (processRecord == null) continue;
+        try {
+            for (int i = (mLruProcesses == null || config.isCurProcStateNull()) ?
+                    0 : mLruProcesses.size() - 1; i > 10; i--) { //逆序, 最近活跃应用在最后
+                var processRecord = mLruProcesses.get(i);
+                if (processRecord == null) continue;
 
-            final int uid = XpUtils.getInt(processRecord, Enum.Field.uid);
-            if (!config.managedApp.contains(uid))
-                continue;
+                final int uid = config.getProcessRecordUid(processRecord);// processRecord
+                if (!config.managedApp.contains(uid))
+                    continue;
 
-            int mCurProcState;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                var mState = XpUtils.getObject(processRecord, Enum.Field.mState);
-                if (mState == null) continue;
-                mCurProcState = XpUtils.getInt(mState, Enum.Field.mCurProcState);
-            } else {
-                mCurProcState = XpUtils.getInt(processRecord, Enum.Field.mCurProcState);
+                int mCurProcState;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    var mState = config.getProcessRecordState(processRecord);
+                    if (mState == null) continue;
+                    mCurProcState = config.getCurProcState(mState);
+                } else {
+                    mCurProcState = config.getCurProcState(processRecord);
+                }
+
+                // 2在顶层 3绑定了顶层应用, 有前台服务:4常驻状态栏 6悬浮窗
+                // ProcessStateEnum: https://cs.android.com/android/platform/superproject/+/master:out/soong/.intermediates/frameworks/base/framework-minus-apex/android_common/xref35/srcjars.xref/android/app/ProcessStateEnum.java;l=10
+                if (mCurProcState == 2 || mCurProcState == 3 ||
+                        (4 <= mCurProcState && mCurProcState <= 6 && config.tolerant.contains(uid)))
+                    config.foregroundUid.add(uid);
             }
-
-            // 2在顶层 3绑定了顶层应用, 有前台服务:4常驻状态栏 6悬浮窗
-            // ProcessStateEnum: https://cs.android.com/android/platform/superproject/+/master:out/soong/.intermediates/frameworks/base/framework-minus-apex/android_common/xref35/srcjars.xref/android/app/ProcessStateEnum.java;l=10
-            if (mCurProcState == 2 || mCurProcState == 3 ||
-                    (4 <= mCurProcState && mCurProcState <= 6 && config.tolerant.contains(uid)))
-                config.foregroundUid.add(uid);
+        } catch (Exception ignore) {
         }
 
         // 某些系统(COS11/12)及Thanox的后台保护机制，会把某些应用或游戏的 mCurProcState 设为 0(系统常驻进程专有状态)
         // 此时只能到窗口管理器获取有前台窗口的应用
         if (config.isExtendFg() && windowsStackMethod != null && mRootWindowContainer != null) {
-            var rootTaskInfoList = (List<?>) windowsStackMethod.invoke(mRootWindowContainer, -1);
+            List<?> rootTaskInfoList;
+            try {
+                rootTaskInfoList = (List<?>) windowsStackMethod.invoke(mRootWindowContainer, -1);
+            } catch (Exception ignore) {
+                rootTaskInfoList = null;
+            }
             if (rootTaskInfoList != null) {
                 // A12 https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/app/ActivityTaskManager.java;l=503
                 // A11 https://cs.android.com/android/platform/superproject/+/android-mainline-11.0.0_r13:frameworks/base/core/java/android/app/ActivityManager.java;l=2816
                 for (Object info : rootTaskInfoList) {
-                    boolean visible = XpUtils.getBoolean(info, "visible");
+                    boolean visible = config.getTaskInfoVisible(info);
                     if (!visible) continue;
 
                     int uid = -1;
-                    var childTaskNames = (String[]) XpUtils.getObject(info,
-                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? "childTaskNames" : "taskNames");
+                    var childTaskNames = config.getTaskInfoTaskNames(info);
                     if (childTaskNames != null && childTaskNames.length > 0) {
                         int pkgEndIdx = childTaskNames[0].indexOf('/'); // 只取首个 taskId
                         if (pkgEndIdx > 0) {
                             final String pkg = childTaskNames[0].substring(0, pkgEndIdx);
-                            var value = config.uidIndex.get(pkg);
+                            final Integer value = config.uidIndex.get(pkg);
                             if (value != null) uid = value;
                         }
                     }
 
-                    if (config.managedApp.contains(uid))
+                    if (config.managedApp.contains(uid)) {
                         config.foregroundUid.add(uid);
+//                        log(WIN_TAG, "窗口前台 " + config.pkgIndex.getOrDefault(uid, "" + uid));
+                    }
                 }
             }
         }
@@ -394,6 +413,11 @@ public class AndroidService {
 
         os.write(buff, 0, 4);
         os.close();
+
+        if (!config.initField) {
+            config.Init(classLoader);
+            log("Freezeit[InitField]:", config.Init(classLoader));
+        }
     }
 
 
@@ -414,8 +438,8 @@ public class AndroidService {
         final int WAKEUP_LOCK_CODE = 40;
 
         try {
-            if (setUidModeMethod == null) {
-                log(WAK_TAG, "未初始化 setUidModeMethod");
+            if (setUidModeMethod == null || appOps == null) {
+                log(WAK_TAG, "未初始化 setUidModeMethod appOps");
                 throw null;
             }
 

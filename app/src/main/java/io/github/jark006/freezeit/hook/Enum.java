@@ -34,6 +34,8 @@ public class Enum {
         public final static String PowerManagerService = "com.android.server.power.PowerManagerService";
         public final static String AlarmManagerServiceR = "com.android.server.AlarmManagerService"; //SDK x ~ 30
         public final static String AlarmManagerServiceS = "com.android.server.alarm.AlarmManagerService"; // SDK 31+
+        public final static String AlarmR = "com.android.server.AlarmManagerService#Alarm"; //SDK x ~ 30
+        public final static String AlarmS = "com.android.server.alarm.Alarm"; // SDK 31+
         public final static String NetworkManagementService = "com.android.server.NetworkManagementService";
         public final static String Dependencies = "com.android.server.NetworkManagementService$Dependencies";
         public final static String SystemServices = "com.android.server.NetworkManagementService$SystemServices";
@@ -60,6 +62,9 @@ public class Enum {
         public final static String PowerCheckerController = "com.miui.powerkeeper.powerchecker.PowerCheckerController";
         public final static String ProcessManager = "miui.process.ProcessManager";
         public final static String ProcessConfig = "miui.process.ProcessConfig";
+        public final static String ForceDozeController = "com.miui.powerkeeper.statemachine.ForceDozeController";
+        public final static String RootTaskInfoS = "android.app.ActivityTaskManager$RootTaskInfo";
+        public final static String StackInfo = "android.app.ActivityManager$StackInfo";
     }
 
     public final static class Method {
@@ -98,6 +103,8 @@ public class Enum {
         public final static String serviceTimeout = "serviceTimeout";
         public final static String serviceForegroundTimeout = "serviceForegroundTimeout";
         public final static String skipReceiverLocked = "skipReceiverLocked";
+        public final static String removeWhiteListAppsIfEnterForceIdle = "removeWhiteListAppsIfEnterForceIdle";
+        public final static String restoreWhiteListAppsIfQuitForceIdle = "restoreWhiteListAppsIfQuitForceIdle";
     }
 
     public final static class Field {
@@ -127,6 +134,9 @@ public class Enum {
         public final static String mCurProcState = "mCurProcState";
         public final static String mState = "mState";
         public final static String delivery = "delivery";
+        public final static String visible = "visible";
+        public final static String childTaskNames = "childTaskNames";
+        public final static String taskNames = "taskNames";
     }
 
 }
