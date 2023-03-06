@@ -26,8 +26,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class AppTimeActivity extends AppCompatActivity {
-    AppTimeAdapter recycleAdapter;
-    int[] uidTime = new int[0];
+    AppTimeAdapter recycleAdapter = new AppTimeAdapter();
     Timer timer;
 
     @SuppressLint("MissingInflatedId")
@@ -36,13 +35,13 @@ public class AppTimeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_time);
 
+        var animator = new DefaultItemAnimator();
+        animator.setSupportsChangeAnimations(false);
         RecyclerView recyclerView = findViewById(R.id.recyclerviewApp);
-        recycleAdapter = new AppTimeAdapter(uidTime);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getBaseContext());
-        recyclerView.setLayoutManager(layoutManager);
-        layoutManager.setOrientation(RecyclerView.VERTICAL);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(recycleAdapter);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setItemAnimator(animator);
+        recyclerView.setHasFixedSize(true);
 
         Context context = this;
         this.addMenuProvider(new MenuProvider() {
@@ -95,34 +94,14 @@ public class AppTimeActivity extends AppCompatActivity {
 
             int[] newUidTime = new int[response.length / 4];
             Utils.Byte2Int(response, 0, response.length, newUidTime, 0);
-
-            if (newUidTime.length != uidTime.length) {
-                recycleAdapter.update(newUidTime);
-                recycleAdapter.notifyItemRangeChanged(0, newUidTime.length / 5);
-            } else {
-                recycleAdapter.update(newUidTime);
-                for (int i = 0; i < newUidTime.length; i += 5) {
-                    if (newUidTime[i] == uidTime[i] &&
-                            newUidTime[i + 1] == uidTime[i + 1] &&
-                            newUidTime[i + 2] == uidTime[i + 2] &&
-                            newUidTime[i + 3] == uidTime[i + 3] &&
-                            newUidTime[i + 4] == uidTime[i + 4])
-                        continue;
-                    recycleAdapter.notifyItemChanged(i / 5);
-                }
-            }
-            uidTime = newUidTime;
+            recycleAdapter.updateDataSet(newUidTime);
         }
     };
 
 
-    public static class AppTimeAdapter extends RecyclerView.Adapter<AppTimeAdapter.MyViewHolder> {
-        int[] uidTime;
+    static class AppTimeAdapter extends RecyclerView.Adapter<AppTimeAdapter.MyViewHolder> {
+        int[] uidTime = new int[0];
         StringBuilder timeStr = new StringBuilder(32);
-
-        public AppTimeAdapter(int[] newUidTime) {
-            uidTime = newUidTime;
-        }
 
         @NonNull
         @Override
@@ -197,8 +176,25 @@ public class AppTimeActivity extends AppCompatActivity {
             return uidTime.length / 5;
         }
 
-        public void update(int[] newUidTime) {
+        @SuppressLint("NotifyDataSetChanged")
+        public void updateDataSet(@NonNull int[] newUidTime) {
+            if (uidTime.length != newUidTime.length) {
+                uidTime = newUidTime;
+                notifyDataSetChanged();
+                return;
+            }
+
+            var oldUidTime = uidTime;
             uidTime = newUidTime;
+            for (int i = 0; i < uidTime.length; i += 5) {
+                if (newUidTime[i] == oldUidTime[i] &&
+                        newUidTime[i + 1] == oldUidTime[i + 1] &&
+                        newUidTime[i + 2] == oldUidTime[i + 2] &&
+                        newUidTime[i + 3] == oldUidTime[i + 3] &&
+                        newUidTime[i + 4] == oldUidTime[i + 4])
+                    continue;
+                notifyItemChanged(i / 5);
+            }
         }
 
         static class MyViewHolder extends RecyclerView.ViewHolder {

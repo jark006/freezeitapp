@@ -37,6 +37,8 @@ public class AppInfoCache {
         }
     }
 
+    private final static StringBuilder appLabelList = new StringBuilder(1024 * 16);
+    private final static ArrayList<Integer> uidList = new ArrayList<>(256);
     private final static HashMap<Integer, Info> cacheInfo = new HashMap<>();
 
     public static void refreshCache(Context context) {
@@ -50,15 +52,20 @@ public class AppInfoCache {
                 applicationList = pm.getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES);
             }
 
+            uidList.clear();
             cacheInfo.clear();
+            appLabelList.setLength(0);
             for (ApplicationInfo appInfo : applicationList) {
                 if (appInfo.uid < 10000)
                     continue;
 
                 boolean isSystemApp = (appInfo.flags & (FLAG_SYSTEM | FLAG_UPDATED_SYSTEM_APP)) != 0;
                 String label = pm.getApplicationLabel(appInfo).toString();
-                cacheInfo.put(appInfo.uid, new Info(
-                        appInfo.loadIcon(pm), appInfo.packageName, label, appInfo.uid, isSystemApp));
+                uidList.add(appInfo.uid);
+                if (!appInfo.packageName.equals(label))
+                    appLabelList.append(appInfo.uid).append(' ').append(label).append('\n');
+                cacheInfo.put(appInfo.uid,
+                        new Info(appInfo.loadIcon(pm), appInfo.packageName, label, appInfo.uid, isSystemApp));
             }
             Log.d(TAG, context.getString(R.string.update_cache) + cacheInfo.size());
         }
@@ -76,21 +83,15 @@ public class AppInfoCache {
         }
     }
 
-    public static void getUidList(ArrayList<Integer> uidList) {
-        uidList.clear();
+    public static ArrayList<Integer> getUidList() {
         synchronized (cacheInfo) {
-            AppInfoCache.cacheInfo.forEach((uid, info) -> uidList.add(uid));
+            return uidList;
         }
     }
 
     public static byte[] getAppLabelBytes() {
-        StringBuilder appLabel = new StringBuilder(1024 * 16);
         synchronized (cacheInfo) {
-            cacheInfo.forEach((uid, info) -> {
-                if (!info.packName.equals(info.label))
-                    appLabel.append(uid).append(" ").append(info.label).append('\n');
-            });
+            return appLabelList.toString().getBytes();
         }
-        return appLabel.toString().getBytes();
     }
 }

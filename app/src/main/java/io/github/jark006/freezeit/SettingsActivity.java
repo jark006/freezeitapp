@@ -224,10 +224,10 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
             if (settingsVar[clusterBindIdx] > 6) settingsVar[clusterBindIdx] = 0;
             if (settingsVar[freezeModeIdx] > 5) settingsVar[freezeModeIdx] = 0;
+            if (settingsVar[reFreezeTimeoutIdx] > 4) settingsVar[reFreezeTimeoutIdx] = 2;
             if (settingsVar[freezeTimeoutIdx] > 60) settingsVar[freezeTimeoutIdx] = 10;
-            if (settingsVar[terminateTimeoutIdx] > 120) settingsVar[terminateTimeoutIdx] = 30;
             if (settingsVar[wakeupTimeoutIdx] > 120) settingsVar[wakeupTimeoutIdx] = 30;
-            if (settingsVar[reFreezeTimeoutIdx] > 5) settingsVar[reFreezeTimeoutIdx] = 0;
+            if (settingsVar[terminateTimeoutIdx] > 120) settingsVar[terminateTimeoutIdx] = 30;
 
             InitSpinner(clusterBindSpinner, clusterBindIdx);
             InitSpinner(freezeModeSpinner, freezeModeIdx);

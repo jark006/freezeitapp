@@ -1,6 +1,5 @@
 package io.github.jark006.freezeit.fragment;
 
-import static android.content.Context.ACTIVITY_SERVICE;
 import static androidx.core.content.ContextCompat.getColor;
 
 import android.annotation.SuppressLint;
@@ -47,7 +46,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private FragmentHomeBinding binding;
 
     Timer timer;
-    ActivityManager am;
     ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
 
     final int realTimeInfoIntLen = 23;
@@ -56,8 +54,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
-        am = (ActivityManager) requireActivity().getSystemService(ACTIVITY_SERVICE);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
 
@@ -313,7 +309,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 Utils.Int2Byte(StaticData.imgHeight, realTimeRequest, 0);
                 Utils.Int2Byte(StaticData.imgWidth, realTimeRequest, 4);
 
-                am.getMemoryInfo(memoryInfo); // 底层 /proc/meminfo 的 MemAvailable 不可靠
+                StaticData.am.getMemoryInfo(memoryInfo); // 底层 /proc/meminfo 的 MemAvailable 不可靠
                 Utils.Int2Byte((int) (memoryInfo.availMem >> 20), realTimeRequest, 8); //Unit: MiB
 
                 Utils.freezeitTask(Utils.getRealTimeInfo, realTimeRequest, realTimeHandler);

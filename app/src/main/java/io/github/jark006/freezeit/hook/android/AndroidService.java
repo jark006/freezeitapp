@@ -6,7 +6,6 @@ import android.content.Context;
 import android.net.LocalServerSocket;
 import android.os.Build;
 import android.os.Handler;
-import android.util.Log;
 
 import java.io.File;
 import java.io.OutputStream;
@@ -211,7 +210,7 @@ public class AndroidService {
                         while (readCnt < payloadLen) { //欲求不满
                             int cnt = is.read(buff, readCnt, payloadLen - readCnt);
                             if (cnt < 0) {
-                                Log.e(TAG, "接收完毕或错误 " + cnt);
+                                log(TAG, "接收完毕或错误 " + cnt);
                                 break;
                             }
                             readCnt += cnt;

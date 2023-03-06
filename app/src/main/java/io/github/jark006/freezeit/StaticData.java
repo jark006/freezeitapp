@@ -1,5 +1,6 @@
 package io.github.jark006.freezeit;
 
+import android.app.ActivityManager;
 import android.graphics.Bitmap;
 
 public class StaticData {
@@ -23,4 +24,5 @@ public class StaticData {
     public static int imgWidth = 0;
     public static int imgHeight = 0;
     public static Bitmap bitmap = null;
+    public static ActivityManager am;
 }

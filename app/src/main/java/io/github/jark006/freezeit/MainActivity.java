@@ -1,5 +1,6 @@
 package io.github.jark006.freezeit;
 
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -20,6 +21,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         checkPrivacy(this);
+
+        StaticData.am = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
 
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());

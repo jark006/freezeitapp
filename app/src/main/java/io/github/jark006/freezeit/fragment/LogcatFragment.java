@@ -39,6 +39,7 @@ public class LogcatFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentLogcatBinding.inflate(inflater, container, false);
+        binding.logView.setMovementMethod(ScrollingMovementMethod.getInstance());//流畅滑动
 
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
@@ -61,10 +62,7 @@ public class LogcatFragment extends Fragment {
                     Utils.layoutDialog(requireContext(), R.layout.help_dialog_logcat);
                 else if (id == R.id.update_label) {
                     Toast.makeText(requireContext(), R.string.update_start, Toast.LENGTH_SHORT).show();
-                    new Thread(() -> {
-                        AppInfoCache.refreshCache(requireContext());
-                        Utils.freezeitTask(Utils.setAppLabel, AppInfoCache.getAppLabelBytes(), appLabelHandler);
-                    }).start();
+                    new Thread(() -> Utils.freezeitTask(Utils.setAppLabel, AppInfoCache.getAppLabelBytes(), appLabelHandler)).start();
                 }
                 return true;
             }
@@ -155,8 +153,6 @@ public class LogcatFragment extends Fragment {
                 return;
 
             lastLogLen = response.length;
-
-            binding.logView.setMovementMethod(ScrollingMovementMethod.getInstance());//流畅滑动
             binding.logView.setText(new String(response));
             binding.forBottom.requestFocus();//请求焦点，直接到日志底部
             binding.forBottom.clearFocus();
