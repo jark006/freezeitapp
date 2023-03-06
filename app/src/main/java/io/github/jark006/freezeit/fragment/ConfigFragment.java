@@ -282,17 +282,18 @@ public class ConfigFragment extends Fragment {
     static class AppCfgAdapter extends RecyclerView.Adapter<AppCfgAdapter.MyViewHolder> {
         ArrayList<Integer> uidList = new ArrayList<>();
         ArrayList<Integer> uidListFilter = new ArrayList<>(400);
-        HashMap<Integer, Pair<Integer, Integer>> appCfg = new HashMap<>(); //<uid, <freezeMode, tolerant>>
+        static HashMap<Integer, Pair<Integer, Integer>> appCfg = new HashMap<>(); //<uid, <freezeMode, tolerant>>
         boolean showSystemApp = false;
         String keyWord = "";
 
         public AppCfgAdapter() {
         }
 
-        public void updateDataSet(@NonNull ArrayList<Integer> uidList,
-                                  @NonNull HashMap<Integer, Pair<Integer, Integer>> appCfg) {
-            this.uidList = uidList;
-            this.appCfg = appCfg;
+        public void updateDataSet(@NonNull ArrayList<Integer> newUidList,
+                                  @NonNull HashMap<Integer, Pair<Integer, Integer>> newAppCfg) {
+            uidList = newUidList;
+            appCfg.clear();
+            appCfg.putAll(newAppCfg);
             keyWord = "";
             updateAndRefreshView();
         }
@@ -319,7 +320,7 @@ public class ConfigFragment extends Fragment {
             }
         }
 
-        int idx2cfgValue(int i) {
+        static int idx2cfgValue(int i) {
             switch (i) {
                 case 0:
                     return CFG_TERMINATE;
@@ -338,12 +339,15 @@ public class ConfigFragment extends Fragment {
         public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
             int uid = uidListFilter.get(position);
 
-            var info = AppInfoCache.get(uid);
-            if (info != null) {
-                holder.app_icon.setImageDrawable(info.icon);
-                holder.app_label.setText(info.label);
-            } else {
-                holder.app_label.setText(String.valueOf(uid));
+            if (holder.uid != uid) {
+                holder.uid = uid;
+                var info = AppInfoCache.get(uid);
+                if (info != null) {
+                    holder.app_icon.setImageDrawable(info.icon);
+                    holder.app_label.setText(info.label);
+                } else {
+                    holder.app_label.setText(String.valueOf(uid));
+                }
             }
 
             var cfg = appCfg.get(uid);
@@ -361,34 +365,6 @@ public class ConfigFragment extends Fragment {
 
             holder.spinner_cfg.setSelection(cfgValue2idx(freezeMode));
             holder.spinner_tolerant.setSelection(isTolerant == 0 ? 0 : 1);
-
-            holder.spinner_cfg.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int spinnerPosition, long id) {
-                    var cfg = appCfg.get(uid);
-                    int newFreezeMode = idx2cfgValue(spinnerPosition);
-                    if (cfg == null || cfg.first == newFreezeMode) return;
-                    appCfg.put(uid, new Pair<>(newFreezeMode, cfg.second));
-                    holder.spinner_tolerant.setVisibility(newFreezeMode == CFG_WHITELIST ? View.GONE : View.VISIBLE);
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-                }
-            });
-
-            holder.spinner_tolerant.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int spinnerPosition, long id) {
-                    var cfg = appCfg.get(uid);
-                    if (cfg == null || cfg.second == spinnerPosition) return;
-                    appCfg.put(uid, new Pair<>(cfg.first, spinnerPosition));
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-                }
-            });
         }
 
         @Override
@@ -401,6 +377,7 @@ public class ConfigFragment extends Fragment {
             ImageView app_icon;
             TextView app_label;
             Spinner spinner_cfg, spinner_tolerant;
+            int uid = 0;
 
             public MyViewHolder(View view) {
                 super(view);
@@ -408,7 +385,38 @@ public class ConfigFragment extends Fragment {
                 app_label = view.findViewById(R.id.app_label);
                 spinner_cfg = view.findViewById(R.id.spinner_cfg);
                 spinner_tolerant = view.findViewById(R.id.spinner_level);
+
+                spinner_cfg.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int spinnerPosition, long id) {
+                        if (uid == 0) return;
+                        var cfg = appCfg.get(uid);
+                        int newFreezeMode = idx2cfgValue(spinnerPosition);
+                        if (cfg == null || cfg.first == newFreezeMode) return;
+                        appCfg.put(uid, new Pair<>(newFreezeMode, cfg.second));
+                        spinner_tolerant.setVisibility(newFreezeMode == CFG_WHITELIST ? View.GONE : View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                    }
+                });
+
+                spinner_tolerant.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int spinnerPosition, long id) {
+                        if (uid == 0) return;
+                        var cfg = appCfg.get(uid);
+                        if (cfg == null || cfg.second == spinnerPosition) return;
+                        appCfg.put(uid, new Pair<>(cfg.first, spinnerPosition));
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                    }
+                });
             }
+
         }
 
         @SuppressLint("NotifyDataSetChanged")
