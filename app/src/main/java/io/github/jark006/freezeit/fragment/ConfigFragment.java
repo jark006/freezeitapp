@@ -38,34 +38,42 @@ import java.util.HashMap;
 
 import io.github.jark006.freezeit.AppInfoCache;
 import io.github.jark006.freezeit.R;
+import io.github.jark006.freezeit.StaticData;
 import io.github.jark006.freezeit.Utils;
 import io.github.jark006.freezeit.databinding.FragmentConfigBinding;
 
 public class ConfigFragment extends Fragment {
     private final static String TAG = "ConfigFragment";
+    final int GET_APP_CFG = 1,
+            SET_CFG_SUCCESS = 2,
+            SET_CFG_FAIL = 3;
 
     private FragmentConfigBinding binding;
     AppCfgAdapter recycleAdapter = new AppCfgAdapter();
     long lastTimestamp = 0;
 
+
+    // 配置名单 <uid, <freezeMode, isTolerant>>
+    // freezeMode: [10]:杀死 [20]:SIGSTOP [30]:Freezer [40]:自由 [50]:内置
+    HashMap<Integer, Pair<Integer, Integer>> appCfg = new HashMap<>();
+    ArrayList<Integer> uidListSort = new ArrayList<>();
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         binding = FragmentConfigBinding.inflate(inflater, container, false);
-        binding.swipeRefreshLayout.setRefreshing(true);
 
-        // 下拉刷新时，先更新应用缓存
-        binding.swipeRefreshLayout.setOnRefreshListener(() -> new Thread(() -> {
-            AppInfoCache.refreshCache(requireContext());
-            Utils.freezeitTask(Utils.getAppCfg, null, getAppCfgHandler);
-        }).start());
-
-        binding.recyclerviewApp.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.recyclerviewApp.setLayoutManager(new LinearLayoutManager(requireContext()));
         var animator = new DefaultItemAnimator();
         animator.setSupportsChangeAnimations(false);
         binding.recyclerviewApp.setItemAnimator(animator);
         binding.recyclerviewApp.setAdapter(recycleAdapter);
         binding.recyclerviewApp.setHasFixedSize(true);
+
+        binding.swipeRefreshLayout.setOnRefreshListener(() -> new Thread(() -> {
+            AppInfoCache.refreshCache(requireContext());// 下拉刷新时，先更新应用缓存
+            getAppCfgTask();
+        }).start());
 
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
@@ -111,8 +119,14 @@ public class ConfigFragment extends Fragment {
             lastTimestamp = now;
 
             byte[] newConf = recycleAdapter.getCfgBytes();
-            if (newConf != null)
-                new Thread(() -> Utils.freezeitTask(Utils.setAppCfg, newConf, setAppCfgHandler)).start();
+            if (newConf == null) return;
+
+            new Thread(() -> {
+                var recvLen = Utils.freezeitTask(Utils.setAppCfg, newConf);
+                handler.sendEmptyMessage((recvLen == 7 &&
+                        new String(StaticData.response, 0, 7).equals("success")) ?
+                        SET_CFG_SUCCESS : SET_CFG_FAIL);
+            }).start();
         });
 
         binding.fabConvertCfg.setOnClickListener(view -> {
@@ -155,122 +169,113 @@ public class ConfigFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        new Thread(() -> Utils.freezeitTask(Utils.getAppCfg, null, getAppCfgHandler)).start();
+        binding.swipeRefreshLayout.setRefreshing(true);
+        new Thread(this::getAppCfgTask).start();
     }
 
-    private final Handler getAppCfgHandler = new Handler(Looper.getMainLooper()) {
+    void getAppCfgTask() {
+        var recvLen = Utils.freezeitTask(Utils.getAppCfg, null);
+        if (recvLen == 0 || recvLen % 12 != 0) {
+            if (binding != null)
+                binding.swipeRefreshLayout.setRefreshing(false);
+            return;
+        }
+
+        appCfg.clear();
+        // 每个配置含：3个[int32]数据，12字节 小端
+        for (int i = 0; i < recvLen; i += 12) {
+            int uid = Utils.Byte2Int(StaticData.response, i);
+            int freezeMode = Utils.Byte2Int(StaticData.response, i + 4);
+            int isTolerant = Utils.Byte2Int(StaticData.response, i + 8);
+            if (AppInfoCache.contains(uid)) // 冻它底层可以获取全部应用，但应用层获取的 AppInfoCache 可能会缺一些特殊应用
+                appCfg.put(uid, new Pair<>(freezeMode, isTolerant));
+        }
+
+        var uidList = AppInfoCache.getUidList();
+        // 补全  此时 uidList 可能包含一些刚刚安装的应用，而底层还没更新全部应用列表
+        uidList.forEach(uid -> {
+            if (!appCfg.containsKey(uid))
+                appCfg.put(uid, new Pair<>(Utils.CFG_FREEZER, 1)); // 默认Freezer 宽松
+        });
+        // 检查非法配置
+        appCfg.forEach((uid, cfg) -> {
+            if (!Utils.CFG_SET.contains(cfg.first))
+                appCfg.put(uid, new Pair<>(Utils.CFG_FREEZER, cfg.second));
+        });
+
+        uidListSort.clear();
+
+        // 先排 自由
+        for (int uid : uidList) {
+            Pair<Integer, Integer> mode = appCfg.get(uid);
+            if (mode != null && mode.first == Utils.CFG_WHITELIST)
+                uidListSort.add(uid);
+        }
+
+        // 优先排列：FREEZER SIGSTOP 杀死后台， 次排列：宽松 严格
+        for (int uid : uidList) {
+            Pair<Integer, Integer> mode = appCfg.get(uid);
+            if (mode != null && mode.first == Utils.CFG_FREEZER && mode.second != 0)
+                uidListSort.add(uid);
+        }
+        for (int uid : uidList) {
+            Pair<Integer, Integer> mode = appCfg.get(uid);
+            if (mode != null && mode.first == Utils.CFG_FREEZER && mode.second == 0)
+                uidListSort.add(uid);
+        }
+
+        for (int uid : uidList) {
+            Pair<Integer, Integer> mode = appCfg.get(uid);
+            if (mode != null && mode.first == Utils.CFG_SIGSTOP && mode.second != 0)
+                uidListSort.add(uid);
+        }
+        for (int uid : uidList) {
+            Pair<Integer, Integer> mode = appCfg.get(uid);
+            if (mode != null && mode.first == Utils.CFG_SIGSTOP && mode.second == 0)
+                uidListSort.add(uid);
+        }
+
+        for (int uid : uidList) {
+            Pair<Integer, Integer> mode = appCfg.get(uid);
+            if (mode != null && mode.first == Utils.CFG_TERMINATE && mode.second != 0)
+                uidListSort.add(uid);
+        }
+        for (int uid : uidList) {
+            Pair<Integer, Integer> mode = appCfg.get(uid);
+            if (mode != null && mode.first == Utils.CFG_TERMINATE && mode.second == 0)
+                uidListSort.add(uid);
+        }
+
+        // 最后排 内置自由
+        for (int uid : uidList) {
+            Pair<Integer, Integer> mode = appCfg.get(uid);
+            if (mode != null && mode.first == Utils.CFG_WHITEFORCE)
+                uidListSort.add(uid);
+        }
+
+        handler.sendEmptyMessage(GET_APP_CFG);
+    }
+
+    private final Handler handler = new Handler(Looper.getMainLooper()) {
         @SuppressLint("SetTextI18n")
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            byte[] response = msg.getData().getByteArray("response");
-
-            if (response == null || response.length == 0 || response.length % 12 != 0) {
-                if (binding != null)
+            switch (msg.what) {
+                case GET_APP_CFG:
+                    recycleAdapter.updateDataSet(uidListSort, appCfg);
+                    if (binding == null) return;
                     binding.swipeRefreshLayout.setRefreshing(false);
-                return;
-            }
-
-            // 配置名单 <uid, <freezeMode, isTolerant>>
-            // freezeMode: [10]:杀死 [20]:SIGSTOP [30]:Freezer [40]:自由 [50]:内置
-            HashMap<Integer, Pair<Integer, Integer>> appCfg = new HashMap<>();
-
-            // 每个配置含：3个[int32]数据，12字节 小端
-            for (int i = 0; i < response.length; i += 12) {
-                int uid = Utils.Byte2Int(response, i);
-                int freezeMode = Utils.Byte2Int(response, i + 4);
-                int isTolerant = Utils.Byte2Int(response, i + 8);
-                if (AppInfoCache.contains(uid)) // 冻它底层可以获取全部应用，但应用层获取的 AppInfoCache 可能会缺一些特殊应用
-                    appCfg.put(uid, new Pair<>(freezeMode, isTolerant));
-            }
-
-            var uidList = AppInfoCache.getUidList();
-            // 补全  此时 uidList 可能包含一些刚刚安装的应用，而底层还没更新全部应用列表
-            uidList.forEach(uid -> {
-                if (!appCfg.containsKey(uid))
-                    appCfg.put(uid, new Pair<>(Utils.CFG_FREEZER, 1)); // 默认Freezer 宽松
-            });
-            // 检查非法配置
-            appCfg.forEach((uid, cfg) -> {
-                if (!Utils.CFG_SET.contains(cfg.first))
-                    appCfg.put(uid, new Pair<>(Utils.CFG_FREEZER, cfg.second));
-            });
-
-            ArrayList<Integer> uidListSort = new ArrayList<>();
-
-            // 先排 自由
-            for (int uid : uidList) {
-                Pair<Integer, Integer> mode = appCfg.get(uid);
-                if (mode != null && mode.first == Utils.CFG_WHITELIST)
-                    uidListSort.add(uid);
-            }
-
-            // 优先排列：FREEZER SIGSTOP 杀死后台， 次排列：宽松 严格
-            for (int uid : uidList) {
-                Pair<Integer, Integer> mode = appCfg.get(uid);
-                if (mode != null && mode.first == Utils.CFG_FREEZER && mode.second != 0)
-                    uidListSort.add(uid);
-            }
-            for (int uid : uidList) {
-                Pair<Integer, Integer> mode = appCfg.get(uid);
-                if (mode != null && mode.first == Utils.CFG_FREEZER && mode.second == 0)
-                    uidListSort.add(uid);
-            }
-
-            for (int uid : uidList) {
-                Pair<Integer, Integer> mode = appCfg.get(uid);
-                if (mode != null && mode.first == Utils.CFG_SIGSTOP && mode.second != 0)
-                    uidListSort.add(uid);
-            }
-            for (int uid : uidList) {
-                Pair<Integer, Integer> mode = appCfg.get(uid);
-                if (mode != null && mode.first == Utils.CFG_SIGSTOP && mode.second == 0)
-                    uidListSort.add(uid);
-            }
-
-            for (int uid : uidList) {
-                Pair<Integer, Integer> mode = appCfg.get(uid);
-                if (mode != null && mode.first == Utils.CFG_TERMINATE && mode.second != 0)
-                    uidListSort.add(uid);
-            }
-            for (int uid : uidList) {
-                Pair<Integer, Integer> mode = appCfg.get(uid);
-                if (mode != null && mode.first == Utils.CFG_TERMINATE && mode.second == 0)
-                    uidListSort.add(uid);
-            }
-
-            // 最后排 内置自由
-            for (int uid : uidList) {
-                Pair<Integer, Integer> mode = appCfg.get(uid);
-                if (mode != null && mode.first == Utils.CFG_WHITEFORCE)
-                    uidListSort.add(uid);
-            }
-
-            recycleAdapter.updateDataSet(uidListSort, appCfg);
-
-            if (binding == null) return;
-            binding.swipeRefreshLayout.setRefreshing(false);
-        }
-    };
-
-    private final Handler setAppCfgHandler = new Handler(Looper.getMainLooper()) {
-        @SuppressLint("SetTextI18n")
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            byte[] response = msg.getData().getByteArray("response");
-
-            String res = new String(response);
-            if (res.equals("success")) {
-                Toast.makeText(getContext(), R.string.update_success, Toast.LENGTH_SHORT).show();
-            } else {
-                String errorTips = getString(R.string.update_fail) + " Receive:[" + res + "]";
-                Toast.makeText(getContext(), errorTips, Toast.LENGTH_SHORT).show();
-                Log.e(TAG, errorTips);
+                    break;
+                case SET_CFG_SUCCESS:
+                    Toast.makeText(requireContext(), R.string.update_success, Toast.LENGTH_SHORT).show();
+                    break;
+                case SET_CFG_FAIL:
+                    Toast.makeText(requireContext(), R.string.update_fail, Toast.LENGTH_SHORT).show();
+                    break;
             }
         }
     };
-
 
     @Override
     public void onDestroyView() {

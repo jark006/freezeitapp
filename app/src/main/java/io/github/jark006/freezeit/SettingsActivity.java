@@ -15,8 +15,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.Arrays;
+
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
+    final int INIT_UI = 1, SET_VAR_SUCCESS = 2, SET_VAR_FAIL = 3;
 
     Spinner clusterBindSpinner, freezeModeSpinner, reFreezeTimeoutSpinner;
     SeekBar freezeTimeoutSeekbar, wakeupTimeoutSeekbar, terminateTimeoutSeekbar;
@@ -91,7 +94,22 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onResume() {
         super.onResume();
-        new Thread(() -> Utils.freezeitTask(Utils.getSettings, null, InitUI_Handler)).start();
+        new Thread(() -> {
+            var recvLen = Utils.freezeitTask(Utils.getSettings, null);
+            if (recvLen != 256) {
+                Toast.makeText(getBaseContext(), getString(R.string.get_settings_fail), Toast.LENGTH_LONG).show();
+                return;
+            }
+            settingsVar = Arrays.copyOfRange(StaticData.response, 0, 256);
+            if (settingsVar[clusterBindIdx] > 6) settingsVar[clusterBindIdx] = 0;
+            if (settingsVar[freezeModeIdx] > 5) settingsVar[freezeModeIdx] = 0;
+            if (settingsVar[reFreezeTimeoutIdx] > 4) settingsVar[reFreezeTimeoutIdx] = 2;
+            if (settingsVar[freezeTimeoutIdx] > 60) settingsVar[freezeTimeoutIdx] = 10;
+            if (settingsVar[wakeupTimeoutIdx] > 120) settingsVar[wakeupTimeoutIdx] = 30;
+            if (settingsVar[terminateTimeoutIdx] > 120) settingsVar[terminateTimeoutIdx] = 30;
+            handler.sendEmptyMessage(INIT_UI);
+        }
+        ).start();
     }
 
 
@@ -114,11 +132,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
                 varIndexForHandle = idx;
                 newValueForHandle = spinnerPosition;
-                new Thread(() -> Utils.freezeitTask(
-                        Utils.setSettingsVar,
-                        new byte[]{(byte) varIndexForHandle, (byte) newValueForHandle},
-                        setVarHandler)
-                ).start();
+                setVarTask();
             }
 
             @Override
@@ -157,11 +171,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
                 varIndexForHandle = idx;
                 newValueForHandle = seekBar.getProgress();
-                new Thread(() -> Utils.freezeitTask(
-                        Utils.setSettingsVar,
-                        new byte[]{(byte) varIndexForHandle, (byte) newValueForHandle},
-                        setVarHandler)
-                ).start();
+                setVarTask();
             }
         });
     }
@@ -183,68 +193,64 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
             varIndexForHandle = idx;
             newValueForHandle = isChecked ? 1 : 0;
-            new Thread(() -> Utils.freezeitTask(
-                    Utils.setSettingsVar,
-                    new byte[]{(byte) varIndexForHandle, (byte) newValueForHandle},
-                    setVarHandler)
-            ).start();
+            setVarTask();
         });
     }
 
+    void setVarTask() {
+        new Thread(() -> {
+            byte[] request = {(byte) varIndexForHandle, (byte) newValueForHandle};
+            var recvLen = Utils.freezeitTask(Utils.setSettingsVar, request);
 
-    private final Handler setVarHandler = new Handler(Looper.getMainLooper()) {
-        @Override
-        public void handleMessage(Message msg) {
-            byte[] response = msg.getData().getByteArray("response");
-
-            if (response == null || response.length == 0) {
-                Toast.makeText(getBaseContext(), getString(R.string.no_response), Toast.LENGTH_LONG).show();
-                return;
-            }
-            String res = new String(response);
-            if (res.equals("success")) {
-                Toast.makeText(getBaseContext(), getString(R.string.setup_successful), Toast.LENGTH_SHORT).show();
-                settingsVar[varIndexForHandle] = (byte) newValueForHandle;
+            Message msg = Message.obtain();
+            if (recvLen == 0) {
+                msg.what = SET_VAR_FAIL;
+                msg.obj = "UnknownError";
             } else {
-                Toast.makeText(getBaseContext(), getString(R.string.setup_failed) + ": " + res, Toast.LENGTH_LONG).show();
+                String res = new String(StaticData.response, 0, recvLen);
+                if (res.equals("success")) {
+                    msg.what = SET_VAR_SUCCESS;
+                } else {
+                    msg.what = SET_VAR_FAIL;
+                    msg.obj = res;
+                }
             }
+            handler.sendMessage(msg);
         }
-    };
+        ).start();
+    }
 
-    private final Handler InitUI_Handler = new Handler(Looper.getMainLooper()) {
+    private final Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
-            byte[] response = msg.getData().getByteArray("response");
+            switch (msg.what) {
+                case INIT_UI:
+                    InitSpinner(clusterBindSpinner, clusterBindIdx);
+                    InitSpinner(freezeModeSpinner, freezeModeIdx);
+                    InitSpinner(reFreezeTimeoutSpinner, reFreezeTimeoutIdx);
 
-            if (response == null || response.length != 256) {
-                Toast.makeText(getBaseContext(), getString(R.string.get_settings_fail), Toast.LENGTH_LONG).show();
-                return;
+                    InitSeekbar(freezeTimeoutSeekbar, freezeTimeoutText, freezeTimeoutIdx);
+                    InitSeekbar(wakeupTimeoutSeekbar, wakeupTimeoutText, wakeupTimeoutIdx);
+                    InitSeekbar(terminateTimeoutSeekbar, terminateTimeoutText, terminateTimeoutIdx);
+
+                    InitSwitch(batterySwitch, batteryIdx);
+                    InitSwitch(currentSwitch, currentIdx);
+                    InitSwitch(breakNetworkSwitch, breakNetworkIdx);
+                    InitSwitch(lmkSwitch, lmkIdx);
+                    InitSwitch(dozeSwitch, dozeIdx);
+                    InitSwitch(extendFgSwitch, extendFgIdx);
+                    InitSwitch(dozeDebugSwitch, dozeDebugIdx);
+                    break;
+
+                case SET_VAR_SUCCESS:
+                    Toast.makeText(getBaseContext(), getString(R.string.setup_successful), Toast.LENGTH_SHORT).show();
+                    settingsVar[varIndexForHandle] = (byte) newValueForHandle;
+                    break;
+
+                case SET_VAR_FAIL:
+                    Toast.makeText(getBaseContext(), getString(R.string.setup_failed) + ": " + msg.obj, Toast.LENGTH_LONG).show();
+                    break;
             }
-            settingsVar = response;
-
-            if (settingsVar[clusterBindIdx] > 6) settingsVar[clusterBindIdx] = 0;
-            if (settingsVar[freezeModeIdx] > 5) settingsVar[freezeModeIdx] = 0;
-            if (settingsVar[reFreezeTimeoutIdx] > 4) settingsVar[reFreezeTimeoutIdx] = 2;
-            if (settingsVar[freezeTimeoutIdx] > 60) settingsVar[freezeTimeoutIdx] = 10;
-            if (settingsVar[wakeupTimeoutIdx] > 120) settingsVar[wakeupTimeoutIdx] = 30;
-            if (settingsVar[terminateTimeoutIdx] > 120) settingsVar[terminateTimeoutIdx] = 30;
-
-            InitSpinner(clusterBindSpinner, clusterBindIdx);
-            InitSpinner(freezeModeSpinner, freezeModeIdx);
-            InitSpinner(reFreezeTimeoutSpinner, reFreezeTimeoutIdx);
-
-            InitSeekbar(freezeTimeoutSeekbar, freezeTimeoutText, freezeTimeoutIdx);
-            InitSeekbar(wakeupTimeoutSeekbar, wakeupTimeoutText, wakeupTimeoutIdx);
-            InitSeekbar(terminateTimeoutSeekbar, terminateTimeoutText, terminateTimeoutIdx);
-
-            InitSwitch(batterySwitch, batteryIdx);
-            InitSwitch(currentSwitch, currentIdx);
-            InitSwitch(breakNetworkSwitch, breakNetworkIdx);
-            InitSwitch(lmkSwitch, lmkIdx);
-            InitSwitch(dozeSwitch, dozeIdx);
-            InitSwitch(extendFgSwitch, extendFgIdx);
-
-            InitSwitch(dozeDebugSwitch, dozeDebugIdx);
         }
     };
 

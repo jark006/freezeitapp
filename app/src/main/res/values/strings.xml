@@ -231,4 +231,11 @@ Thanox(灭霸)的后台保护功能以及部分系统(COS11)会修改应用前�
         \n\n微信：凡梦/*惠，*花X4，*林X2，*🌈，*长，*彬，*寒，*宾，*叁，*爸，*(加油!)，*包，*彭，*阳，*。，*我，*G，*行，*勾，g*d，*！，*子，P*e,*月，*名，*0，*邻，*，G*t，*夏，*岸，*骞，*春，*棋，*酸，*猫，A*3，*谏。
         \n\n支付宝：**鑫X2，卡卡罗宾，*静，*郎，*炀，**豪，**鹏，**昕，**泽，**国，**晖，**秀，**民，**超，*金阳，*宽，*森，*锋，**良，**义。
         </string>
+    <string name="workMode">冻结模式</string>
+    <string name="unknown">未知</string>
+    <string name="moduleEnv">模块环境</string>
+    <string name="moduleVer">冻它版本</string>
+    <string name="managerVer">管理器版本</string>
+    <string name="kernel_version">内核版本</string>
+    <string name="android_version">安卓版本</string>
 </resources>

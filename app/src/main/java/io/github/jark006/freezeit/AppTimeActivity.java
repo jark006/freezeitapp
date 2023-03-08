@@ -28,6 +28,7 @@ import java.util.TimerTask;
 public class AppTimeActivity extends AppCompatActivity {
     AppTimeAdapter recycleAdapter = new AppTimeAdapter();
     Timer timer;
+    int[] newUidTime;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -65,7 +66,10 @@ public class AppTimeActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        timer.cancel();
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
     }
 
     @Override
@@ -76,7 +80,14 @@ public class AppTimeActivity extends AppCompatActivity {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                new Thread(() -> Utils.freezeitTask(Utils.getUidTime, null, handler)).start();
+                var recvLen = Utils.freezeitTask(Utils.getUidTime, null);
+
+                // 每个APP时间为5个int32, 共20字节  int[0-4]: [uid lastUserTime lastSysTime userTime sysTime]
+                if (recvLen == 0 || recvLen % 20 != 0)
+                    return;
+                newUidTime = new int[recvLen / 4];
+                Utils.Byte2Int(StaticData.response, 0, recvLen, newUidTime, 0);
+                handler.sendEmptyMessage(1);
             }
         }, 0, 2000);
     }
@@ -86,15 +97,8 @@ public class AppTimeActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            byte[] response = msg.getData().getByteArray("response");
-
-            // 每个APP时间为5个int32, 共20字节  int[0-4]: [uid lastUserTime lastSysTime userTime sysTime]
-            if (response == null || response.length == 0 || response.length % 20 != 0)
-                return;
-
-            int[] newUidTime = new int[response.length / 4];
-            Utils.Byte2Int(response, 0, response.length, newUidTime, 0);
-            recycleAdapter.updateDataSet(newUidTime);
+            if (msg.what == 1)
+                recycleAdapter.updateDataSet(newUidTime);
         }
     };
 
@@ -118,13 +122,17 @@ public class AppTimeActivity extends AppCompatActivity {
             int elementPosition = position * 5;
             int uid = uidTime[elementPosition];
 
-            var info = AppInfoCache.get(uid);
-            if (info != null) {
-                holder.app_icon.setImageDrawable(info.icon);
-                holder.app_label.setText(info.label);
-            } else {
-                holder.app_label.setText(String.valueOf(uid));
+            if (holder.uid != uid) {
+                holder.uid = uid;
+                var info = AppInfoCache.get(uid);
+                if (info != null) {
+                    holder.app_icon.setImageDrawable(info.icon);
+                    holder.app_label.setText(info.label);
+                } else {
+                    holder.app_label.setText(String.valueOf(uid));
+                }
             }
+
             int lastUserTime = uidTime[elementPosition + 1];
             int lastSysTime = uidTime[elementPosition + 2];
             int userTime = uidTime[elementPosition + 3];
@@ -158,16 +166,13 @@ public class AppTimeActivity extends AppCompatActivity {
                 time %= 60;
             }
 
-            if (time >= 10) timeStr.append(time);
-            else timeStr.append('0').append(time);
-
-            timeStr.append("s.");
+            timeStr.append(time).append('.');
 
             if (ms >= 100) timeStr.append(ms);
             else if (ms >= 10) timeStr.append('0').append(ms);
             else timeStr.append("00").append(ms);
 
-            timeStr.append("ms");
+            timeStr.append('s');
             return timeStr;
         }
 
@@ -201,6 +206,7 @@ public class AppTimeActivity extends AppCompatActivity {
 
             ImageView app_icon;
             TextView app_label, userTimeDelta, userTimeSum, sysTimeDelta, sysTimeSum;
+            int uid = 0;
 
             public MyViewHolder(View view) {
                 super(view);

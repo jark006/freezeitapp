@@ -13,7 +13,7 @@
 
     <string-array name="freeze_mode">
         <item>⚔️Terminate</item>
-        <item>❄️SIGSTOP</item>
+        <item>🧊SIGSTOP</item>
         <item>❄️Freezer</item>
         <item>🍀️Free</item>
     </string-array>

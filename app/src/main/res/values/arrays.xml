@@ -13,7 +13,7 @@
 
     <string-array name="freeze_mode">
         <item>⚔️杀死后台</item>
-        <item>❄️SIGSTOP冻结</item>
+        <item>🧊️SIGSTOP冻结</item>
         <item>❄️Freezer冻结</item>
         <item>🍀️自由后台</item>
     </string-array>

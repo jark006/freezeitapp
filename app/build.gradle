@@ -23,8 +23,8 @@ android {
         applicationId "io.github.jark006.freezeit"
         minSdk 29
         targetSdk 33
-        versionCode 206000
-        versionName "2.6.0"
+        versionCode 206020
+        versionName "2.6.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resValue "string", "versionName", "${versionName}"

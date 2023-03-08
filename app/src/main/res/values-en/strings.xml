@@ -138,5 +138,12 @@ Note:The above statistics are the default behavior of the system, Freezeit only 
     <string name="reject">Reject</string>
     <string name="accept">Accept</string>
     <string name="thanks_title">Thanks List</string>
+    <string name="workMode">WorkMode</string>
+    <string name="unknown">Unknown</string>
+    <string name="moduleEnv">Module Platform</string>
+    <string name="moduleVer">Freezeit Version</string>
+    <string name="managerVer">Manager Version</string>
+    <string name="kernel_version">Kernel Version</string>
+    <string name="android_version">Android Version</string>
 
 </resources>

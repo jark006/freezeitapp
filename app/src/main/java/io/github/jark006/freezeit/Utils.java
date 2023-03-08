@@ -3,13 +3,9 @@ package io.github.jark006.freezeit;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -24,7 +20,6 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
-import java.util.HashSet;
 import java.util.Set;
 
 public class Utils {
@@ -57,7 +52,7 @@ public class Utils {
     public final static byte clearLog = 61;         // return string: "log" //清理并返回log
     public final static byte printFreezerProc = 62; // return string: "log" //打印冻结状态进程并返回log
 
-    public static synchronized void freezeitTask(byte command, byte[] AdditionalData, Handler handler) {
+    public static synchronized int freezeitTask(byte command, byte[] AdditionalData) {
         // dataHeader[0-3]:附带数据大小(uint32 小端)
         // dataHeader[4]: 命令(可参考上面)
         // dataHeader[5]: 附带数据的异或校验值
@@ -65,11 +60,6 @@ public class Utils {
         try {
             var socket = new Socket();
             socket.connect(new InetSocketAddress("127.0.0.1", 60613), 3000);
-
-            // 终端执行 setenforce 0 ，即设置 SELinux 为宽容模式, 普通安卓应用才可以使用 LocalSocket
-            // var socket = new LocalSocket();
-            // socket.connect(new LocalSocketAddress("FreezeitServer", LocalSocketAddress.Namespace.ABSTRACT));
-
             InputStream is = socket.getInputStream();
             OutputStream os = socket.getOutputStream();
 
@@ -89,82 +79,56 @@ public class Utils {
 
             os.flush();
 
-            if (handler == null) {
-                socket.close();
-                return;
-            }
-
             int receiveLen = is.read(dataHeader, 0, 6);
             if (receiveLen != 6) {
                 Log.e(TAG, "Receive dataHeader Fail, receiveLen:" + receiveLen);
                 socket.close();
-                handler.sendMessage(new Message());
-                return;
+                return 0;
             }
 
-            int payloadLen = Byte2Int(dataHeader, 0);
-            var responseBuf = new byte[payloadLen];
+            final int payloadLen = Byte2Int(dataHeader, 0);
+            if (StaticData.response.length < payloadLen)
+                StaticData.response = new byte[payloadLen];
             int readCnt = 0;
             while (readCnt < payloadLen) { //欲求不满
-                int cnt = is.read(responseBuf, readCnt, payloadLen - readCnt);
+                int cnt = is.read(StaticData.response, readCnt, payloadLen - readCnt);
                 if (cnt < 0) {
                     Log.e(TAG, "Get payload Fail");
                     socket.close();
-                    handler.sendMessage(new Message());
-                    return;
+                    return 0;
                 }
                 readCnt += cnt;
             }
             socket.close();
 
-            Message msg = new Message();
-            Bundle data = new Bundle();
-            data.putByteArray("response", responseBuf);
-            msg.setData(data);
-            handler.sendMessage(msg);
+            return payloadLen;
         } catch (IOException e) {
-            if (handler != null)
-                handler.sendMessage(new Message());
+            return 0;
         }
     }
 
-    public static void getData(String link, Handler handler) {
-        byte[] res = null;
-        if (handler == null)
-            return;
-
+    public static byte[] getNetworkData(String link) {
         try {
             URL url = new URL(link);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setConnectTimeout(5 * 1000);
-            int resCode = conn.getResponseCode();
-            if (resCode != 200) {
-                Log.i(ContentValues.TAG, "异常HTTP返回码[" + resCode + "]");
-                return;
-            }
+            conn.setRequestMethod("GET");
+            conn.connect();
+            if (conn.getResponseCode() != 200) return null;
 
             InputStream is = conn.getInputStream();
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             int len;
-            byte[] buffer = new byte[204800];  //200kb
+            byte[] buffer = new byte[4096];
             while ((len = is.read(buffer)) != -1)
                 os.write(buffer, 0, len);
 
             is.close();
             os.close();
-            res = os.toByteArray();
+            return os.toByteArray();
         } catch (IOException e) {
-            e.printStackTrace();
-            Log.i(ContentValues.TAG, "Network IO异常");
+            return null;
         }
-        if (res == null)
-            return;
-
-        Message msg = new Message();
-        Bundle data = new Bundle();
-        data.putByteArray("response", res);
-        msg.setData(data);
-        handler.sendMessage(msg);
     }
 
     public static void imgDialog(Context context, @DrawableRes int drawableID) {
@@ -242,19 +206,4 @@ public class Utils {
         }
     }
 
-    public static void HashSet2Byte(HashSet<Integer> set, byte[] bytes, int byteOffset) {
-        if (bytes == null) return;
-        if ((byteOffset + 4 * set.size()) > bytes.length) {
-            while (byteOffset < bytes.length)
-                bytes[byteOffset++] = 0;
-            return;
-        }
-
-        for (int value : set) {
-            bytes[byteOffset++] = (byte) value;
-            bytes[byteOffset++] = (byte) (value >> 8);
-            bytes[byteOffset++] = (byte) (value >> 16);
-            bytes[byteOffset++] = (byte) (value >> 24);
-        }
-    }
 }
