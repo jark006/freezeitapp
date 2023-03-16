@@ -207,48 +207,48 @@ public class ConfigFragment extends Fragment {
 
         // 先排 自由
         for (int uid : uidList) {
-            Pair<Integer, Integer> mode = appCfg.get(uid);
+            var mode = appCfg.get(uid);
             if (mode != null && mode.first == Utils.CFG_WHITELIST)
                 uidListSort.add(uid);
         }
 
         // 优先排列：FREEZER SIGSTOP 杀死后台， 次排列：宽松 严格
         for (int uid : uidList) {
-            Pair<Integer, Integer> mode = appCfg.get(uid);
+            var mode = appCfg.get(uid);
             if (mode != null && mode.first == Utils.CFG_FREEZER && mode.second != 0)
                 uidListSort.add(uid);
         }
         for (int uid : uidList) {
-            Pair<Integer, Integer> mode = appCfg.get(uid);
+            var mode = appCfg.get(uid);
             if (mode != null && mode.first == Utils.CFG_FREEZER && mode.second == 0)
                 uidListSort.add(uid);
         }
 
         for (int uid : uidList) {
-            Pair<Integer, Integer> mode = appCfg.get(uid);
+            var mode = appCfg.get(uid);
             if (mode != null && mode.first == Utils.CFG_SIGSTOP && mode.second != 0)
                 uidListSort.add(uid);
         }
         for (int uid : uidList) {
-            Pair<Integer, Integer> mode = appCfg.get(uid);
+            var mode = appCfg.get(uid);
             if (mode != null && mode.first == Utils.CFG_SIGSTOP && mode.second == 0)
                 uidListSort.add(uid);
         }
 
         for (int uid : uidList) {
-            Pair<Integer, Integer> mode = appCfg.get(uid);
+            var mode = appCfg.get(uid);
             if (mode != null && mode.first == Utils.CFG_TERMINATE && mode.second != 0)
                 uidListSort.add(uid);
         }
         for (int uid : uidList) {
-            Pair<Integer, Integer> mode = appCfg.get(uid);
+            var mode = appCfg.get(uid);
             if (mode != null && mode.first == Utils.CFG_TERMINATE && mode.second == 0)
                 uidListSort.add(uid);
         }
 
         // 最后排 内置自由
         for (int uid : uidList) {
-            Pair<Integer, Integer> mode = appCfg.get(uid);
+            var mode = appCfg.get(uid);
             if (mode != null && mode.first == Utils.CFG_WHITEFORCE)
                 uidListSort.add(uid);
         }

@@ -38,7 +38,7 @@
             android:background="@drawable/ic_circle_24dp"
             android:contentDescription="@string/icon"
             android:padding="15dp"
-            android:src="@drawable/ic_check_freezer_24dp" />
+            android:src="@drawable/ic_freezeit_24dp" />
 
         <TextView
             android:layout_width="match_parent"

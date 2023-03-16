@@ -1,20 +1,4 @@
 <resources>
-    <string name="app_name">冻它</string>
-    <string name="freezeit_app_name">冻它APP</string>
-    <string name="freezeit_mod_name">冻它模块</string>
-    <string name="title_home">主页</string>
-    <string name="title_config">配置</string>
-    <string name="title_logcat">日志</string>
-    <string name="title_other">其他</string>
-    <string name="icon">图标</string>
-    <string name="supportTitle">支持开发</string>
-
-    <string name="xposed_description">
-        禁止应用无响应、唤醒锁及定时器，清理广播(防止卡拨号、卡安装等等)\n
-        禁用MIUI电量与性能杀后台</string>
-
-    <string name="changelogTitle">更新日志</string>
-    <string name="changelogText">冻它模块更新日志</string>
 
     <string name="number" translatable="false">0</string>
     <string name="todo" translatable="false">TODO</string>
@@ -30,212 +14,188 @@
     <string name="github_rel_link" translatable="false">https://github.com/jark006/freezeitRelease</string>
     <string name="github_app_link" translatable="false">https://github.com/jark006/freezeitapp</string>
     <string name="lanzou_link" translatable="false">https://jark006.lanzout.com/b017oz9if</string>
-    <string name="tutorial_link">https://jark006.gitee.io/FreezeitIntroduction/</string>
-    <string name="update_json_link">https://raw.fastgit.org/jark006/freezeitRelease/master/update.json</string>
-    <string name="online_changelog_link">https://raw.fastgit.org/jark006/freezeitRelease/main/changelogFull.txt</string>
 
-    <string name="communityTitle">社区交流</string>
-    <string name="coolapk_text">酷安 @JARK006</string>
-    <string name="qq_group_text">QQ群组 781222669</string>
-    <string name="qq_channel_text">QQ频道 冻它模块</string>
-    <string name="tg_group_text">Telegram 群组</string>
-    <string name="tg_channel_text">Telegram 频道</string>
-
-    <string name="update_app_label">更新应用名称</string>
-    <string name="about">关于</string>
-    <string name="developer">开发者 JARK006</string>
-
-    <string name="magisk_online">Magisk</string>
-    <string name="magisk_offline">Magisk 未安装或未运行</string>
-    <string name="xposed_online">LSPosed</string>
-    <string name="xposed_offline">LSPosed未激活</string>
-    <string name="xposed_warn">未激活,无法工作</string>
-    <string name="freezeit_offline">冻它未启用或工作异常</string>
-    <string name="freezeit_error_tips">1.进入桌面1分钟后才启动，请稍后再打开。\n
-2.请检查面具模块是否已启用。\n
-3.请检查冻它APP的网络权限。\n
-4.请检查异常日志:/sdcard/Android/freezeit_crash_log.txt\n
-5.如果设备还没安装冻它的面具模块(MagiskModule)，请通过以下跳转按钮下载并安装。\n
-6.如果设备还没有获取Root权限，将无法使用冻它。
-    </string>
-    <string name="get_log_fail_tips">工作日志获取失败</string>
-    <string name="get_changelog_fail_tips">更新日志获取失败</string>
-    <string name="update_success">更新成功</string>
-    <string name="update_fail">更新失败</string>
-    <string name="update_start">开始更新 应用名称</string>
-    <string name="app_label">应用名称</string>
-    <string name="clear_log_text">清空日志</string>
-    <string name="clear_log_tips">已清空日志</string>
-    <string name="title_activity_setting">设置</string>
-    <string name="title_activity_task_manager">应用CPU时间</string>
-
-    <string name="slowly_tips">别急，慢点</string>
-    <string name="help">帮助</string>
-    <string name="check_freezer">查看冻结</string>
-    <string name="freezeit_tutorial_text">冻它教程说明</string>
-    <string name="download">下载</string>
-
-    <string name="second">秒</string>
-    <string name="minute">分</string>
-    <string name="lanzou_password">蓝奏云密码: dy6i</string>
-    <string name="donate_wechat">微信捐赠</string>
-    <string name="donate_alipay">支付宝捐赠</string>
-    <string name="github_open_source">APP开源</string>
-    <string name="github_publish">Github发布页</string>
-    <string name="physical_ram_text">[物理内存] 全部: %.2f GiB\n已用:%.1f%% 可用: %.2f %s</string>
-    <string name="virtual_ram_text">[虚拟内存] 全部: %.2f GiB\n已用:%.1f%% 可用: %.2f %s</string>
-    <string name="setup_successful">设置成功</string>
-    <string name="setup_failed">设置失败</string>
-    <string name="no_response">无响应，设置失败</string>
-    <string name="get_settings_fail">设置数据获取失败</string>
-    <string name="update_cache">更新缓存</string>
-    <string name="new_version">📌新版本</string>
-    <string name="beta_version">内测版本</string>
-    <string name="current_version">当前版本</string>
-    <string name="online_version">在线版本</string>
-    <string name="online_changelog">历史更新日志</string>
-    <string name="title_activity_about">关于</string>
-
-
-    <string name="cluster_title">绑定核心 ⓘ</string>
-    <string name="cluster_tips">
-        绑定冻它进程到某簇核心,小核省电,中大核解冻快,重启生效\n
-        4+4架构：小核[0~3] 大核[4~7] 少数相反\n
-        4+3+1架构：小核[0~3] 中核[4~6] 大核[7]\n
-        3+2+2+1架构:小核[0~2] 中核[3~4] 中大核[5~6] 大核[7]</string>
-
-    <string name="freeze_mode_title">Freezer类型 ⓘ</string>
-    <string name="freeze_mode_tips">
-        每个应用可选SIGSTOP或Freezer两种冻结模式。而Freezer模式有2个版本，具体版本由内核决定。\n
-        内核4.9及以下仅支持V1。\n
-        内核4.14~4.19支持V1和不完整V2(默认不开启，可尝试使用模块进行挂载)。\n
-        内核5.4起支持完整版V2。\n
-        V1(FRZ+ST)为FreezerV1和SIGSTOP双重冻结(实验性)，用于解决V1冻结延迟或失效问题。
-        V2(FROZEN)相对稳定，而V2(UID)有概率因cgroup/Freezer子系统反应不及时导致冻结失效。
-        一般自动选择即可，设置重启生效</string>
-
-    <string name="refreeze_timeout_title">定时压制 ⓘ</string>
-    <string name="refreeze_timeout_tips">
-        定时检查后台活动，重新冻结被关联唤醒的后台进程，以及压制开机自启动的后台进程。正常情况下不会压制正在前台的应用。\n
-        如果在Thanox中设置了”后台保护“的应用，会被冻它识别成”后台状态“而被冻结，这是机制冲突导致误伤，开启扩展前台识别即可。\n
-        如果扩展前台无效，请检查并关闭其他可能冲突的“保后台”机制，若“前台被冻结”的误伤一直存在，那就关闭定时压制。</string>
-
-    <string name="wakeup_timeout_title">定时解冻 ⓘ</string>
-    <string name="wakeup_timeout_tips">
-        定时解冻被冻结的后台应用，解冻时长为[超时冻结]参数。\n
-        若应用经常闪弹闪退，建议调短时间，设为120则关闭定时解冻。\n
-        如果使用FreezerV1存在内存泄漏，请不要关闭，否则无法释放内存</string>
-
-    <string name="freeze_timeout_title">超时冻结 ⓘ</string>
-    <string name="freeze_timeout_tips">
-        设为冻结的应用进入后台之后，需要多久冻结。\n
-        如果应用切换频繁，不建议设置太短</string>
-
-    <string name="terminate_timeout_title">超时杀死 ⓘ</string>
-    <string name="terminate_timeout_tips">
-        设为[杀死后台]的应用进入后台之后，需要多久杀死\n
-        一般用于不需要留后台的工具型应用</string>
-
-    <string name="radical_fg_title">激进识别 ⓘ</string>
-    <string name="radical_fg_tips">略微省电的任务切换识别，部分系统不支持，可能导致冻结/解冻失效。重启生效</string>
-
-    <string name="battery_title">电池监控 ⓘ</string>
-    <string name="battery_tips">记录电池充/放电时长、功率、温度等</string>
-
-    <string name="current_title">电流校准 ⓘ</string>
-    <string name="current_tips">电流或功率数值接近或等于0则需要开启，常见于OPPO/VIVO系统</string>
-
-    <string name="break_network_title">QQ冻结断网 ⓘ</string>
-    <string name="break_network_tips">
-        冻结QQ/TIM时断开其网络，由HMSPush或MiPush接管消息推送。\n
-        冻它教程附有HMSPush使用教程</string>
-
-    <string name="lmk_title">调整lmk参数 ⓘ</string>
-    <string name="lmk_tips">调整lmk参数，缓解杀后台，重启生效</string>
-
-    <string name="doze_title">息屏Doze ⓘ</string>
-    <string name="doze_tips">
-虽然系统默认会进入Doze(低功耗待机模式)，但多是轻度doze，进入深度Doze更慢。\n
-开启后，息屏状态超时3分钟，尝试强制进入深度Doze，息屏播放和充电状态除外。\n
-部分系统可能提前进入轻度Doze导致冻它间断暂停运行，进而延迟进入深度Doze
-    </string>
-
-    <string name="extend_fg_title">扩展前台识别 ⓘ</string>
-    <string name="extend_fg_tips">
-Thanox(灭霸)的后台保护功能以及部分系统(COS11)会修改应用前、后台状态机制，导致应用无法识别为前台而被冻结。\n
-如果你遇到过这种情况，则需要打开，重启生效。若一切正常则建议关闭</string>
-
-    <string name="doze_debug_title">Doze调试日志 ⓘ</string>
-    <string name="doze_debug_tips">如果无法进入Doze，开启该选项则启用Doze调试日志，助于分析原因。</string>
-
-    <string name="more_whitelist_title">内置更多自由后台 ⓘ</string>
-    <string name="more_whitelist_tips">把第三方应用里与系统深度关联的应用内置为自由后台，防止被冻结而影响系统运行，重启生效</string>
-    <string name="config_help_text">
-【杀死后台】:该应用进入后台超时就直接杀死，而不是冻结。该选项适合那些用完就丢、不用留后台的应用。\n
-【SIGSTOP冻结】:使用SIGSTOP信号进行冻结，该方式不考虑进程状态而强制冻结，有概率破坏应用的正常运行。\n
-【Freezer冻结】:使用cgroup的Freezer子系统进行冻结，该方式会根据进程状态是否合适而冻结，可能会延迟冻结，甚至无限延迟。\n
-【后台自由】:该应用不会冻结，可在后台自由运行。\n\n
-
-【严格前台】:当应用Activity显示在顶层(TOP)或绑定到顶层(BOUND_TOP)应用时，才算在前台，也是旧版冻它(v2.2.18及以下)的前台判断条件。\n
-【宽松前台】:若符合严格前台的条件，或存在悬浮窗、常驻通知栏、音频播放服务等前台服务时，则判为前台状态，不会被冻结。\n\n
-
-部分特殊应用(输入法，桌面，Magisk等)将强制自由后台，不能配置冻结。
-    </string>
-
-    <string name="help_logcat_update">更新应用名称\n不再使用包名</string>
-    <string name="help_logcat_check">查看冻结状态、内存占用</string>
-    <string name="help_logcat_clear">清空日志</string>
-    <string name="app_time_help_text">
-统计开机至今，应用运行时CPU使用时间，分为用户态和内核态，运行过的应用才会统计，累计时长可以近似理解为该应用的耗电量。\n\n
-应用正在运行时，并非一直在使用CPU资源运算，而是在其需要处理数据的时候才会使用，而大多数时间会在“休眠”状态。\n\n
-注:以上统计数据属于系统默认行为，冻它只是读取出来进行可视化，冻它不会主动去统计这类信息，不会有额外资源消耗。
-    </string>
-    <string name="save">保存</string>
-    <string name="convert_freezer_sigstop">反转 Freezer / SIGSTOP</string>
-    <string name="convert_strict">反转 严格 / 宽松</string>
-    <string name="switch_sys_user">切换系统、三方应用</string>
-
-    <string name="privacy_title">隐私协议</string>
-    <string name="privacy_content" translatable="false">
-更新日期：2023/03/04\n\n
-导言\n\n
-冻它 是一款由 JARK006 （以下简称“我们”）提供的在安卓平台实现部分墓碑机制的软件，以下协议是本软件相关的具体协议内容，如对本《隐私政策》或相关事宜有任何问题，请通过 jark006@qq.com 与我们联系。\n\n
-
-一、 我们收集的信息\n\n
-我们仅收集用户设备上的”应用列表及相关信息“、”实时进程信息“及“设备硬件相关信息”，这些信息全部保存再设备本地，不会以任何形式上传或转移到设备外部。也不会收集任何关于个人的隐私信息。\n\n
-
-二、 我们如何使用这些信息\n\n
-1.我们使用“应用列表”提供给用户进行配置哪些应用切到后台时以哪种方式冻结。\n
-2.我们使用实时进程信息进行具体的冻结、解冻操作，同时提供进程内存占用，运行状态等类似进程管理的可视化页面。\n\n
-
-三、 权限使用\n\n
-我们将使用以下权限确保各项功能正常，不会干扰设备正常运作，更不会用于读取或分析您的私密信息。\n
-1. 获取应用列表权限\n
-(1) android.permission.QUERY_ALL_PACKAGES\n\n
-2. 查看网络状态及网络权限，仅用于获取版本更新信息和更新日志\n
-(1) android.permission.ACCESS_NETWORK_STATE\n
-(2) android.permission.INTERNET\n\n
-
-四、 我们如何更新隐私政策\n\n
-1. 我们保留不时更新或修订本政策的权利。这些更新与修订将构成本政策的一部分并具有等同于本政策的效力，未经您明确同意，我们不会削减您依据当前生效的本政策所应享受的权利。\n
-2. 如遇本政策更新，新的政策信息将内置到新版应用，跟随应用一起发布。\n\n
-
-五、 如何联系我们\n\n
-如果您对我们的应用权限和安全策略有任何顾虑和疑惑，可随时通过邮箱 jark006@qq.com 向我们反馈以及获得帮助。\n\n
-    </string>
-    <string name="reject">拒绝</string>
-    <string name="accept">接受</string>
-    <string name="thanks_title">捐赠感谢名单</string>
     <string name="thanks_list" translatable="false">
         感谢以下小伙伴对冻它的捐赠支持，截止至2023年3月4日，大致以时间从最近到最久排序：
         \n\n微信：凡梦/*惠，*花X4，*林X2，*🌈，*长，*彬，*寒，*宾，*叁，*爸，*(加油!)，*包，*彭，*阳，*。，*我，*G，*行，*勾，g*d，*！，*子，P*e,*月，*名，*0，*邻，*，G*t，*夏，*岸，*骞，*春，*棋，*酸，*猫，A*3，*谏。
         \n\n支付宝：**鑫X2，卡卡罗宾，*静，*郎，*炀，**豪，**鹏，**昕，**泽，**国，**晖，**秀，**民，**超，*金阳，*宽，*森，*锋，**良，**义。
         </string>
-    <string name="workMode">冻结模式</string>
-    <string name="unknown">未知</string>
-    <string name="moduleEnv">模块环境</string>
-    <string name="moduleVer">冻它版本</string>
-    <string name="managerVer">管理器版本</string>
-    <string name="kernel_version">内核版本</string>
-    <string name="android_version">安卓版本</string>
+
+    <string name="privacy_content" translatable="false">
+        更新日期：2023/03/04
+        \n\n导言
+        \n\n冻它 是一款由 JARK006 （以下简称“我们”）提供的在安卓平台实现部分墓碑机制的软件，以下协议是本软件相关的具体协议内容，如对本《隐私政策》或相关事宜有任何问题，请通过 jark006@qq.com 与我们联系。
+
+        \n\n一、 我们收集的信息
+        \n\n我们仅收集用户设备上的”应用列表及相关信息“、”实时进程信息“及“设备硬件相关信息”，这些信息全部保存再设备本地，不会以任何形式上传或转移到设备外部。也不会收集任何关于个人的隐私信息。
+
+        \n\n二、 我们如何使用这些信息
+        \n\n1.我们使用“应用列表”提供给用户进行配置哪些应用切到后台时以哪种方式冻结。
+        \n2.我们使用实时进程信息进行具体的冻结、解冻操作，同时提供进程内存占用，运行状态等类似进程管理的可视化页面。
+
+        \n\n三、 权限使用
+        \n\n我们将使用以下权限确保各项功能正常，不会干扰设备正常运作，更不会用于读取或分析您的私密信息。
+        \n1. 获取应用列表权限
+        \n(1) android.permission.QUERY_ALL_PACKAGES
+        \n2. 查看网络状态及网络权限，仅用于获取版本更新信息和更新日志
+        \n(1) android.permission.ACCESS_NETWORK_STATE
+        \n(2) android.permission.INTERNET
+
+        \n\n四、 我们如何更新隐私政策
+        \n\n1. 我们保留不时更新或修订本政策的权利。这些更新与修订将构成本政策的一部分并具有等同于本政策的效力，未经您明确同意，我们不会削减您依据当前生效的本政策所应享受的权利。
+        \n2. 如遇本政策更新，新的政策信息将内置到新版应用，跟随应用一起发布。
+
+        \n\n五、 如何联系我们
+        \n\n如果您对我们的应用权限和安全策略有任何顾虑和疑惑，可随时通过邮箱 jark006@qq.com 向我们反馈以及获得帮助。
+    </string>
+
+
+    <string name="app_name">Freezeit</string>
+    <string name="title_home">Home</string>
+    <string name="title_config">Config</string>
+    <string name="title_logcat">Log</string>
+    <string name="icon">Icon</string>
+    <string name="communityTitle">Community</string>
+    <string name="coolapk_text">Coolapk @JARK006</string>
+    <string name="qq_group_text">QQ Group 781222669</string>
+    <string name="qq_channel_text">QQ Channel [冻它模块]</string>
+    <string name="tg_group_text">Telegram Group</string>
+    <string name="tg_channel_text">Telegram Channel</string>
+    <string name="update_app_label">Update Apps</string>
+    <string name="get_log_fail_tips">Failed to get work log</string>
+    <string name="get_changelog_fail_tips">Failed to get Changelog</string>
+    <string name="about">About</string>
+    <string name="freezeit_offline">Freezeit is not installed or running</string>
+    <string name="app_label">App label</string>
+    <string name="update_success">Update success</string>
+    <string name="update_fail">Update fail</string>
+    <string name="update_start">Updating AppLabel</string>
+    <string name="clear_log_text">Clear</string>
+    <string name="clear_log_tips">Cleared</string>
+    <string name="xposed_description">Disable ANR, wakelocks and alarm, clear broadcasts (to prevent dialing stuck, installation stuck, etc.). Disable powerkeeper kill background apps in MIUI.</string>
+    <string name="magisk_online">Magisk</string>
+    <string name="magisk_offline">Magisk  Inactivated</string>
+    <string name="xposed_online">LSPosed Activated</string>
+    <string name="xposed_offline">LSPosed Inactivated</string>
+    <string name="title_activity_setting">Settings</string>
+    <string name="title_activity_task_manager">APP CPU Time</string>
+    <string name="cluster_title">Cluster Bind ⓘ</string>
+    <string name="freeze_timeout_title">Freeze Timeout ⓘ</string>
+    <string name="wakeup_timeout_title">Regular Wakeup ⓘ</string>
+    <string name="terminate_timeout_title">Terminate Timeout ⓘ</string>
+    <string name="freeze_mode_title">Freezer Type ⓘ</string>
+    <string name="slowly_tips">Be Slowly</string>
+    <string name="help">Help</string>
+    <string name="check_freezer">check_freezer_status</string>
+    <string name="freezeit_tutorial_text">Freezeit Tutorial</string>
+    <string name="xposed_warn">Xposed unactive, stop working</string>
+    <string name="freezeit_error_tips">
+        1. It takes 1 minute to init after first unlock, please open it again later.
+        \n2. Please check if the Freezeit module is enabled or not.
+        \n3. Please check the network permissions of Freezeit APP.
+        \n4. Check the exception log [ /sdcard/Android/freezeit_crash_log.txt ]
+        \n5. If the device has not yet installed the Freezeit(MagiskModule), please download and install it via the jump button below.
+        \n6. If the device has not yet acquired Root permission, it will not be able to use Freezeit.
+    </string>
+    <string name="download">Download</string>
+    <string name="second">sec</string>
+    <string name="minute">min</string>
+    <string name="lanzou_password">Lanzou Password: dy6i</string>
+    <string name="donate_wechat">Donate Wechat</string>
+    <string name="donate_alipay">Donate Alipay</string>
+    <string name="github_publish">Github Publish</string>
+    <string name="doze_title">OffScreen Doze ⓘ</string>
+    <string name="lmk_title">Adjust LMK Parameter ⓘ</string>
+    <string name="current_title">Adjust Current ⓘ</string>
+    <string name="battery_title">Battery Monitor ⓘ</string>
+    <string name="radical_fg_title">Radical Foreground ⓘ</string>
+    <string name="break_network_title">QQ BreakNetwork ⓘ</string>
+    <string name="developer">Developer JARK006</string>
+    <string name="physical_ram_text">[RAM] Total: %.2f GiB\nUse: %.1f%% Remain: %.2f %s</string>
+    <string name="virtual_ram_text">[SWAP] Total: %.2f GiB\nUse: %.1f%% Remain: %.2f %s</string>
+    <string name="cluster_tips">
+        Binding freezeit process to a cluster, restart effective.
+        \n4+4 architecture: Efficiency core [0~3], Performance core [4~7]
+        \n4+3+1 architecture: Efficiency core [0~3], Performance core [4~6] Prime core [7]
+        \n3+2+2+1 architecture: Efficiency core [0~2], Performance core [3~4], Performance+ core [5~6], Prime core [7]</string>
+    <string name="freeze_timeout_tips">How long does it take to freeze an application that is set to freeze after it enters the background, it is not recommended to freeze it in seconds</string>
+    <string name="wakeup_timeout_tips">Timed to unfreeze frozen background applications, the unfreeze duration is [Timeout Freeze] parameter. If the application often flash bounce and flash back, it is recommended to adjust the short time, it is not easy to freeze. Set to the maximum value of 120 to turn off timed thawing. If there is a memory leak with FreezerV1, please do not turn it off, otherwise it will not be able to release memory.</string>
+    <string name="terminate_timeout_tips">How long it takes to kill an app set to [Terminate] after it enters the background</string>
+    <string name="freeze_mode_tips">
+        Each application is available in either SIGSTOP or Freezer mode. And Freezer mode has 2 versions.
+        \nKernel version 4.9 and below only support V1, 4.14~4.19 support V1 and incomplete V2 (not enabled by default), 5.4 onwards support complete V2.
+        \nFrozen and uid mode only different paths, the difference is not significant, it is recommended to use frozen in preference.
+        \nReboot takes effect.
+    </string>
+    <string name="radical_fg_tips">Slightly power saving task switching recognition, not supported by some systems, may cause freeze/unfreeze to fail. Reboot effective</string>
+    <string name="battery_tips">Record battery charge/discharge time, power, temperature, etc.</string>
+    <string name="current_tips">Current or power values close to or equal to 0 need to be turned on, common in OPPO/VIVO system</string>
+    <string name="break_network_tips">When freezing QQ/TIM, disconnect its network and let HMSPush or MiPush take over the message pushing, freezeit tutorial with HMSPush tutorial</string>
+    <string name="lmk_tips">Adjust lmk parameters to ease the kill background, reboot to take effect</string>
+    <string name="doze_tips">Although the system will enter Doze (low-power standby mode) by default, it is mostly a light doze, and it is even slower to enter deep Doze. After opening, the rest screen state timeout 3 minutes, try to force into the deep Doze, except for the charging state or playing. Some systems may enter the light Doze early to cause freezing it intermittently suspended operation, and then delayed to enter the deep Doze</string>
+    <string name="setup_successful">Setup successful</string>
+    <string name="setup_failed">Setup failed</string>
+    <string name="no_response">No response, setting failed</string>
+    <string name="get_settings_fail">Setting data acquisition failure</string>
+    <string name="update_cache">Update Cache</string>
+    <string name="new_version">New Version</string>
+    <string name="beta_version">Beta Version</string>
+    <string name="online_version">Online Version</string>
+    <string name="current_version">Current Version</string>
+    <string name="online_changelog">History Changelog</string>
+    <string name="extend_fg_tips">Some systems will modify the foreground/background state mechanism (some COS 11), resulting in some foreground applications not being recognized correctly and being frozen. If you have encountered this situation, then you need to turn it on and reboot to take effect. If everything is fine then it is recommended to turn off</string>
+    <string name="extend_fg_title">Extended Foreground Recognize ⓘ</string>
+    <string name="title_activity_about">About</string>
+    <string name="doze_debug_title">Doze Debug ⓘ</string>
+    <string name="doze_debug_tips">If you cannot enter , turning this option on enables debug logging and helps to analyze the cause.</string>
+    <string name="github_open_source">APP OpenSource</string>
+    <string name="more_whitelist_title">More WhiteList ⓘ</string>
+    <string name="more_whitelist_tips">Add those third-party applications that are deeply associated with the system to an immutable whitelist to prevent them from being frozen, which would otherwise affect the system. Reboot takes effect</string>
+    <string name="config_help_text">
+        \n[Terminate]:Use SIGKILL signal to terminate app, instead of freezing.
+        \n[SIGSTOP]:Use SIGSTOP signal to freeze.
+        \n[Freezer]:Use cgroup\'s Freezer subsystem to freeze.
+        \n[Free]:The application will not freeze and can run freely in the background.
+
+        \n\n[Strictly]:The application Activity is considered to be in the foreground when it is displayed in the top level (TOP) or bound to the top level (BOUND_TOP) app.
+        \n[Lenient]:If it meets the conditions of strict foreground, or when there are foreground services such as floatingView, resident notification bar, audio playback service, it is judged as foreground and will not be frozen.
+
+        \n\nSome special applications (input method, launcher, Magisk, etc.) will force whitelist.
+    </string>
+    <string name="help_logcat_update">Update the app label, no longer use the package name to log.</string>
+    <string name="help_logcat_check">Check freeze status, memory usage</string>
+    <string name="help_logcat_clear">Clear log</string>
+    <string name="app_time_help_text">
+        Statistics of CPU usage time, it can be approximated as the power consumption.
+        \nWhen the application is running, it does not use CPU resources all the time, but only when it needs to process data, and most of the time it is in the "sleep" state.
+        \nNote:The above statistics are the default behavior of the system, Freezeit only reads them out for visualization.
+    </string>
+    <string name="save">Save</string>
+    <string name="convert_freezer_sigstop">Convert Freezer / SIGSTOP</string>
+    <string name="convert_strict">Convert Strict / Lenient</string>
+    <string name="switch_sys_user">Switch sys/third App</string>
+
+    <string name="refreeze_timeout_title">Regular Refreeze ⓘ</string>
+    <string name="refreeze_timeout_tips">
+        Regularly check background activity, refreeze background processes woken by association, and suppress background processes that start on boot.
+        \nApplications with "background protection" set in Thanox will be frozen as "background state", which is a mechanism conflict, just turn on extended foreground recognition.
+        \nIf the extended foreground is invalid, please check and turn off other "background protection" mechanisms that may conflict.
+        \nIf the "frozen foreground" error persists, turn off this.</string>
+
+    <string name="website_link">https://jark006.github.io/i/freezeit/</string>
+    <string name="tutorial_link">https://jark006.github.io/FreezeitIntroduction/</string>
+    <string name="update_json_link">https://raw.githubusercontent.com/jark006/freezeitRelease/main/update.json</string>
+    <string name="online_changelog_link">https://raw.githubusercontent.com/jark006/freezeitRelease/main/changelogFull.txt</string>
+    <string name="privacy_title">Privacy</string>
+    <string name="reject">Reject</string>
+    <string name="accept">Accept</string>
+    <string name="thanks_title">Thanks List</string>
+    <string name="workMode">WorkMode</string>
+    <string name="unknown">Unknown</string>
+    <string name="moduleEnv">Module Platform</string>
+    <string name="moduleVer">Freezeit Version</string>
+    <string name="managerVer">Manager Version</string>
+    <string name="kernel_version">Kernel Version</string>
+    <string name="android_version">Android Version</string>
+    <string name="freezeit_website">Website</string>
 </resources>

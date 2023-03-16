@@ -272,7 +272,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/tutorial_link"
+                android:id="@+id/website_link"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -285,6 +285,39 @@
                     android:contentDescription="@string/icon"
                     android:padding="10dp"
                     app:srcCompat="@drawable/logo_freezeit" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:padding="10dp"
+                    android:text="@string/freezeit_website"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:contentDescription="@string/icon"
+                    android:padding="15dp"
+                    app:srcCompat="@drawable/ic_jump_24dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/tutorial_link"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:contentDescription="@string/icon"
+                    android:padding="10dp"
+                    app:srcCompat="@drawable/logo_help" />
 
                 <TextView
                     android:layout_width="0dp"

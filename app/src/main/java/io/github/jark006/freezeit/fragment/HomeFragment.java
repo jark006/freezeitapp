@@ -196,7 +196,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }, 0, 3000);
     }
 
-    Handler handler = new Handler(Looper.getMainLooper()) {
+    private final Handler handler = new Handler(Looper.getMainLooper()) {
         @SuppressLint({"SetTextI18n", "DefaultLocale"})
         @Override
         public void handleMessage(Message msg) {
@@ -218,9 +218,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 break;
 
                 case HANDLE_ONLINE_INFO: {
-                    if (StaticData.moduleVersionCode == StaticData.onlineVersionCode)
+                    if (StaticData.moduleVersionCode == StaticData.onlineVersionCode) {
+                        binding.changelogLayout.setVisibility(View.GONE);
                         return;
-                    else if (StaticData.moduleVersionCode < StaticData.onlineVersionCode) {
+                    } else if (StaticData.moduleVersionCode < StaticData.onlineVersionCode) {
                         binding.downloadButton.setVisibility(View.VISIBLE);
                         binding.changelogLayout.setVisibility(View.VISIBLE);
                         String tmp = requireContext().getString(StaticData.moduleVersionCode == 0 ?

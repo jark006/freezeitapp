@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="level">
+        <item>😡严格</item>
+        <item>😐宽松</item>
+    </string-array>
+
+    <string-array name="freeze_mode">
+        <item>⚔️杀死后台</item>
+        <item>🧊️SIGSTOP冻结</item>
+        <item>❄️Freezer冻结</item>
+        <item>🍀️自由后台</item>
+    </string-array>
+
+    <string-array name="work_mode">
+        <item>全局SIGSTOP</item>
+        <item>V1(FROZEN)</item>
+        <item>V1(FRZ+ST)</item>
+        <item>V2(UID)</item>
+        <item>V2(FROZEN)</item>
+        <item>自动选择</item>
+    </string-array>
+
+    <string-array name="refreeze_timeout">
+        <item>关闭</item>
+        <item>15分钟</item>
+        <item>30分钟</item>
+        <item>1小时</item>
+        <item>2小时</item>
+    </string-array>
+</resources>

@@ -24,6 +24,7 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.qq_group_link).setOnClickListener(this);
         findViewById(R.id.qq_channel_link).setOnClickListener(this);
         findViewById(R.id.telegram_link).setOnClickListener(this);
+        findViewById(R.id.website_link).setOnClickListener(this);
         findViewById(R.id.tutorial_link).setOnClickListener(this);
         findViewById(R.id.changelog_text).setOnClickListener(this);
         findViewById(R.id.privacy_text).setOnClickListener(this);
@@ -73,6 +74,8 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
             } catch (Exception e) {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.tg_https_link))));
             }
+        } else if (id == R.id.website_link) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.website_link))));
         } else if (id == R.id.tutorial_link) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.tutorial_link))));
         } else if (id == R.id.changelog_text) {
