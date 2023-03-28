@@ -35,10 +35,10 @@
     <color name="trans_gray_bb">#bbbbbbbb</color>
     <color name="trans_gray_dd">#ddbbbbbb</color>
 
-    <color name="cpu_small">#22BB22</color>
-    <color name="cpu_mid">#2288DD</color>
-    <color name="cpu_mid_plus">#BB6622</color>
-    <color name="cpu_big">#FF4422</color>
+    <color name="efficiency_core">#22BB22</color>
+    <color name="performance_core">#2288DD</color>
+    <color name="performance_e_core">#BB6622</color>
+    <color name="prime_core">#FF4422</color>
 
     <color name="blue">#CC0080FF</color>
 

@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Handler;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
@@ -32,6 +33,7 @@ public class AndroidService {
     final static String NMS_TAG = "Freezeit[NMS]:";
     final static String WAK_TAG = "Freezeit[WAK]:";
     final static String DPC_TAG = "Freezeit[DPC]:";
+    final static String FGD_TAG = "Freezeit[FGD]:";
 
     final int REPLY_SUCCESS = 2;
     final int REPLY_FAILURE = 0;
@@ -167,87 +169,104 @@ public class AndroidService {
         );
 
         byte[] buff = new byte[64 * 1024];// 64 KiB
+        LocalServerSocket mSocketServer;
 
-        @SuppressWarnings("InfiniteLoopStatement")
         @Override
         public void run() {
             try {
-                var mSocketServer = new LocalServerSocket("FreezeitXposedServer");
-                while (true) {
-                    var client = mSocketServer.accept();//堵塞,单线程处理
-                    if (client == null) continue;
-
-                    client.setSoTimeout(100);
-                    var is = client.getInputStream();
-
-                    final int recvLen = is.read(buff, 0, 8);
-                    if (recvLen != 8) {
-                        log(TAG, "非法连接 接收长度 " + recvLen);
-                        is.close();
-                        client.close();
-                        continue;
-                    }
-
-                    // 前4字节是请求码，后4字节是附加数据长度
-                    final int requestCode = Utils.Byte2Int(buff, 0);
-                    if (!requestCodeSet.contains(requestCode)) {
-                        log(TAG, "非法请求码 " + requestCode);
-                        is.close();
-                        client.close();
-                        continue;
-                    }
-
-                    final int payloadLen = Utils.Byte2Int(buff, 4);
-                    if (payloadLen > 0) {
-                        if (buff.length <= payloadLen) {
-                            log(TAG, "数据量超过承载范围 " + payloadLen);
-                            is.close();
-                            client.close();
-                            continue;
-                        }
-
-                        int readCnt = 0;
-                        while (readCnt < payloadLen) { //欲求不满
-                            int cnt = is.read(buff, readCnt, payloadLen - readCnt);
-                            if (cnt < 0) {
-                                log(TAG, "接收完毕或错误 " + cnt);
-                                break;
-                            }
-                            readCnt += cnt;
-                        }
-                        if (payloadLen != readCnt) {
-                            log(TAG, "接收错误 payloadLen" + payloadLen + " readCnt" + readCnt);
-                            is.close();
-                            client.close();
-                            continue;
-                        }
-                    }
-
-                    var os = client.getOutputStream();
-                    switch (requestCode) {
-                        case GET_FOREGROUND:
-                            handleForeground(os, buff);
-                            break;
-                        case GET_SCREEN_STATE:
-                            handleScreen(os, buff);
-                            break;
-                        case SET_CONFIG:
-                            handleConfig(os, buff, payloadLen);
-                            break;
-                        case SET_WAKEUP_LOCK:
-                            handleWakeupLock(os, buff, payloadLen);
-                            break;
-                        case BREAK_NETWORK:
-                            handleBreakNetwork(os, buff, payloadLen);
-                            break;
-                        default:
-                            log(TAG, "请求码功能暂未实现TODO: " + requestCode);
-                            break;
-                    }
-                    client.close();
-                }
+                mSocketServer = new LocalServerSocket("FreezeitXposedServer");
             } catch (Exception e) {
-                log(TAG, e.toString());
+                log(TAG, "创建失败 LocalServerSocket");
+                return;
+            }
+
+            int i = 5;
+            while (--i > 0) {
+                try {
+                    sleep(3000);
+                    acceptHandle();
+                } catch (Exception e) {
+                    log(TAG, "clientHandle 第" + i + " 次异常: " + e);
+                    e.printStackTrace();
+                }
+            }
+            log(TAG, "mSocketServer 异常次数过多，已退出");
+        }
+
+        @SuppressWarnings("InfiniteLoopStatement")
+        void acceptHandle() throws IOException {
+            while (true) {
+                var client = mSocketServer.accept();//堵塞,单线程处理
+                if (client == null) continue;
+
+                client.setSoTimeout(3000);
+                var is = client.getInputStream();
+
+                final int recvLen = is.read(buff, 0, 8);
+                if (recvLen != 8) {
+                    log(TAG, "非法连接 接收长度 " + recvLen);
+                    is.close();
+                    client.close();
+                    continue;
+                }
+
+                // 前4字节是请求码，后4字节是附加数据长度
+                final int requestCode = Utils.Byte2Int(buff, 0);
+                if (!requestCodeSet.contains(requestCode)) {
+                    log(TAG, "非法请求码 " + requestCode);
+                    is.close();
+                    client.close();
+                    continue;
+                }
+
+                final int payloadLen = Utils.Byte2Int(buff, 4);
+                if (payloadLen > 0) {
+                    if (buff.length <= payloadLen) {
+                        log(TAG, "数据量超过承载范围 " + payloadLen);
+                        is.close();
+                        client.close();
+                        continue;
+                    }
+
+                    int readCnt = 0;
+                    while (readCnt < payloadLen) { //欲求不满
+                        int cnt = is.read(buff, readCnt, payloadLen - readCnt);
+                        if (cnt < 0) {
+                            log(TAG, "接收完毕或错误 " + cnt);
+                            break;
+                        }
+                        readCnt += cnt;
+                    }
+                    if (payloadLen != readCnt) {
+                        log(TAG, "接收错误 payloadLen" + payloadLen + " readCnt" + readCnt);
+                        is.close();
+                        client.close();
+                        continue;
+                    }
+                }
+
+                var os = client.getOutputStream();
+                switch (requestCode) {
+                    case GET_FOREGROUND:
+                        handleForeground(os, buff);
+                        break;
+                    case GET_SCREEN_STATE:
+                        handleScreen(os, buff);
+                        break;
+                    case SET_CONFIG:
+                        handleConfig(os, buff, payloadLen);
+                        break;
+                    case SET_WAKEUP_LOCK:
+                        handleWakeupLock(os, buff, payloadLen);
+                        break;
+                    case BREAK_NETWORK:
+                        handleDestroySocket(os, buff, payloadLen);
+                        break;
+                    default:
+                        log(TAG, "请求码功能暂未实现TODO: " + requestCode);
+                        break;
+                }
+                client.close();
             }
         }
     }
@@ -256,7 +275,7 @@ public class AndroidService {
         return windowsStackMethod != null && mRootWindowContainer != null;
     }
 
-    void handleForeground(OutputStream os, byte[] replyBuff) throws Exception {
+    void handleForeground(OutputStream os, byte[] replyBuff) throws IOException {
         config.foregroundUid.clear();
         try {
             for (int i = (mLruProcesses == null || !config.isCurProcStateInitialized()) ?
@@ -283,7 +302,9 @@ public class AndroidService {
                         (4 <= mCurProcState && mCurProcState <= 6 && config.tolerant.contains(uid)))
                     config.foregroundUid.add(uid);
             }
-        } catch (Exception ignore) {
+        } catch (Exception e) {
+            log(FGD_TAG, "前台服务错误: "+e);
+            e.printStackTrace();
         }
 
         // 某些系统(COS11/12)及Thanox的后台保护机制，会把某些应用或游戏的 mCurProcState 设为 0(系统常驻进程专有状态)
@@ -332,7 +353,7 @@ public class AndroidService {
 
 
     // 0未知 1息屏 2亮屏 3Doze...
-    void handleScreen(OutputStream os, byte[] replyBuff) throws Exception {
+    void handleScreen(OutputStream os, byte[] replyBuff) throws IOException {
 /*
         https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/view/Display.java;l=387
         enum DisplayStateEnum
@@ -356,7 +377,7 @@ public class AndroidService {
      * 第二行：受冻它管控的应用 只含杀死后台和冻结配置， 不含自由后台、白名单
      * 第三行：宽松前台UID列表 只含杀死后台和冻结配置， 不含自由后台、白名单 (此行可能为空)
      */
-    void handleConfig(OutputStream os, byte[] buff, int recvLen) throws Exception {
+    void handleConfig(OutputStream os, byte[] buff, int recvLen) throws IOException {
         var splitLine = new String(buff, 0, recvLen).split("\n");
         if (splitLine.length != 2 && splitLine.length != 3) {
             log(CFG_TAG, "Fail splitLine.length:" + splitLine.length);
@@ -434,7 +455,7 @@ public class AndroidService {
      * "foreground",   // MODE_FOREGROUND
      * };
      */
-    void handleWakeupLock(OutputStream os, byte[] buff, int recvLen) throws Exception {
+    void handleWakeupLock(OutputStream os, byte[] buff, int recvLen) throws IOException {
         final int WAKEUP_LOCK_IGNORE = 1;
         final int WAKEUP_LOCK_DEFAULT = 3;
         final int WAKEUP_LOCK_CODE = 40;
@@ -490,7 +511,7 @@ public class AndroidService {
         os.close();
     }
 
-    void handleBreakNetwork(OutputStream os, byte[] buff, int recvLen) throws Exception {
+    void handleDestroySocket(OutputStream os, byte[] buff, int recvLen) throws IOException {
         try {
             if (recvLen != 4) {
                 log(NMS_TAG, "非法数据长度" + recvLen);

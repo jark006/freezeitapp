@@ -141,6 +141,9 @@ public class LogcatFragment extends Fragment {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+            if (binding == null)
+                return;
+
             switch (msg.what) {
                 case NEW_LOG_CONTENT:
                     binding.logView.setText(new String(StaticData.response, 0, lastLogLen));

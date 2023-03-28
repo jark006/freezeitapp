@@ -13,6 +13,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class AppInfoCache {
     private static final String TAG = "Freezeit[AppInfoCache]";
@@ -28,7 +29,7 @@ public class AppInfoCache {
             this.icon = icon;
             this.packName = packName;
             this.label = label;
-            this.forSearch = label.toLowerCase() + packName.toLowerCase() + uid;
+            this.forSearch = label.toLowerCase(Locale.ENGLISH) + packName.toLowerCase(Locale.ENGLISH) + uid;
             this.isSystemApp = isSystemApp;
         }
 

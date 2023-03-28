@@ -18,15 +18,4 @@
     <style name="footButton" parent="Theme.AppCompat.DayNight.DarkActionBar">
         <item name="colorPrimary">@color/purple_500</item>
     </style>
-
-    <style name="AppTheme.Spinner" parent="Theme.AppCompat.DayNight">
-        <item name="android:spinnerItemStyle">@style/SpinnerItem</item>
-        <item name="android:spinnerDropDownItemStyle">@style/SpinnerItem</item>
-    </style>
-
-    <style name="SpinnerItem">
-        <item name="android:layout_gravity">center</item>
-        <item name="android:textSize">18sp</item>
-    </style>
-
 </resources>

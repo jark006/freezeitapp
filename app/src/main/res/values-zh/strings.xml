@@ -13,11 +13,10 @@
 
     <string name="website_link">https://jark006.gitee.io/i/freezeit/</string>
     <string name="tutorial_link">https://jark006.gitee.io/FreezeitIntroduction/</string>
-    <string name="update_json_link">https://raw.fastgit.org/jark006/freezeitRelease/master/update.json</string>
-    <string name="online_changelog_link">https://raw.fastgit.org/jark006/freezeitRelease/main/changelogFull.txt</string>
+    <string name="update_json_link">https://ghproxy.com/https://raw.githubusercontent.com/jark006/freezeitRelease/main/update.json</string>
+    <string name="online_changelog_link">https://ghproxy.com/https://raw.githubusercontent.com/jark006/freezeitRelease/main/changelogFull.txt</string>
 
 
-    <string name="communityTitle">社区交流</string>
     <string name="coolapk_text">酷安 @JARK006</string>
     <string name="qq_group_text">QQ群组 781222669</string>
     <string name="qq_channel_text">QQ频道 冻它模块</string>
@@ -27,11 +26,6 @@
     <string name="update_app_label">更新应用名称</string>
     <string name="about">关于</string>
     <string name="developer">开发者 JARK006</string>
-
-    <string name="magisk_online">Magisk</string>
-    <string name="magisk_offline">Magisk 未安装或未运行</string>
-    <string name="xposed_online">LSPosed</string>
-    <string name="xposed_offline">LSPosed未激活</string>
     <string name="xposed_warn">未激活,无法工作</string>
     <string name="freezeit_offline">冻它未启用或工作异常</string>
     <string name="freezeit_error_tips">
@@ -55,7 +49,6 @@
 
     <string name="slowly_tips">别急，慢点</string>
     <string name="help">帮助</string>
-    <string name="check_freezer">查看冻结</string>
     <string name="freezeit_tutorial_text">冻它教程说明</string>
     <string name="download">下载</string>
 
@@ -120,9 +113,6 @@
         设为[杀死后台]的应用进入后台之后，需要多久杀死。
         \n一般用于不需要留后台的工具型应用</string>
 
-    <string name="radical_fg_title">激进识别 ⓘ</string>
-    <string name="radical_fg_tips">略微省电的任务切换识别，部分系统不支持，可能导致冻结/解冻失效。重启生效</string>
-
     <string name="battery_title">电池监控 ⓘ</string>
     <string name="battery_tips">记录电池充/放电时长、功率、温度等</string>
 
@@ -152,8 +142,6 @@
     <string name="doze_debug_title">Doze调试日志 ⓘ</string>
     <string name="doze_debug_tips">如果无法进入Doze，开启该选项则启用Doze调试日志，助于分析原因。</string>
 
-    <string name="more_whitelist_title">内置更多自由后台 ⓘ</string>
-    <string name="more_whitelist_tips">把第三方应用里与系统深度关联的应用内置为自由后台，防止被冻结而影响系统运行，重启生效</string>
     <string name="config_help_text">
         【杀死后台】:该应用进入后台超时就直接杀死，而不是冻结。该选项适合那些用完就丢、不用留后台的应用。
         \n【SIGSTOP冻结】:使用SIGSTOP信号进行冻结，该方式不考虑进程状态而强制冻结，有概率破坏应用的正常运行。
@@ -170,7 +158,7 @@
     <string name="help_logcat_check">查看冻结状态、内存占用</string>
     <string name="help_logcat_clear">清空日志</string>
     <string name="app_time_help_text">
-        统计应用的CPU使用时间，基本上反应该应用的耗电水平。
+        统计应用的全部核心总使用时间，基本上反应该应用的耗电水平。若一个应用1秒内占用了3个核心的全部计算资源，将计时3秒。
         \n\n应用正在运行时，并非一直在使用CPU资源运算，而是在其需要处理数据的时候才会使用，而大多数时间会在“休眠”状态。
         \n\n注:以上数据统计属于系统默认行为，冻它只是读取进行可视化。
     </string>
@@ -183,7 +171,6 @@
     <string name="reject">拒绝</string>
     <string name="accept">接受</string>
     <string name="thanks_title">捐赠感谢名单</string>
-    <string name="workMode">冻结模式</string>
     <string name="unknown">未知</string>
     <string name="moduleEnv">模块环境</string>
     <string name="moduleVer">冻它版本</string>

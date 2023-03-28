@@ -35,6 +35,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 
 import io.github.jark006.freezeit.AppInfoCache;
 import io.github.jark006.freezeit.R;
@@ -93,7 +94,7 @@ public class ConfigFragment extends Fragment {
 
                     @Override
                     public boolean onQueryTextChange(String newText) {
-                        recycleAdapter.filter(newText != null ? newText.toLowerCase() : "");
+                        recycleAdapter.filter(newText != null ? newText.toLowerCase(Locale.ENGLISH) : "");
                         return true;
                     }
                 });
@@ -261,10 +262,12 @@ public class ConfigFragment extends Fragment {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+            if (binding == null)
+                return;
+
             switch (msg.what) {
                 case GET_APP_CFG:
                     recycleAdapter.updateDataSet(uidListSort, appCfg);
-                    if (binding == null) return;
                     binding.swipeRefreshLayout.setRefreshing(false);
                     break;
                 case SET_CFG_SUCCESS:

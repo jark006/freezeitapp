@@ -13,7 +13,7 @@ public class StaticData {
     public static String changelogUrl = "";
 
     public static boolean hasGetPropInfo = false;
-    public static int clusterNum = 0;
+    public static int clusterType = 0;
     public static int moduleVersionCode = 0;
     public static String moduleVersion = "";
     public static String moduleEnv = "";      // Magisk or KernelSU
@@ -31,11 +31,4 @@ public class StaticData {
     public static ActivityManager am;
     public static byte[] response = new byte[0];
 
-    public static class buffNode {
-        boolean lock = false;
-        int recvLen = 0;
-        byte[] response = null;
-    }
-
-    public static buffNode[] responseBuf = new buffNode[4];
 }

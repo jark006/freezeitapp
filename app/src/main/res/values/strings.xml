@@ -16,8 +16,8 @@
     <string name="lanzou_link" translatable="false">https://jark006.lanzout.com/b017oz9if</string>
 
     <string name="thanks_list" translatable="false">
-        感谢以下小伙伴对冻它的捐赠支持，截止至2023年3月4日，大致以时间从最近到最久排序：
-        \n\n微信：凡梦/*惠，*花X4，*林X2，*🌈，*长，*彬，*寒，*宾，*叁，*爸，*(加油!)，*包，*彭，*阳，*。，*我，*G，*行，*勾，g*d，*！，*子，P*e,*月，*名，*0，*邻，*，G*t，*夏，*岸，*骞，*春，*棋，*酸，*猫，A*3，*谏。
+        感谢以下小伙伴对冻它的捐赠支持，截止至2023年3月14日，大致以时间从最近到最久排序：
+        \n\n微信：*蒙，*x，W*h，龙z月，凡梦/*惠，*花X4，*林X2，*🌈，*长，*彬，*寒，*宾，*叁，*爸，*(加油!)，*包，*彭，*阳，*。，*我，*G，*行，*勾，g*d，*！，*子，P*e,*月，*名，*0，*邻，*，G*t，*夏，*岸，*骞，*春，*棋，*酸，*猫，A*3，*谏。
         \n\n支付宝：**鑫X2，卡卡罗宾，*静，*郎，*炀，**豪，**鹏，**昕，**泽，**国，**晖，**秀，**民，**超，*金阳，*宽，*森，*锋，**良，**义。
         </string>
 
@@ -55,7 +55,6 @@
     <string name="title_config">Config</string>
     <string name="title_logcat">Log</string>
     <string name="icon">Icon</string>
-    <string name="communityTitle">Community</string>
     <string name="coolapk_text">Coolapk @JARK006</string>
     <string name="qq_group_text">QQ Group 781222669</string>
     <string name="qq_channel_text">QQ Channel [冻它模块]</string>
@@ -73,10 +72,6 @@
     <string name="clear_log_text">Clear</string>
     <string name="clear_log_tips">Cleared</string>
     <string name="xposed_description">Disable ANR, wakelocks and alarm, clear broadcasts (to prevent dialing stuck, installation stuck, etc.). Disable powerkeeper kill background apps in MIUI.</string>
-    <string name="magisk_online">Magisk</string>
-    <string name="magisk_offline">Magisk  Inactivated</string>
-    <string name="xposed_online">LSPosed Activated</string>
-    <string name="xposed_offline">LSPosed Inactivated</string>
     <string name="title_activity_setting">Settings</string>
     <string name="title_activity_task_manager">APP CPU Time</string>
     <string name="cluster_title">Cluster Bind ⓘ</string>
@@ -86,7 +81,6 @@
     <string name="freeze_mode_title">Freezer Type ⓘ</string>
     <string name="slowly_tips">Be Slowly</string>
     <string name="help">Help</string>
-    <string name="check_freezer">check_freezer_status</string>
     <string name="freezeit_tutorial_text">Freezeit Tutorial</string>
     <string name="xposed_warn">Xposed unactive, stop working</string>
     <string name="freezeit_error_tips">
@@ -108,7 +102,6 @@
     <string name="lmk_title">Adjust LMK Parameter ⓘ</string>
     <string name="current_title">Adjust Current ⓘ</string>
     <string name="battery_title">Battery Monitor ⓘ</string>
-    <string name="radical_fg_title">Radical Foreground ⓘ</string>
     <string name="break_network_title">QQ BreakNetwork ⓘ</string>
     <string name="developer">Developer JARK006</string>
     <string name="physical_ram_text">[RAM] Total: %.2f GiB\nUse: %.1f%% Remain: %.2f %s</string>
@@ -127,7 +120,6 @@
         \nFrozen and uid mode only different paths, the difference is not significant, it is recommended to use frozen in preference.
         \nReboot takes effect.
     </string>
-    <string name="radical_fg_tips">Slightly power saving task switching recognition, not supported by some systems, may cause freeze/unfreeze to fail. Reboot effective</string>
     <string name="battery_tips">Record battery charge/discharge time, power, temperature, etc.</string>
     <string name="current_tips">Current or power values close to or equal to 0 need to be turned on, common in OPPO/VIVO system</string>
     <string name="break_network_tips">When freezing QQ/TIM, disconnect its network and let HMSPush or MiPush take over the message pushing, freezeit tutorial with HMSPush tutorial</string>
@@ -149,8 +141,6 @@
     <string name="doze_debug_title">Doze Debug ⓘ</string>
     <string name="doze_debug_tips">If you cannot enter , turning this option on enables debug logging and helps to analyze the cause.</string>
     <string name="github_open_source">APP OpenSource</string>
-    <string name="more_whitelist_title">More WhiteList ⓘ</string>
-    <string name="more_whitelist_tips">Add those third-party applications that are deeply associated with the system to an immutable whitelist to prevent them from being frozen, which would otherwise affect the system. Reboot takes effect</string>
     <string name="config_help_text">
         \n[Terminate]:Use SIGKILL signal to terminate app, instead of freezing.
         \n[SIGSTOP]:Use SIGSTOP signal to freeze.
@@ -190,7 +180,6 @@
     <string name="reject">Reject</string>
     <string name="accept">Accept</string>
     <string name="thanks_title">Thanks List</string>
-    <string name="workMode">WorkMode</string>
     <string name="unknown">Unknown</string>
     <string name="moduleEnv">Module Platform</string>
     <string name="moduleVer">Freezeit Version</string>

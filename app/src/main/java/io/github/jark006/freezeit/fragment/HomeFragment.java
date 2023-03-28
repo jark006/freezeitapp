@@ -141,7 +141,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
             try {
                 StaticData.moduleVersionCode = Integer.parseInt(info[3]);
-                StaticData.clusterNum = info.length >= 6 ? Integer.parseInt(info[5]) : 0;
+                StaticData.clusterType = info.length > 5 ? Integer.parseInt(info[5]) : 0;
             } catch (Exception ignored) {
             }
             StaticData.moduleVersion = info[2];
@@ -295,17 +295,35 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     binding.androidVer.setText(StaticData.androidVer);
                     binding.kernelVer.setText(StaticData.kernelVer);
 
-                    switch (StaticData.clusterNum) {
-                        case 3: // 4+3+1
-                            binding.cpu4.setTextColor(getColor(requireContext(), R.color.cpu_mid));
-                            binding.cpu5.setTextColor(getColor(requireContext(), R.color.cpu_mid));
-                            binding.cpu6.setTextColor(getColor(requireContext(), R.color.cpu_mid));
+                    final int colorEfficiency = getColor(requireContext(), R.color.efficiency_core);
+                    final int colorPerformance = getColor(requireContext(), R.color.performance_core);
+                    final int colorPerformanceEnhance = getColor(requireContext(), R.color.performance_e_core);
+                    // default:44  4+4
+                    switch (StaticData.clusterType) {
+                        case 431: // 4+3+1
+                            binding.cpu4.setTextColor(colorPerformance);
+                            binding.cpu5.setTextColor(colorPerformance);
+                            binding.cpu6.setTextColor(colorPerformance);
                             break;
-                        case 4: // 3+2+2+1
-                            binding.cpu3.setTextColor(getColor(requireContext(), R.color.cpu_mid));
-                            binding.cpu4.setTextColor(getColor(requireContext(), R.color.cpu_mid));
-                            binding.cpu5.setTextColor(getColor(requireContext(), R.color.cpu_mid_plus));
-                            binding.cpu6.setTextColor(getColor(requireContext(), R.color.cpu_mid_plus));
+                        case 3221: // 3+2+2+1
+                            binding.cpu3.setTextColor(colorPerformance);
+                            binding.cpu4.setTextColor(colorPerformance);
+                            binding.cpu5.setTextColor(colorPerformanceEnhance);
+                            binding.cpu6.setTextColor(colorPerformanceEnhance);
+                            break;
+                        case 422: // 4+2+2
+                            binding.cpu4.setTextColor(colorPerformance);
+                            binding.cpu5.setTextColor(colorPerformance);
+                            break;
+                        case 62: // 6+2
+                            binding.cpu4.setTextColor(colorEfficiency);
+                            binding.cpu5.setTextColor(colorEfficiency);
+                            break;
+                        case 8: //全小核，或全核心一致
+                            binding.cpu4.setTextColor(colorEfficiency);
+                            binding.cpu5.setTextColor(colorEfficiency);
+                            binding.cpu6.setTextColor(colorEfficiency);
+                            binding.cpu7.setTextColor(colorEfficiency);
                             break;
                     }
 
@@ -376,7 +394,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         // [0]全部物理内存 [1]可用内存 [2]全部虚拟内存 [3]可用虚拟内存  Unit: MiB
         // [4-11]八个核心频率(MHz) [12-19]八个核心使用率(%)
-        // [20]CPU总使用率(%) [21]CPU温度(m℃) [22]电流(mA)
+        // [20]CPU总使用率(%) [21]CPU温度(m℃) [22]电池功率(mW)
         Utils.Byte2Int(StaticData.response, imgBuffBytes, realTimeInfoIntLen * 4, realTimeInfo, 0);
 
         final double GiB = 1024.0;
@@ -396,12 +414,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 SwapFree > GiB ? "GiB" : "MiB");
         binding.zramInfo.setText(tmp);
 
-        int percent = realTimeInfo[20];
-        double temperature = realTimeInfo[21] / 1e3; // m℃ -> ℃
-        int mA = realTimeInfo[22] / -1000; // uA -> mA
+        final int percent = realTimeInfo[20];
+        final double temperature = realTimeInfo[21] / 1e3; // m℃ -> ℃
+        final int mW = realTimeInfo[22]; // mW 毫瓦
         binding.cpu.setText(String.format(getString(R.string.cpu_format), percent, temperature));
-        binding.battery.setText(Math.abs(mA) < 2000 ? (mA + " mA\uD83D\uDD0B") :
-                String.format("%.2f A\uD83D\uDD0B", mA / 1e3));
+        binding.battery.setText(String.format("%.2f W\uD83D\uDD0B", mW / 1e3));
 
         binding.cpu0.setText("cpu0\n" + realTimeInfo[4] + "MHz\n" + realTimeInfo[12] + "%");
         binding.cpu1.setText("cpu1\n" + realTimeInfo[5] + "MHz\n" + realTimeInfo[13] + "%");

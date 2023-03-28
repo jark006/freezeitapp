@@ -102,7 +102,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:textColor="@color/cpu_small"
+                            android:textColor="@color/efficiency_core"
                             android:textSize="8sp"
                             tools:ignore="SmallSp" />
 
@@ -112,7 +112,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:textColor="@color/cpu_small"
+                            android:textColor="@color/efficiency_core"
                             android:textSize="8sp"
                             tools:ignore="SmallSp" />
 
@@ -122,7 +122,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:textColor="@color/cpu_small"
+                            android:textColor="@color/efficiency_core"
                             android:textSize="8sp"
                             tools:ignore="SmallSp" />
 
@@ -132,7 +132,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:textColor="@color/cpu_small"
+                            android:textColor="@color/efficiency_core"
                             android:textSize="8sp"
                             tools:ignore="SmallSp" />
 
@@ -142,7 +142,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:textColor="@color/cpu_big"
+                            android:textColor="@color/prime_core"
                             android:textSize="8sp"
                             tools:ignore="SmallSp" />
 
@@ -152,7 +152,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:textColor="@color/cpu_big"
+                            android:textColor="@color/prime_core"
                             android:textSize="8sp"
                             tools:ignore="SmallSp" />
 
@@ -162,7 +162,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:textColor="@color/cpu_big"
+                            android:textColor="@color/prime_core"
                             android:textSize="8sp"
                             tools:ignore="SmallSp" />
 
@@ -172,7 +172,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:textColor="@color/cpu_big"
+                            android:textColor="@color/prime_core"
                             android:textSize="8sp"
                             tools:ignore="SmallSp" />
 
