@@ -1,11 +1,17 @@
 package io.github.jark006.freezeit;
 
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.net.Uri;
+import android.os.FileUtils;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -13,6 +19,8 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.LayoutRes;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -206,4 +214,35 @@ public class Utils {
         }
     }
 
+    public static String getFileAbsolutePath(Context context, Uri uri) {
+        if (context == null || uri == null)
+            return null;
+
+        File file = null;
+        //android10以上转换
+        if (uri.getScheme().equals(ContentResolver.SCHEME_FILE)) {
+            file = new File(uri.getPath());
+        } else if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
+            //把文件复制到沙盒目录
+            ContentResolver contentResolver = context.getContentResolver();
+            @SuppressLint("Recycle")
+            Cursor cursor = contentResolver.query(uri, null, null, null, null);
+            if (cursor.moveToFirst()) {
+                @SuppressLint("Range")
+                String displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                try {
+                    InputStream is = contentResolver.openInputStream(uri);
+                    File cache = new File(context.getExternalCacheDir().getAbsolutePath(), Math.round((Math.random() + 1) * 1000) + displayName);
+                    FileOutputStream fos = new FileOutputStream(cache);
+                    FileUtils.copy(is, fos);
+                    file = cache;
+                    fos.close();
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return file == null ? null : file.getAbsolutePath();
+    }
 }

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/container"
     tools:context=".SettingsActivity">
 
     <LinearLayout
@@ -11,7 +12,8 @@
         android:layout_marginHorizontal="10dp"
         android:orientation="vertical"
         android:paddingHorizontal="@dimen/width_margin"
-        android:paddingVertical="10dp">
+        android:paddingTop="10dp"
+        android:paddingBottom="40dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -405,11 +407,6 @@
                 tools:ignore="UseSwitchCompatOrMaterialXml" />
         </LinearLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="?android:attr/listDivider" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -434,6 +431,27 @@
                 android:thumbTint="@color/white"
                 android:trackTint="@color/transparent"
                 tools:ignore="UseSwitchCompatOrMaterialXml" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="?android:attr/listDivider" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/set_bg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="15dp"
+                android:text="@string/set_background"
+                android:textSize="18sp" />
+
         </LinearLayout>
 
     </LinearLayout>

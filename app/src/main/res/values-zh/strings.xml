@@ -59,8 +59,9 @@
     <string name="donate_alipay">支付宝捐赠</string>
     <string name="github_open_source">APP开源</string>
     <string name="github_publish">Github发布页</string>
-    <string name="physical_ram_text">[物理内存] 全部: %.2f GiB\n已用:%.1f%% 可用: %.2f %s</string>
-    <string name="virtual_ram_text">[虚拟内存] 全部: %.2f GiB\n已用:%.1f%% 可用: %.2f %s</string>
+    <string name="physical_ram_text">[物理内存] 全部: %1$.2f GiB\n已用:%2$.1f%% 可用: %3$.2f %4$s</string>
+    <string name="virtual_ram_text">[虚拟内存] 全部: %1$.2f GiB\n已用:%2$.1f%% 可用: %3$.2f %4$s</string>
+    <string name="ext_memory">另有内存扩展: %1$.2f GiB</string>
     <string name="setup_successful">设置成功</string>
     <string name="setup_failed">设置失败</string>
     <string name="no_response">无响应，设置失败</string>
@@ -178,4 +179,5 @@
     <string name="kernel_version">内核版本</string>
     <string name="android_version">安卓版本</string>
     <string name="freezeit_website">冻它官网</string>
+    <string name="set_background">设置背景</string>
 </resources>

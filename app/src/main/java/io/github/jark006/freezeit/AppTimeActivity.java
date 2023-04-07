@@ -76,6 +76,7 @@ public class AppTimeActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        findViewById(R.id.container).setBackground(StaticData.getBackgroundDrawable(this));
 
         timer = new Timer();
         timer.schedule(new TimerTask() {

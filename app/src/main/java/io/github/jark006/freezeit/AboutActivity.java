@@ -33,6 +33,11 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.thanks).setOnClickListener(this);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        findViewById(R.id.container).setBackground(StaticData.getBackgroundDrawable(this));
+    }
 
     @Override
     public void onClick(View v) {

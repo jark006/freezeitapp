@@ -133,6 +133,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             //      [7]:workMode:   冻结模式 V1 / V2
             //      [8]:androidVer: 安卓版本
             //      [9]:kernelVer:  内核版本
+            //      [10]:extMemory: 内存扩展 MiB
             String[] info = (recvLen == 0) ? null : new String(StaticData.response, 0, recvLen).split("\n");
             if (info == null || info.length < 5) {
                 handler.sendEmptyMessage(NO_MODULE_INFO);
@@ -142,6 +143,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             try {
                 StaticData.moduleVersionCode = Integer.parseInt(info[3]);
                 StaticData.clusterType = info.length > 5 ? Integer.parseInt(info[5]) : 0;
+                StaticData.extMemory = info.length > 10 ? Integer.parseInt(info[10]) : 0;
             } catch (Exception ignored) {
             }
             StaticData.moduleVersion = info[2];
@@ -412,6 +414,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 SwapTotal / GiB, 100.0 * (SwapTotal - SwapFree) / SwapTotal,
                 SwapFree > GiB ? SwapFree / GiB : SwapFree,
                 SwapFree > GiB ? "GiB" : "MiB");
+        if (StaticData.extMemory > 0)
+            tmp += "\n" + String.format(getString(R.string.ext_memory), StaticData.extMemory / 1024.0);
         binding.zramInfo.setText(tmp);
 
         final int percent = realTimeInfo[20];

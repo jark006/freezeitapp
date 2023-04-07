@@ -1,9 +1,11 @@
 package io.github.jark006.freezeit;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +18,7 @@ import io.github.jark006.freezeit.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +41,20 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.navView, navController);
 
         new Thread(() -> AppInfoCache.refreshCache(this)).start();
+
+        try {
+            StaticData.bg = Drawable.createFromPath(
+                    this.getFilesDir().getPath() + "/" + StaticData.bgFileName);
+            if (StaticData.bg != null)
+                StaticData.bg.setAlpha(56);
+        } catch (Exception ignored) {
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        findViewById(R.id.container).setBackground(StaticData.getBackgroundDrawable(this));
     }
 
     public static void checkPrivacy(Context context) {

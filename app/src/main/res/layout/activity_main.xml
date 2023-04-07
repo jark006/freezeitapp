@@ -19,6 +19,7 @@
         android:id="@+id/nav_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:alpha="0.6"
         android:background="?android:attr/windowBackground"
         android:padding="5dp"
         android:theme="@style/footButton"

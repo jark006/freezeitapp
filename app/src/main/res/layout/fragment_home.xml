@@ -22,6 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="16dp"
+                android:alpha="0.75"
                 card_view:cardUseCompatPadding="true">
 
                 <LinearLayout
@@ -59,6 +60,7 @@
                 android:id="@+id/realtimeLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:alpha="0.75"
                 app:cardCornerRadius="16dp"
                 app:cardUseCompatPadding="true">
 
@@ -219,6 +221,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="16dp"
+                android:alpha="0.75"
                 android:visibility="invisible"
                 card_view:cardUseCompatPadding="true">
 
@@ -352,6 +355,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
+                android:alpha="0.75"
                 app:cardCornerRadius="16dp"
                 card_view:cardUseCompatPadding="true">
 

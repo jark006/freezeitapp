@@ -39,7 +39,9 @@
         \n(1) android.permission.QUERY_ALL_PACKAGES
         \n2. 查看网络状态及网络权限，仅用于获取版本更新信息和更新日志
         \n(1) android.permission.ACCESS_NETWORK_STATE
-        \n(2) android.permission.INTERNET
+        \n(2) android.permission.INTERNET2.
+        \n3. 读写储存权限，仅用于读取图像用于设置应用背景
+        \n(1) android.permission.WRITE_EXTERNAL_STORAGE
 
         \n\n四、 我们如何更新隐私政策
         \n\n1. 我们保留不时更新或修订本政策的权利。这些更新与修订将构成本政策的一部分并具有等同于本政策的效力，未经您明确同意，我们不会削减您依据当前生效的本政策所应享受的权利。
@@ -104,8 +106,9 @@
     <string name="battery_title">Battery Monitor ⓘ</string>
     <string name="break_network_title">QQ BreakNetwork ⓘ</string>
     <string name="developer">Developer JARK006</string>
-    <string name="physical_ram_text">[RAM] Total: %.2f GiB\nUse: %.1f%% Remain: %.2f %s</string>
-    <string name="virtual_ram_text">[SWAP] Total: %.2f GiB\nUse: %.1f%% Remain: %.2f %s</string>
+    <string name="physical_ram_text">[RAM] Total: %1$.2f GiB\nUse: %2$.1f%% Remain: %3$.2f %4$s</string>
+    <string name="virtual_ram_text">[SWAP] Total: %1$.2f GiB\nUse: %2$.1f%% Remain: %3$.2f %4$s</string>
+    <string name="ext_memory">ExtMemory: %1$.2f GiB</string>
     <string name="cluster_tips">
         Binding freezeit process to a cluster, restart effective.
         \n4+4 architecture: Efficiency core [0~3], Performance core [4~7]
@@ -187,4 +190,5 @@
     <string name="kernel_version">Kernel Version</string>
     <string name="android_version">Android Version</string>
     <string name="freezeit_website">Website</string>
+    <string name="set_background">Setting Background</string>
 </resources>

@@ -1,6 +1,11 @@
 package io.github.jark006.freezeit;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,8 +18,12 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import java.io.FileInputStream;
 import java.util.Arrays;
 
 
@@ -51,6 +60,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     int varIndexForHandle = 0;
     int newValueForHandle = 0;
 
+    ActivityResultLauncher<Intent> pickPicture;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +81,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         findViewById(R.id.extend_fg_title).setOnClickListener(this);
         findViewById(R.id.doze_debug_title).setOnClickListener(this);
 
+        findViewById(R.id.set_bg).setOnClickListener(this);
 
         clusterBindSpinner = findViewById(R.id.cluster_spinner);
         freezeModeSpinner = findViewById(R.id.freeze_mode_spinner);
@@ -89,11 +101,41 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         dozeSwitch = findViewById(R.id.switch_doze);
         extendFgSwitch = findViewById(R.id.switch_extend_fg);
         dozeDebugSwitch = findViewById(R.id.switch_doze_debug);
+
+        if (this.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(SettingsActivity.this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        }
+
+        pickPicture = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() != RESULT_OK || result.getData() == null)
+                return;
+
+            String imagePath = Utils.getFileAbsolutePath(this, result.getData().getData());
+            StaticData.bg = Drawable.createFromPath(imagePath);
+            StaticData.bg.setAlpha(56);
+
+            try {
+                var is = new FileInputStream(imagePath);
+                var os = openFileOutput(StaticData.bgFileName, Context.MODE_PRIVATE);
+                byte[] buff = new byte[1024];
+                int len;
+                while ((len = is.read(buff)) > 0) {
+                    os.write(buff, 0, len);
+                }
+                is.close();
+                os.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        findViewById(R.id.container).setBackground(StaticData.getBackgroundDrawable(this));
         new Thread(() -> {
             var recvLen = Utils.freezeitTask(Utils.getSettings, null);
             if (recvLen != 256) {
@@ -283,6 +325,10 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             Utils.textDialog(this, R.string.extend_fg_title, R.string.extend_fg_tips);
         } else if (id == R.id.doze_debug_title) {
             Utils.textDialog(this, R.string.doze_debug_title, R.string.doze_debug_tips);
+        } else if (id == R.id.set_bg) {
+            Intent intent = new Intent("android.intent.action.GET_CONTENT");
+            intent.setType("image/*");
+            pickPicture.launch(intent);
         }
     }
 }
