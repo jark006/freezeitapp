@@ -73,7 +73,7 @@
     <string name="update_start">Updating AppLabel</string>
     <string name="clear_log_text">Clear</string>
     <string name="clear_log_tips">Cleared</string>
-    <string name="xposed_description">Disable ANR, wakelocks and alarm, clear broadcasts (to prevent dialing stuck, installation stuck, etc.). Disable powerkeeper kill background apps in MIUI.</string>
+    <string name="xposed_description">Freezeit Auxiliary Modules</string>
     <string name="title_activity_setting">Settings</string>
     <string name="title_activity_task_manager">APP CPU Time</string>
     <string name="cluster_title">Cluster Bind ⓘ</string>

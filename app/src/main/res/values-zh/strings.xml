@@ -7,9 +7,7 @@
     <string name="title_logcat">日志</string>
     <string name="icon">图标</string>
 
-    <string name="xposed_description">
-        禁止应用无响应、唤醒锁及定时器，清理广播(防止卡拨号、卡安装等等)
-        \n禁用MIUI电量与性能杀后台</string>
+    <string name="xposed_description">冻它辅助模块</string>
 
     <string name="website_link">https://jark006.gitee.io/i/freezeit/</string>
     <string name="tutorial_link">https://jark006.gitee.io/FreezeitIntroduction/</string>

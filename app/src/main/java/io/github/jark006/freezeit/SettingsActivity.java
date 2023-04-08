@@ -5,6 +5,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,7 +25,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import java.io.FileInputStream;
 import java.util.Arrays;
 
 
@@ -112,20 +113,21 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             if (result.getResultCode() != RESULT_OK || result.getData() == null)
                 return;
 
-            String imagePath = Utils.getFileAbsolutePath(this, result.getData().getData());
-            StaticData.bg = Drawable.createFromPath(imagePath);
-            StaticData.bg.setAlpha(56);
-
             try {
-                var is = new FileInputStream(imagePath);
-                var os = openFileOutput(StaticData.bgFileName, Context.MODE_PRIVATE);
-                byte[] buff = new byte[1024];
-                int len;
-                while ((len = is.read(buff)) > 0) {
-                    os.write(buff, 0, len);
+                String imagePath = Utils.getFileAbsolutePath(this, result.getData().getData());
+                var bg = BitmapFactory.decodeFile(imagePath);
+                if (bg == null) return;
+                if (bg.getHeight() > 1000 || bg.getWidth() > 1000) {
+                    final float scale = 1000f / Math.max(bg.getHeight(), bg.getWidth());
+                    bg = Utils.resize(bg, scale);
                 }
-                is.close();
-                os.close();
+                bg.compress(Bitmap.CompressFormat.JPEG, 90,
+                        openFileOutput(StaticData.bgFileName, Context.MODE_PRIVATE));
+
+                StaticData.bg = Drawable.createFromPath(
+                        this.getFilesDir().getPath() + "/" + StaticData.bgFileName);
+                if (StaticData.bg != null)
+                    StaticData.bg.setAlpha(56);
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -7,7 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
 public class StaticData {
-    public static final String bgFileName = "bgFile";
+    public static final String bgFileName = "bg.jpg";
     public static Drawable bg;
 
     public static boolean hasOnlineInfo = false;
