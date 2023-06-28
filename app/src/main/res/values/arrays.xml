@@ -14,18 +14,10 @@
     <string-array name="freeze_mode">
         <item>⚔️Terminate</item>
         <item>🧊SIGSTOP</item>
+        <item>🧊ST_BREAK</item>
         <item>❄️Freezer</item>
+        <item>❄️FRZ_BREAK</item>
         <item>🍀️Free</item>
-    </string-array>
-
-    <string-array name="cluster">
-        <item>[0][1][2][3]</item>
-        <item>[0][1][2]</item>
-        <item>[3][4]</item>
-        <item>[4][5][6]</item>
-        <item>[5][6]</item>
-        <item>[7]</item>
-        <item>[4][5][6][7]</item>
     </string-array>
 
     <string-array name="work_mode">

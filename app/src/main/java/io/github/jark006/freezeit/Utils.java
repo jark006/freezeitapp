@@ -31,11 +31,19 @@ import java.net.URL;
 import java.util.Set;
 
 public class Utils {
-    public final static int CFG_TERMINATE = 10, CFG_SIGSTOP = 20, CFG_FREEZER = 30, CFG_WHITELIST = 40, CFG_WHITEFORCE = 50;
+    public final static int CFG_TERMINATE = 10,
+            CFG_SIGSTOP = 20,
+            CFG_SIGSTOP_BR = 21, //附加断网
+            CFG_FREEZER = 30,
+            CFG_FREEZER_BR = 31, //附加断网
+            CFG_WHITELIST = 40,
+            CFG_WHITEFORCE = 50;
     public final static Set<Integer> CFG_SET = Set.of(
             CFG_TERMINATE,
             CFG_SIGSTOP,
+            CFG_SIGSTOP_BR,
             CFG_FREEZER,
+            CFG_FREEZER_BR,
             CFG_WHITELIST,
             CFG_WHITEFORCE
     );

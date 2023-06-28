@@ -11,7 +11,7 @@ public class Enum {
     }
 
     public final static class Class {
-        public final static String self = BuildConfig.APPLICATION_ID + ".fragment.HomeFragment";
+        public final static String self = BuildConfig.APPLICATION_ID + ".fragment.Home";
 
         public final static String BroadcastQueue = "com.android.server.am.BroadcastQueue";
         public final static String BroadcastRecord = "com.android.server.am.BroadcastRecord";

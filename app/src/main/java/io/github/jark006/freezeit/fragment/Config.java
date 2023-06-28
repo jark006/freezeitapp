@@ -1,7 +1,9 @@
 package io.github.jark006.freezeit.fragment;
 
 import static io.github.jark006.freezeit.Utils.CFG_FREEZER;
+import static io.github.jark006.freezeit.Utils.CFG_FREEZER_BR;
 import static io.github.jark006.freezeit.Utils.CFG_SIGSTOP;
+import static io.github.jark006.freezeit.Utils.CFG_SIGSTOP_BR;
 import static io.github.jark006.freezeit.Utils.CFG_TERMINATE;
 import static io.github.jark006.freezeit.Utils.CFG_WHITEFORCE;
 import static io.github.jark006.freezeit.Utils.CFG_WHITELIST;
@@ -43,7 +45,7 @@ import io.github.jark006.freezeit.StaticData;
 import io.github.jark006.freezeit.Utils;
 import io.github.jark006.freezeit.databinding.FragmentConfigBinding;
 
-public class ConfigFragment extends Fragment {
+public class Config extends Fragment {
     private final static String TAG = "ConfigFragment";
     final int GET_APP_CFG = 1,
             SET_CFG_SUCCESS = 2,
@@ -55,7 +57,7 @@ public class ConfigFragment extends Fragment {
 
 
     // 配置名单 <uid, <freezeMode, isTolerant>>
-    // freezeMode: [10]:杀死 [20]:SIGSTOP [30]:Freezer [40]:自由 [50]:内置
+    // freezeMode: [10]:杀死 [20]:SIGSTOP [21]:SIGSTOP断网 [30]:Freezer [31]:Freezer断网 [40]:自由 [50]:内置
     HashMap<Integer, Pair<Integer, Integer>> appCfg = new HashMap<>();
     ArrayList<Integer> uidListSort = new ArrayList<>();
 
@@ -216,23 +218,27 @@ public class ConfigFragment extends Fragment {
         // 优先排列：FREEZER SIGSTOP 杀死后台， 次排列：宽松 严格
         for (int uid : uidList) {
             var mode = appCfg.get(uid);
-            if (mode != null && mode.first == Utils.CFG_FREEZER && mode.second != 0)
+            if (mode != null && (mode.first == Utils.CFG_FREEZER || mode.first == Utils.CFG_FREEZER_BR)
+                    && mode.second != 0)
                 uidListSort.add(uid);
         }
         for (int uid : uidList) {
             var mode = appCfg.get(uid);
-            if (mode != null && mode.first == Utils.CFG_FREEZER && mode.second == 0)
+            if (mode != null && (mode.first == Utils.CFG_FREEZER || mode.first == Utils.CFG_FREEZER_BR)
+                    && mode.second == 0)
                 uidListSort.add(uid);
         }
 
         for (int uid : uidList) {
             var mode = appCfg.get(uid);
-            if (mode != null && mode.first == Utils.CFG_SIGSTOP && mode.second != 0)
+            if (mode != null && (mode.first == CFG_SIGSTOP || mode.first == Utils.CFG_SIGSTOP_BR)
+                    && mode.second != 0)
                 uidListSort.add(uid);
         }
         for (int uid : uidList) {
             var mode = appCfg.get(uid);
-            if (mode != null && mode.first == Utils.CFG_SIGSTOP && mode.second == 0)
+            if (mode != null && (mode.first == CFG_SIGSTOP || mode.first == Utils.CFG_SIGSTOP_BR)
+                    && mode.second == 0)
                 uidListSort.add(uid);
         }
 
@@ -320,11 +326,15 @@ public class ConfigFragment extends Fragment {
                     return 0;
                 case CFG_SIGSTOP:
                     return 1;
-                case CFG_FREEZER:
-                default:
+                case CFG_SIGSTOP_BR:
                     return 2;
-                case CFG_WHITELIST:
+                default:
+                case CFG_FREEZER:
                     return 3;
+                case CFG_FREEZER_BR:
+                    return 4;
+                case CFG_WHITELIST:
+                    return 5;
             }
         }
 
@@ -335,9 +345,13 @@ public class ConfigFragment extends Fragment {
                 case 1:
                     return CFG_SIGSTOP;
                 case 2:
+                    return CFG_SIGSTOP_BR;
                 default:
-                    return CFG_FREEZER;
                 case 3:
+                    return CFG_FREEZER;
+                case 4:
+                    return CFG_FREEZER_BR;
+                case 5:
                     return CFG_WHITELIST;
             }
         }
@@ -431,10 +445,20 @@ public class ConfigFragment extends Fragment {
         public void convertCfg() {
             appCfg.forEach((uid, cfg) -> {
                 if (AppInfoCache.get(uid).isSystemApp == showSystemApp) {
-                    if (cfg.first == CFG_FREEZER)
-                        appCfg.put(uid, new Pair<>(CFG_SIGSTOP, cfg.second));
-                    else if (cfg.first == CFG_SIGSTOP)
-                        appCfg.put(uid, new Pair<>(CFG_FREEZER, cfg.second));
+                    switch (cfg.first) {
+                        case CFG_FREEZER:
+                            appCfg.put(uid, new Pair<>(CFG_SIGSTOP, cfg.second));
+                            break;
+                        case CFG_SIGSTOP:
+                            appCfg.put(uid, new Pair<>(CFG_FREEZER, cfg.second));
+                            break;
+                        case CFG_FREEZER_BR:
+                            appCfg.put(uid, new Pair<>(CFG_SIGSTOP_BR, cfg.second));
+                            break;
+                        case CFG_SIGSTOP_BR:
+                            appCfg.put(uid, new Pair<>(CFG_FREEZER_BR, cfg.second));
+                            break;
+                    }
                 }
             });
             notifyDataSetChanged();
@@ -443,12 +467,8 @@ public class ConfigFragment extends Fragment {
         @SuppressLint("NotifyDataSetChanged")
         public void convertTolerant() {
             appCfg.forEach((uid, cfg) -> {
-                if (AppInfoCache.get(uid).isSystemApp == showSystemApp) {
-                    if (cfg.second == 0)
-                        appCfg.put(uid, new Pair<>(cfg.first, 1));
-                    else
-                        appCfg.put(uid, new Pair<>(cfg.first, 0));
-                }
+                if (AppInfoCache.get(uid).isSystemApp == showSystemApp)
+                    appCfg.put(uid, new Pair<>(cfg.first, cfg.second == 0 ? 1 : 0));
             });
             notifyDataSetChanged();
         }

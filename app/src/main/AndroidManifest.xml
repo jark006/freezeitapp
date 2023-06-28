@@ -32,7 +32,7 @@
             android:resource="@array/recommend_package" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.Main"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,15 +41,15 @@
         </activity>
 
         <activity
-            android:name=".SettingsActivity"
+            android:name=".activity.Settings"
             android:exported="false"
             android:label="@string/title_activity_setting" />
         <activity
-            android:name=".AboutActivity"
+            android:name=".activity.About"
             android:exported="false"
             android:label="@string/title_activity_about" />
         <activity
-            android:name=".AppTimeActivity"
+            android:name=".activity.AppTime"
             android:exported="false"
             android:label="@string/title_activity_task_manager" />
     </application>

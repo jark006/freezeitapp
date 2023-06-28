@@ -40,8 +40,17 @@ public class StaticData {
     @SuppressLint("UseCompatLoadingForDrawables")
     public static Drawable getBackgroundDrawable(Context context){
         if(bg == null) {
-            bg = context.getDrawable(R.drawable.bg);
-            bg.setAlpha(56);
+            try {
+                bg = Drawable.createFromPath(
+                        context.getFilesDir().getPath() + "/" + bgFileName);
+
+                if (bg == null)
+                    throw new Exception();
+                bg.setAlpha(56);
+            } catch (Exception ignored) {
+                bg = context.getDrawable(R.drawable.bg);
+                bg.setAlpha(0);
+            }
         }
         return bg;
     }

@@ -27,7 +27,7 @@ import io.github.jark006.freezeit.StaticData;
 import io.github.jark006.freezeit.Utils;
 import io.github.jark006.freezeit.databinding.FragmentLogcatBinding;
 
-public class LogcatFragment extends Fragment {
+public class Logcat extends Fragment {
     private FragmentLogcatBinding binding;
     final int NEW_LOG_CONTENT = 1,
             UPDATE_LABEL_SUCCESS = 2,

@@ -1,4 +1,4 @@
-package io.github.jark006.freezeit;
+package io.github.jark006.freezeit.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -25,7 +25,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class AppTimeActivity extends AppCompatActivity {
+import io.github.jark006.freezeit.AppInfoCache;
+import io.github.jark006.freezeit.R;
+import io.github.jark006.freezeit.StaticData;
+import io.github.jark006.freezeit.Utils;
+
+public class AppTime extends AppCompatActivity {
     AppTimeAdapter recycleAdapter = new AppTimeAdapter();
     Timer timer;
     int[] newUidTime;

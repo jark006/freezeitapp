@@ -1,4 +1,4 @@
-package io.github.jark006.freezeit;
+package io.github.jark006.freezeit.activity;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -7,8 +7,12 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import io.github.jark006.freezeit.R;
+import io.github.jark006.freezeit.StaticData;
+import io.github.jark006.freezeit.Utils;
 
-public class AboutActivity extends AppCompatActivity implements View.OnClickListener {
+
+public class About extends AppCompatActivity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

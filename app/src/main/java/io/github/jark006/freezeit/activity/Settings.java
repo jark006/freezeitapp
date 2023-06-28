@@ -1,4 +1,4 @@
-package io.github.jark006.freezeit;
+package io.github.jark006.freezeit.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -27,19 +27,22 @@ import androidx.core.app.ActivityCompat;
 
 import java.util.Arrays;
 
+import io.github.jark006.freezeit.R;
+import io.github.jark006.freezeit.StaticData;
+import io.github.jark006.freezeit.Utils;
 
-public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
+
+public class Settings extends AppCompatActivity implements View.OnClickListener {
     final int INIT_UI = 1, SET_VAR_SUCCESS = 2, SET_VAR_FAIL = 3;
 
-    Spinner clusterBindSpinner, freezeModeSpinner, reFreezeTimeoutSpinner;
+    Spinner freezeModeSpinner, reFreezeTimeoutSpinner;
     SeekBar freezeTimeoutSeekbar, wakeupTimeoutSeekbar, terminateTimeoutSeekbar;
     TextView freezeTimeoutText, wakeupTimeoutText, terminateTimeoutText;
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")
-    Switch batterySwitch, currentSwitch, breakNetworkSwitch,
+    Switch batterySwitch, currentSwitch,
             lmkSwitch, dozeSwitch, extendFgSwitch, dozeDebugSwitch;
 
-    final int clusterBindIdx = 1;
     final int freezeTimeoutIdx = 2;
     final int wakeupTimeoutIdx = 3;
     final int terminateTimeoutIdx = 4;
@@ -48,7 +51,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     final int batteryIdx = 13;
     final int currentIdx = 14;
-    final int breakNetworkIdx = 15;
     final int lmkIdx = 16;
     final int dozeIdx = 17;
     final int extendFgIdx = 18;
@@ -68,7 +70,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        findViewById(R.id.cluster_title).setOnClickListener(this);
         findViewById(R.id.freeze_mode_title).setOnClickListener(this);
         findViewById(R.id.freeze_timeout_title).setOnClickListener(this);
         findViewById(R.id.refreeze_timeout_title).setOnClickListener(this);
@@ -76,7 +77,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         findViewById(R.id.wakeup_timeout_title).setOnClickListener(this);
         findViewById(R.id.battery_title).setOnClickListener(this);
         findViewById(R.id.current_title).setOnClickListener(this);
-        findViewById(R.id.break_network_title).setOnClickListener(this);
         findViewById(R.id.lmk_title).setOnClickListener(this);
         findViewById(R.id.doze_title).setOnClickListener(this);
         findViewById(R.id.extend_fg_title).setOnClickListener(this);
@@ -84,7 +84,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
         findViewById(R.id.set_bg).setOnClickListener(this);
 
-        clusterBindSpinner = findViewById(R.id.cluster_spinner);
         freezeModeSpinner = findViewById(R.id.freeze_mode_spinner);
         reFreezeTimeoutSpinner = findViewById(R.id.refreeze_timeout_spinner);
 
@@ -97,7 +96,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
         batterySwitch = findViewById(R.id.switch_battery);
         currentSwitch = findViewById(R.id.switch_current);
-        breakNetworkSwitch = findViewById(R.id.switch_break_network);
         lmkSwitch = findViewById(R.id.switch_lmk);
         dozeSwitch = findViewById(R.id.switch_doze);
         extendFgSwitch = findViewById(R.id.switch_extend_fg);
@@ -105,7 +103,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
         if (this.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
                 PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(SettingsActivity.this,
+            ActivityCompat.requestPermissions(Settings.this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
 
@@ -116,18 +114,25 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             try {
                 String imagePath = Utils.getFileAbsolutePath(this, result.getData().getData());
                 var bg = BitmapFactory.decodeFile(imagePath);
-                if (bg == null) return;
-                if (bg.getHeight() > 1000 || bg.getWidth() > 1000) {
-                    final float scale = 1000f / Math.max(bg.getHeight(), bg.getWidth());
-                    bg = Utils.resize(bg, scale);
-                }
+                if (bg == null || bg.getHeight() == 0 || bg.getWidth() == 0) return;
+
+                // 居中截取 宽:高 = 1:2
+                if (bg.getHeight() > 2 * bg.getWidth())
+                    bg = Bitmap.createBitmap(bg, 0, bg.getHeight() / 2 - bg.getWidth(),
+                            bg.getWidth(), bg.getWidth() * 2);
+                else if (bg.getHeight() < 2 * bg.getWidth())
+                    bg = Bitmap.createBitmap(bg, bg.getWidth() / 2 - bg.getHeight() / 4, 0,
+                            bg.getHeight() / 2, bg.getHeight());
+
+                // 限制分辨率
+                if (bg.getWidth() > 1080)
+                    bg = Utils.resize(bg, 1080f / bg.getWidth());
+
                 bg.compress(Bitmap.CompressFormat.JPEG, 90,
                         openFileOutput(StaticData.bgFileName, Context.MODE_PRIVATE));
 
-                StaticData.bg = Drawable.createFromPath(
-                        this.getFilesDir().getPath() + "/" + StaticData.bgFileName);
-                if (StaticData.bg != null)
-                    StaticData.bg.setAlpha(56);
+                StaticData.bg = new BitmapDrawable(getResources(), bg);
+                StaticData.bg.setAlpha(56);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -145,7 +150,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 return;
             }
             settingsVar = Arrays.copyOfRange(StaticData.response, 0, 256);
-            if (settingsVar[clusterBindIdx] > 6) settingsVar[clusterBindIdx] = 0;
             if (settingsVar[freezeModeIdx] > 5) settingsVar[freezeModeIdx] = 0;
             if (settingsVar[reFreezeTimeoutIdx] > 4) settingsVar[reFreezeTimeoutIdx] = 2;
             if (settingsVar[freezeTimeoutIdx] > 60) settingsVar[freezeTimeoutIdx] = 10;
@@ -269,7 +273,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case INIT_UI:
-                    InitSpinner(clusterBindSpinner, clusterBindIdx);
                     InitSpinner(freezeModeSpinner, freezeModeIdx);
                     InitSpinner(reFreezeTimeoutSpinner, reFreezeTimeoutIdx);
 
@@ -279,7 +282,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
                     InitSwitch(batterySwitch, batteryIdx);
                     InitSwitch(currentSwitch, currentIdx);
-                    InitSwitch(breakNetworkSwitch, breakNetworkIdx);
                     InitSwitch(lmkSwitch, lmkIdx);
                     InitSwitch(dozeSwitch, dozeIdx);
                     InitSwitch(extendFgSwitch, extendFgIdx);
@@ -301,9 +303,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        if (id == R.id.cluster_title) {
-            Utils.textDialog(this, R.string.cluster_title, R.string.cluster_tips);
-        } else if (id == R.id.freeze_mode_title) {
+        if (id == R.id.freeze_mode_title) {
             Utils.textDialog(this, R.string.freeze_mode_title, R.string.freeze_mode_tips);
         } else if (id == R.id.freeze_timeout_title) {
             Utils.textDialog(this, R.string.freeze_timeout_title, R.string.freeze_timeout_tips);
@@ -317,8 +317,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             Utils.textDialog(this, R.string.battery_title, R.string.battery_tips);
         } else if (id == R.id.current_title) {
             Utils.textDialog(this, R.string.current_title, R.string.current_tips);
-        } else if (id == R.id.break_network_title) {
-            Utils.textDialog(this, R.string.break_network_title, R.string.break_network_tips);
         } else if (id == R.id.lmk_title) {
             Utils.textDialog(this, R.string.lmk_title, R.string.lmk_tips);
         } else if (id == R.id.doze_title) {

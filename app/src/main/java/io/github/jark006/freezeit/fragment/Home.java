@@ -32,16 +32,16 @@ import java.nio.ByteBuffer;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import io.github.jark006.freezeit.AboutActivity;
-import io.github.jark006.freezeit.AppTimeActivity;
+import io.github.jark006.freezeit.activity.About;
+import io.github.jark006.freezeit.activity.AppTime;
 import io.github.jark006.freezeit.BuildConfig;
 import io.github.jark006.freezeit.R;
-import io.github.jark006.freezeit.SettingsActivity;
+import io.github.jark006.freezeit.activity.Settings;
 import io.github.jark006.freezeit.StaticData;
 import io.github.jark006.freezeit.Utils;
 import io.github.jark006.freezeit.databinding.FragmentHomeBinding;
 
-public class HomeFragment extends Fragment implements View.OnClickListener {
+public class Home extends Fragment implements View.OnClickListener {
     private final static String TAG = "HomeFragment";
     private FragmentHomeBinding binding;
 
@@ -73,11 +73,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 int id = menuItem.getItemId();
                 if (id == R.id.settings) {
                     if (StaticData.hasGetPropInfo)
-                        startActivity(new Intent(requireContext(), SettingsActivity.class));
+                        startActivity(new Intent(requireContext(), Settings.class));
                     else
                         Toast.makeText(requireContext(), getString(R.string.freezeit_offline), Toast.LENGTH_LONG).show();
                 } else if (id == R.id.about) {
-                    startActivity(new Intent(requireContext(), AboutActivity.class));
+                    startActivity(new Intent(requireContext(), About.class));
                 }
                 return true;
             }
@@ -317,6 +317,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                             binding.cpu4.setTextColor(colorPerformance);
                             binding.cpu5.setTextColor(colorPerformance);
                             break;
+                        case 251: // 2+5+1
+                            binding.cpu2.setTextColor(colorPerformance);
+                            binding.cpu3.setTextColor(colorPerformance);
+                            binding.cpu4.setTextColor(colorPerformance);
+                            binding.cpu5.setTextColor(colorPerformance);
+                            binding.cpu6.setTextColor(colorPerformance);
+                            break;
                         case 62: // 6+2
                             binding.cpu4.setTextColor(colorEfficiency);
                             binding.cpu5.setTextColor(colorEfficiency);
@@ -438,7 +445,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.realtimeLayout) {
-            startActivity(new Intent(requireContext(), AppTimeActivity.class));
+            startActivity(new Intent(requireContext(), AppTime.class));
         } else if (id == R.id.download_button) {
             if (StaticData.zipUrl.length() > 2)
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(StaticData.zipUrl)));
