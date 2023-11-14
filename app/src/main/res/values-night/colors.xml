@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="cpu0">#22b8dd</color>
+    <color name="cpu1">#22ddb8</color>
+    <color name="cpu2">#22dd6d</color>
+    <color name="cpu3">#92dd22</color>
+    <color name="cpu4">#e6e61a</color>
+    <color name="cpu5">#e6bd1a</color>
+    <color name="cpu6">#e66b1a</color>
+    <color name="cpu7">#FF3434</color>
+
+</resources>

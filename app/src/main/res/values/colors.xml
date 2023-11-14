@@ -35,10 +35,14 @@
     <color name="trans_gray_bb">#bbbbbbbb</color>
     <color name="trans_gray_dd">#ddbbbbbb</color>
 
-    <color name="efficiency_core">#22BB22</color>
-    <color name="performance_core">#2288DD</color>
-    <color name="performance_e_core">#BB6622</color>
-    <color name="prime_core">#FF4422</color>
+    <color name="cpu0">#22b8dd</color>
+    <color name="cpu1">#22ddb8</color>
+    <color name="cpu2">#22dd6d</color>
+    <color name="cpu3">#7BB91D</color>
+    <color name="cpu4">#D4CA00</color>
+    <color name="cpu5">#C59C00</color>
+    <color name="cpu6">#e66b1a</color>
+    <color name="cpu7">#e61a1a</color>
 
     <color name="blue">#CC0080FF</color>
 

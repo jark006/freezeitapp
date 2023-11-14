@@ -14,6 +14,8 @@ public class Enum {
         public final static String self = BuildConfig.APPLICATION_ID + ".fragment.Home";
 
         public final static String BroadcastQueue = "com.android.server.am.BroadcastQueue";
+        public final static String BroadcastQueueImpl = "com.android.server.am.BroadcastQueueImpl"; //SDK 34+
+        public final static String BroadcastQueueModernImpl = "com.android.server.am.BroadcastQueueModernImpl"; //SDK 34+
         public final static String BroadcastRecord = "com.android.server.am.BroadcastRecord";
         public final static String BroadcastFilter = "com.android.server.am.BroadcastFilter";
         public final static String AnrHelper = "com.android.server.am.AnrHelper";
@@ -37,14 +39,18 @@ public class Enum {
         public final static String AlarmR = "com.android.server.AlarmManagerService$Alarm"; //SDK x ~ 30
         public final static String AlarmS = "com.android.server.alarm.Alarm"; // SDK 31+
         public final static String NetworkManagementService = "com.android.server.NetworkManagementService";
+        public final static String NetworkManagementServiceU = "com.android.server.net.NetworkManagementService"; //SDK 34+
         public final static String Dependencies = "com.android.server.NetworkManagementService$Dependencies";
         public final static String SystemServices = "com.android.server.NetworkManagementService$SystemServices";
         public final static String DisplayPowerController = "com.android.server.display.DisplayPowerController";
+        public final static String DisplayPowerController2 = "com.android.server.display.DisplayPowerController2"; //SDK 34+
+        public final static String DisplayPowerState = "com.android.server.display.DisplayPowerState";
 
         public final static String WindowProcessController = "com.android.server.wm.WindowProcessController";
         public final static String ActivityTaskManagerService = "com.android.server.wm.ActivityTaskManagerService";
         public final static String WindowManagerService = "com.android.server.wm.WindowManagerService";
-        public static String RootWindowContainer = "com.android.server.wm.RootWindowContainer";
+        public final static String RootWindowContainer = "com.android.server.wm.RootWindowContainer";
+        public final static Object TimeoutRecord = "com.android.internal.os.TimeoutRecord";
 
         public final static String PowerManager = "android.os.PowerManager";
         public final static String IPowerManager = "android.os.IPowerManager";
@@ -105,6 +111,7 @@ public class Enum {
         public final static String skipReceiverLocked = "skipReceiverLocked";
         public final static String removeWhiteListAppsIfEnterForceIdle = "removeWhiteListAppsIfEnterForceIdle";
         public final static String restoreWhiteListAppsIfQuitForceIdle = "restoreWhiteListAppsIfQuitForceIdle";
+        public final static String initialize = "initialize";
     }
 
     public final static class Field {
@@ -137,6 +144,7 @@ public class Enum {
         public final static String visible = "visible";
         public final static String childTaskNames = "childTaskNames";
         public final static String taskNames = "taskNames";
+        public final static String mPowerState = "mPowerState";
     }
 
 }

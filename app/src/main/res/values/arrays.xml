@@ -8,7 +8,7 @@
 
     <string-array name="level">
         <item>😡Strict</item>
-        <item>😐Lenient</item>
+        <item>😐️Permissive</item>
     </string-array>
 
     <string-array name="freeze_mode">
@@ -21,16 +21,21 @@
     </string-array>
 
     <string-array name="work_mode">
-        <item>Global SIGSTOP</item>
-        <item>V1(FROZEN)</item>
-        <item>V1(FRZ+ST)</item>
-        <item>V2(UID)</item>
         <item>V2(FROZEN)</item>
-        <item>Auto</item>
+        <item>V2(UID)</item>
+        <item>Global SIGSTOP</item>
     </string-array>
 
     <string-array name="refreeze_timeout">
         <item>Off</item>
+        <item>30 min</item>
+        <item>1 hour</item>
+        <item>2 hour</item>
+    </string-array>
+
+    <string-array name="wakeup_timeout">
+        <item>Off</item>
+        <item>5 min</item>
         <item>15 min</item>
         <item>30 min</item>
         <item>1 hour</item>

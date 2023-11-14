@@ -28,35 +28,9 @@
         android:alpha="0.75"
         android:contentDescription="@string/icon"
         app:backgroundTint="@color/float_button"
-        app:layout_constraintBottom_toTopOf="@+id/fabConvertTolerant"
-        app:layout_constraintRight_toRightOf="parent"
-        app:srcCompat="@drawable/ic_android_24dp" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabConvertTolerant"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginBottom="@dimen/fab_margin"
-        android:alpha="0.75"
-        android:contentDescription="@string/icon"
-        app:backgroundTint="@color/float_button"
-        app:layout_constraintBottom_toTopOf="@+id/fabConvertCfg"
-        app:layout_constraintRight_toRightOf="parent"
-        app:srcCompat="@drawable/ic_convert2_24dp" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabConvertCfg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginBottom="@dimen/fab_margin"
-        android:alpha="0.75"
-        android:contentDescription="@string/icon"
-        app:backgroundTint="@color/float_button"
         app:layout_constraintBottom_toTopOf="@+id/fabSave"
         app:layout_constraintRight_toRightOf="parent"
-        app:srcCompat="@drawable/ic_convert_24dp" />
+        app:srcCompat="@drawable/ic_android_24dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabSave"

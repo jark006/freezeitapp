@@ -16,16 +16,21 @@
     </string-array>
 
     <string-array name="work_mode">
-        <item>全局SIGSTOP</item>
-        <item>V1(FROZEN)</item>
-        <item>V1(FRZ+ST)</item>
-        <item>V2(UID)</item>
         <item>V2(FROZEN)</item>
-        <item>自动选择</item>
+        <item>V2(UID)</item>
+        <item>全局SIGSTOP</item>
     </string-array>
 
     <string-array name="refreeze_timeout">
         <item>关闭</item>
+        <item>30分钟</item>
+        <item>1小时</item>
+        <item>2小时</item>
+    </string-array>
+
+    <string-array name="wakeup_timeout">
+        <item>关闭</item>
+        <item>5分钟</item>
         <item>15分钟</item>
         <item>30分钟</item>
         <item>1小时</item>

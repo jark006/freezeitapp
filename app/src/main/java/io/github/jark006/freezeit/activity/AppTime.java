@@ -26,6 +26,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import io.github.jark006.freezeit.AppInfoCache;
+import io.github.jark006.freezeit.ManagerCmd;
 import io.github.jark006.freezeit.R;
 import io.github.jark006.freezeit.StaticData;
 import io.github.jark006.freezeit.Utils;
@@ -87,7 +88,7 @@ public class AppTime extends AppCompatActivity {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                var recvLen = Utils.freezeitTask(Utils.getUidTime, null);
+                var recvLen = Utils.freezeitTask(ManagerCmd.getUidTime, null);
 
                 // 每个APP时间为3个int32 [0-2]:[uid delta total], 共12字节
                 if (recvLen == 0 || recvLen % 12 != 0)
@@ -102,7 +103,7 @@ public class AppTime extends AppCompatActivity {
     private final Handler handler = new Handler(Looper.getMainLooper()) {
         @SuppressLint("SetTextI18n")
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
             if (msg.what == UPDATE_DATA_SET)
                 recycleAdapter.updateDataSet(newUidTime);

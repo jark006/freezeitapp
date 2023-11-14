@@ -63,6 +63,30 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/wakeup_timeout_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingVertical="15dp"
+                android:text="@string/wakeup_timeout_title"
+                android:textSize="18sp" />
+
+            <Spinner
+                android:id="@+id/wakeup_timeout_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:entries="@array/wakeup_timeout"
+                android:spinnerMode="dropdown" />
+
+        </LinearLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
@@ -89,7 +113,7 @@
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/freeze_timeout_text"
+                    android:id="@+id/freeze_timeout_value_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/number"
@@ -122,6 +146,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
             android:orientation="vertical">
 
             <LinearLayout
@@ -140,7 +165,7 @@
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/terminate_timeout_text"
+                    android:id="@+id/terminate_timeout_value_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/number"
@@ -170,57 +195,6 @@
                 android:thumbTint="@null" />
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingBottom="10dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/wakeup_timeout_title"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingVertical="15dp"
-                    android:text="@string/wakeup_timeout_title"
-                    android:textSize="18sp" />
-
-                <TextView
-                    android:id="@+id/wakeup_timeout_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/number"
-                    android:textSize="18sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingHorizontal="10dp"
-                    android:text="@string/minute"
-                    android:textSize="18sp" />
-            </LinearLayout>
-
-            <SeekBar
-                android:id="@+id/seekBarWakeup"
-                style="@style/Widget.AppCompat.SeekBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:max="120"
-                android:maxHeight="30dp"
-                android:min="3"
-                android:minHeight="30dp"
-                android:progressDrawable="@drawable/seekbar_bg"
-                android:progressTint="@color/purple_500"
-                android:thumb="@null"
-                android:thumbOffset="0dp"
-                android:thumbTint="@null" />
-        </LinearLayout>
 
         <View
             android:layout_width="match_parent"
@@ -338,42 +312,16 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/extend_fg_title"
+                android:id="@+id/debug_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:paddingVertical="15dp"
-                android:text="@string/extend_fg_title"
+                android:text="@string/debug_title"
                 android:textSize="18sp" />
 
             <Switch
-                android:id="@+id/switch_extend_fg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/selector"
-                android:minHeight="30dp"
-                android:thumbTint="@color/white"
-                android:trackTint="@color/transparent"
-                tools:ignore="UseSwitchCompatOrMaterialXml" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/doze_debug_title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingVertical="15dp"
-                android:text="@string/doze_debug_title"
-                android:textSize="18sp" />
-
-            <Switch
-                android:id="@+id/switch_doze_debug"
+                android:id="@+id/switch_debug"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/selector"

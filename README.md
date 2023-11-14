@@ -1,20 +1,24 @@
-# 冻它模块 APP freezeitapp
+# FreezeitManager 冻它管理器
 
-**[面具模块]** 模拟墓碑后台机制，自动暂停第三方应用后台运行。
+**[面具模块]** 实现部分墓碑机制，自动暂停后台进程的运行。
 
-**[MagiskModule]** Emulate the Tombstone mechanism to automatically suspend third-party apps running in the background. 
+**[MagiskModule]** Implement a partial tombstone mechanism to automatically suspend background processes.
 
----
+### 相关链接
 
-[教程 Tutorials](https://jark006.github.io/FreezeitIntroduction/)
+1. [项目开源地址](https://github.com/jark006/freezeitVS)
 
-[酷安 @JARK006](https://www.coolapk.com/u/1212220) 
+1. [管理器开源地址](https://github.com/jark006/freezeitapp)
 
-[Magisk模块发布页](https://github.com/jark006/freezeitRelease)
+1. [模块包发布地址](https://github.com/jark006/freezeitRelease)
 
-[QQ群组 781222669](https://jq.qq.com/?_wv=1027&k=Q5aVUglt)
-[Telegram Group 群组](https://t.me/+sjDX1oTk31ZmYjY1) [Channel 频道](https://t.me/freezeitRelease)
-[蓝奏云](https://jark006.lanzout.com/b017oz9if) 密码: dy6i
+### 其他链接
+
+[教程 Tutorials](https://jark006.github.io/FreezeitIntroduction/) |
+[酷安 @JARK006](https://www.coolapk.com/u/1212220) |
+[QQ频道 冻它模块](https://qun.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&appChannel=share&inviteCode=1W6opB7&appChannel=share&businessType=9&from=246610&biz=ka) |
+[Telegram Group](https://t.me/+sjDX1oTk31ZmYjY1) |
+[蓝奏云 密码: dy6i](https://jark006.lanzout.com/b017oz9if) 
 
 ---
 

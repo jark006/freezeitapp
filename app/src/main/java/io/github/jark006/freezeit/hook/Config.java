@@ -1,7 +1,6 @@
 package io.github.jark006.freezeit.hook;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
 
 import androidx.annotation.NonNull;
 
@@ -12,10 +11,14 @@ import io.github.jark006.freezeit.hook.XpUtils.BucketSet;
 import io.github.jark006.freezeit.hook.XpUtils.VectorSet;
 
 public class Config {
+
+    boolean mEnableModernQueue = false; // Android14+ SDK34+ 新广播机制
+
     public int[] settings = new int[256];
     public BucketSet managedApp = new BucketSet();// 受冻它管控的应用 只含冻结配置和杀死后台 不含自由后台
-    public BucketSet tolerant = new BucketSet();  // 宽松前台
-    public VectorSet foregroundUid = new VectorSet(20); // 实时 当前在前台(含宽松前台) 底层进程问询时才刷新
+    public BucketSet permissive = new BucketSet();  // 宽松前台
+    public VectorSet foregroundUid = new VectorSet(64); // 当前在前台(含宽松前台) 底层进程问询时才刷新
+    public VectorSet pendingUid = new VectorSet(64);    // 切到后台暂未冻结的应用
     public HashMap<String, Integer> uidIndex = new HashMap<>(512); // UID索引
     public HashMap<Integer, String> pkgIndex = new HashMap<>(512); // 包名索引
 
@@ -27,44 +30,27 @@ public class Config {
             serviceRecordDefiningUidField,
             alarmUidField,
             processRecordStateField,
-            taskInfoVisibleField,
-            taskInfoTaskNamesField;
+            mScreenStateField;
 
     public boolean initField = false;
 
-    public final boolean isExtendFg() {
-        return settings[18] != 0 && taskInfoVisibleField != null && taskInfoTaskNamesField != null;
-    }
-
     public final boolean isCurProcStateInitialized() {
-        return mCurProcStateField != null && (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R || processRecordStateField != null);
+        return mCurProcStateField != null && processRecordStateField != null;
     }
 
     @SuppressLint("PrivateApi")
     public String Init(ClassLoader classLoader) {
         try {
             // 需进入桌面后才能初始化
-            mCurProcStateField = Class.forName(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ?
-                    Enum.Class.ProcessStateRecord : Enum.Class.ProcessRecord, true, classLoader).getDeclaredField(Enum.Field.mCurProcState);
+            mCurProcStateField = Class.forName(Enum.Class.ProcessStateRecord, true, classLoader).getDeclaredField(Enum.Field.mCurProcState);
             processRecordUidField = Class.forName(Enum.Class.ProcessRecord, true, classLoader).getDeclaredField(Enum.Field.uid);
             broadcastFilterOwningUidField = Class.forName(Enum.Class.BroadcastFilter, true, classLoader).getDeclaredField(Enum.Field.owningUid);
             broadcastRecordCallingUidField = Class.forName(Enum.Class.BroadcastRecord, true, classLoader).getDeclaredField(Enum.Field.callingUid);
             broadcastRecordDeliveryField = Class.forName(Enum.Class.BroadcastRecord, true, classLoader).getDeclaredField(Enum.Field.delivery);
             serviceRecordDefiningUidField = Class.forName(Enum.Class.ServiceRecord, true, classLoader).getDeclaredField(Enum.Field.definingUid);
-            alarmUidField = Class.forName(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ?
-                    Enum.Class.AlarmS : Enum.Class.AlarmR, true, classLoader).getDeclaredField(Enum.Field.uid);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                processRecordStateField = Class.forName(Enum.Class.ProcessRecord, true, classLoader).getDeclaredField(Enum.Field.mState);
-                processRecordStateField.setAccessible(true);
-            }
-            taskInfoVisibleField = Class.forName(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ?
-                    Enum.Class.RootTaskInfoS : Enum.Class.StackInfo, true, classLoader).getDeclaredField(Enum.Field.visible);
-
-            taskInfoTaskNamesField = Class.forName(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ?
-                    Enum.Class.RootTaskInfoS : Enum.Class.StackInfo, true, classLoader).getDeclaredField(
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? Enum.Field.childTaskNames : Enum.Field.taskNames);
-
+            alarmUidField = Class.forName(Enum.Class.AlarmS, true, classLoader).getDeclaredField(Enum.Field.uid);
+            processRecordStateField = Class.forName(Enum.Class.ProcessRecord, true, classLoader).getDeclaredField(Enum.Field.mState);
+            mScreenStateField = Class.forName(Enum.Class.DisplayPowerState, true, classLoader).getDeclaredField(Enum.Field.mScreenState);
 
             mCurProcStateField.setAccessible(true);
             processRecordUidField.setAccessible(true);
@@ -73,30 +59,25 @@ public class Config {
             broadcastRecordDeliveryField.setAccessible(true);
             serviceRecordDefiningUidField.setAccessible(true);
             alarmUidField.setAccessible(true);
-            taskInfoVisibleField.setAccessible(true);
-            taskInfoTaskNamesField.setAccessible(true);
-
+            processRecordStateField.setAccessible(true);
+            mScreenStateField.setAccessible(true);
 
             initField = true;
             return "[SUCCESS]";
         } catch (Exception e) {
             initField = false;
 
-            var initInfo = new StringBuilder("\n[ !!! FAIL !!! ]\n[ !!! 失败 !!! ]\n[ !!! FAIL !!! ]\n");
-            initInfo.append(mCurProcStateField != null ? 'O' : 'X');
-            initInfo.append(processRecordUidField != null ? 'O' : 'X');
-            initInfo.append(broadcastFilterOwningUidField != null ? 'O' : 'X');
-            initInfo.append(broadcastRecordCallingUidField != null ? 'O' : 'X');
-            initInfo.append(broadcastRecordDeliveryField != null ? 'O' : 'X');
-            initInfo.append(serviceRecordDefiningUidField != null ? 'O' : 'X');
-            initInfo.append(alarmUidField != null ? 'O' : 'X');
-            initInfo.append(taskInfoVisibleField != null ? 'O' : 'X');
-            initInfo.append(taskInfoTaskNamesField != null ? 'O' : 'X');
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-                initInfo.append(processRecordStateField != null ? 'O' : 'X');
-
-            initInfo.append(e);
-            return initInfo.toString();
+            return "\n[ !!! FAIL !!! ]\n[ !!! 失败 !!! ]\n[ !!! FAIL !!! ]\n" +
+                    (mCurProcStateField != null ? 'O' : 'X') +
+                    (processRecordUidField != null ? 'O' : 'X') +
+                    (broadcastFilterOwningUidField != null ? 'O' : 'X') +
+                    (broadcastRecordCallingUidField != null ? 'O' : 'X') +
+                    (broadcastRecordDeliveryField != null ? 'O' : 'X') +
+                    (serviceRecordDefiningUidField != null ? 'O' : 'X') +
+                    (alarmUidField != null ? 'O' : 'X') +
+                    (processRecordStateField != null ? 'O' : 'X') +
+                    (mScreenStateField != null ? 'O' : 'X') +
+                    e;
         }
     }
 
@@ -164,19 +145,12 @@ public class Config {
         }
     }
 
-    public final boolean getTaskInfoVisible(@NonNull Object obj) {
+    public final int getScreenState(@NonNull Object obj) {
         try {
-            return taskInfoVisibleField.getBoolean(obj); // isExtendFg() 已判空
+            return mScreenStateField == null ? 0 : mScreenStateField.getInt(obj);
         } catch (Exception e) {
-            return false;
+            return 0;
         }
     }
 
-    public final String[] getTaskInfoTaskNames(@NonNull Object obj) {
-        try {
-            return (String[]) taskInfoTaskNamesField.get(obj); // isExtendFg() 已判空
-        } catch (Exception e) {
-            return null;
-        }
-    }
 }

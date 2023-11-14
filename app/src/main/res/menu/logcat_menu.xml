@@ -8,6 +8,11 @@
         android:title="@string/update_app_label"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/switch_log"
+        android:icon="@drawable/ic_log_24dp"
+        android:title="@string/switch_xposed_log"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/help_log"
         android:icon="@drawable/ic_help_24dp"
         android:title="@string/help"
