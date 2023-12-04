@@ -158,4 +158,8 @@
     <string name="appFailTips">应用列表获取失败，请授予相关权限</string>
     <string name="xposed_log">Xposed日志</string>
     <string name="switch_xposed_log">切换Xposed日志</string>
+    <string name="sys_warn_title">谨慎配置系统应用</string>
+    <string name="sys_warn_info">系统应用比较特殊，很多需要常驻后台，随时为系统提供各类服务。\n\n
+        如果冻结，会引起很多系统异常现象，即使设为杀死后台，也会被系统不断重复拉起，这种反复拉锯会加速手机耗电。\n\n
+        如果你不清楚你的行为会造成什么后果，则建议系统应用默认一律“🍀️自由后台”。</string>
 </resources>

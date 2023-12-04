@@ -24,8 +24,8 @@ android {
         applicationId "io.github.jark006.freezeit"
         minSdk 31
         targetSdk 34
-        versionCode 300003
-        versionName "3.0.0Beta3"
+        versionCode 300004
+        versionName "3.0.0"
 
         resValue "string", "versionName", "${versionName}"
         signingConfig signingConfigs.release
@@ -51,9 +51,9 @@ android {
     }
     buildFeatures {
         viewBinding true
+        buildConfig true
     }
     namespace 'io.github.jark006.freezeit'
-    ndkVersion '25.2.9519653'
     dependenciesInfo {
         includeInApk false
         includeInBundle false

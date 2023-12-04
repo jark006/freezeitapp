@@ -89,6 +89,7 @@ public class Logcat extends Fragment {
             }
             lastTimestamp = now;
 
+            isGetWorkLog = true;
             new Thread(() -> logTask(ManagerCmd.printFreezerProc)).start();
         });
 
@@ -100,6 +101,7 @@ public class Logcat extends Fragment {
             }
             lastTimestamp = now;
 
+            isGetWorkLog = true;
             new Thread(() -> logTask(ManagerCmd.clearLog)).start();
         });
 

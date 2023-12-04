@@ -180,4 +180,8 @@
     <string name="xposed_log">Xposed Log</string>
     <string name="debug_tips">Enable Debug log</string>
     <string name="switch_xposed_log">Switch to XposedLog</string>
+    <string name="sys_warn_title">Attention</string>
+    <string name="sys_warn_info">System applications are quite special, and many of them need to reside in the background to provide various services to the system at any time. \n\n
+         If it is frozen, it will cause many system abnormalities. Even if it is set to terminate, it will be repeatedly pulled up by the system. This repeated sawing will accelerate the power consumption of the mobile phone. \n\n
+         If you don\'t know what the consequences of your actions will be, it is recommended that system applications default to 🍀️Free.</string>
 </resources>

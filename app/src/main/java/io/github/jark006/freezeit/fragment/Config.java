@@ -9,6 +9,7 @@ import static io.github.jark006.freezeit.Utils.CFG_WHITEFORCE;
 import static io.github.jark006.freezeit.Utils.CFG_WHITELIST;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -78,6 +79,8 @@ public class Config extends Fragment {
             AppInfoCache.refreshCache(requireContext());// 下拉刷新时，先更新应用缓存
             getAppCfgTask();
         }).start());
+
+        recycleAdapter.setContext(requireContext());
 
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
@@ -278,8 +281,13 @@ public class Config extends Fragment {
         static HashMap<Integer, Pair<Integer, Integer>> appCfg = new HashMap<>(); //<uid, <freezeMode, permissive>>
         boolean showSystemApp = false;
         String keyWord = "";
+        Context context;
 
         public AppCfgAdapter() {
+        }
+
+        public void setContext(Context ctx){
+            context = ctx;
         }
 
         public void updateDataSet(@NonNull ArrayList<Integer> newUidList,
@@ -441,6 +449,8 @@ public class Config extends Fragment {
         public void switchAppType() {
             showSystemApp = !showSystemApp;
             updateAndRefreshView();
+            if(showSystemApp)
+                Utils.textDialog(context, R.string.sys_warn_title, R.string.sys_warn_info);
         }
 
         public void filter(@NonNull final String _keyWord) {
