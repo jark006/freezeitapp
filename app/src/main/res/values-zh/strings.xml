@@ -11,8 +11,8 @@
 
     <string name="website_link">https://jark006.gitee.io/i/freezeit/</string>
     <string name="tutorial_link">https://jark006.gitee.io/FreezeitIntroduction/</string>
-    <string name="update_json_link">https://ghproxy.com/https://raw.githubusercontent.com/jark006/freezeitRelease/main/update.json</string>
-    <string name="online_changelog_link">https://ghproxy.com/https://raw.githubusercontent.com/jark006/freezeitRelease/main/changelogFull.txt</string>
+    <string name="update_json_link">https://mirror.ghproxy.com/https://raw.githubusercontent.com/jark006/freezeitRelease/main/update.json</string>
+    <string name="online_changelog_link">https://mirror.ghproxy.com/https://raw.githubusercontent.com/jark006/freezeitRelease/main/changelogFull.txt</string>
 
 
     <string name="coolapk_text">酷安 @JARK006</string>
@@ -105,6 +105,9 @@
 
     <string name="current_title">电流校准 ⓘ</string>
     <string name="current_tips">电流或功率数值接近或等于0则需要开启，常见于OPPO/VIVO</string>
+
+    <string name="double_cell_title">双电芯 ⓘ</string>
+    <string name="double_cell_tips">双电芯电池，用于校准电流或功率数值</string>
 
     <string name="lmk_title">调整lmk参数 ⓘ</string>
     <string name="lmk_tips">调整lmk参数，尽量保留更多应用后台(内存使用量会比较高)。重启生效</string>

@@ -97,6 +97,7 @@
     <string name="doze_title">OffScreen Doze ⓘ</string>
     <string name="lmk_title">Adjust LMK Parameter ⓘ</string>
     <string name="current_title">Adjust Current ⓘ</string>
+    <string name="double_cell_title">DoubleCell Battery ⓘ</string>
     <string name="battery_title">Battery Monitor ⓘ</string>
     <string name="developer">Developer JARK006</string>
     <string name="physical_ram_text">[RAM] Total: %1$.2f GiB\nUse: %2$.1f%% Remain: %3$.2f %4$s</string>
@@ -114,6 +115,7 @@
     </string>
     <string name="battery_tips">Record battery charge/discharge time, power, temperature, etc.</string>
     <string name="current_tips">Current or power values close to or equal to 0 need to be turned on, common in OPPO/VIVO system</string>
+    <string name="double_cell_tips">With a dual-cell battery, the current value will double.</string>
     <string name="lmk_tips">Adjust lmk parameters to ease the kill background, reboot to take effect</string>
     <string name="doze_tips">The system requires a strict condition to enter the Doze state. Enabling this option can quickly enter deep Doze after a few minutes of screen-off.</string>
     <string name="setup_successful">Setup successful</string>

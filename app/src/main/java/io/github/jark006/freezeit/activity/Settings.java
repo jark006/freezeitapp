@@ -39,7 +39,7 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
     TextView freezeTimeoutValueText, terminateTimeoutValueText;
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")
-    Switch batterySwitch, currentSwitch,
+    Switch batterySwitch, currentSwitch,  doubleCellSwitch,
             lmkSwitch, dozeSwitch, debugSwitch;
 
     final int freezeTimeoutIdx = 2;
@@ -50,6 +50,7 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
 
     final int batteryIdx = 13;
     final int currentIdx = 14;
+    final int doubleCellIdx = 15;
     final int lmkIdx = 16;
     final int dozeIdx = 17;
 
@@ -75,6 +76,7 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
         findViewById(R.id.wakeup_timeout_title).setOnClickListener(this);
         findViewById(R.id.battery_title).setOnClickListener(this);
         findViewById(R.id.current_title).setOnClickListener(this);
+        findViewById(R.id.double_cell_title).setOnClickListener(this);
         findViewById(R.id.lmk_title).setOnClickListener(this);
         findViewById(R.id.doze_title).setOnClickListener(this);
         findViewById(R.id.debug_title).setOnClickListener(this);
@@ -93,6 +95,7 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
 
         batterySwitch = findViewById(R.id.switch_battery);
         currentSwitch = findViewById(R.id.switch_current);
+        doubleCellSwitch = findViewById(R.id.switch_double_cell);
         lmkSwitch = findViewById(R.id.switch_lmk);
         dozeSwitch = findViewById(R.id.switch_doze);
         debugSwitch = findViewById(R.id.switch_debug);
@@ -130,8 +133,7 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
 
                 StaticData.bg = new BitmapDrawable(getResources(), bg);
                 StaticData.bg.setAlpha(56);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception ignore) {
             }
         });
     }
@@ -274,6 +276,7 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
 
                     InitSwitch(batterySwitch, batteryIdx);
                     InitSwitch(currentSwitch, currentIdx);
+                    InitSwitch(doubleCellSwitch, doubleCellIdx);
                     InitSwitch(lmkSwitch, lmkIdx);
                     InitSwitch(dozeSwitch, dozeIdx);
                     InitSwitch(debugSwitch, debugIdx);
@@ -307,6 +310,8 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
             Utils.textDialog(this, R.string.battery_title, R.string.battery_tips);
         } else if (id == R.id.current_title) {
             Utils.textDialog(this, R.string.current_title, R.string.current_tips);
+        } else if (id == R.id.double_cell_title) {
+            Utils.textDialog(this, R.string.double_cell_title, R.string.double_cell_tips);
         } else if (id == R.id.lmk_title) {
             Utils.textDialog(this, R.string.lmk_title, R.string.lmk_tips);
         } else if (id == R.id.doze_title) {
